@@ -1,0 +1,44 @@
+.main {
+  overflow-x: hidden;
+  display: flex;
+  flex: 1;
+  &__outlet {
+    flex: 1;
+    width: 100%;
+    padding-left: 250px;
+  }
+}
+
+.layout {
+  display: flex;
+  flex-direction: column;
+  max-height: 100vh;
+}
+
+.chat_admin {
+  position: fixed;
+  bottom: 0;
+  right: 5rem;
+  display: flex;
+  gap: 3rem;
+}
+
+.chatScreen_admin {
+  position: unset;
+}
+
+.main__sidebar {
+  position: fixed;
+}
+@media only screen and (max-width: 768px) {
+  .main {
+    overflow-x: hidden;
+    display: flex;
+    flex: 1;
+    &__outlet {
+      flex: 1;
+      width: 100%;
+      padding-left: 150px;
+    }
+  }
+}

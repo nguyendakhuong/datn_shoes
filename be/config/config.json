@@ -1,0 +1,26 @@
+{
+  "development": {
+    "username": "sql12764082",
+    "password": "q6kWYWzGx7",
+    "database": "sql12764082",
+    "host": "sql12.freesqldatabase.com",
+    "dialect": "mysql",
+    "logging": false,
+    "timezone": "+07:00",
+    "port": 3306
+  },
+  "test": {
+    "username": "root",
+    "password": null,
+    "database": "",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  },
+  "production": {
+    "username": "root",
+    "password": null,
+    "database": "database_production",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  }
+}

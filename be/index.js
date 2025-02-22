@@ -3,8 +3,9 @@ const app = express();
 require("dotenv").config();
 const moment = require("moment");
 const cors = require("cors");
-
+const path = require("path");
 const db = require("./models");
+const adminAccount = require("./route/admin.route");
 
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -24,6 +25,10 @@ app.get("/", (req, res) => {
   res.render("ejs/example");
 });
 
-app.listen(PORT, () => {
-  console.log("server start localhost: " + PORT);
+app.use("/", adminAccount);
+
+db.sequelize.sync().then(() => {
+  app.listen(PORT, () => {
+    console.log("server start localhost: " + PORT);
+  });
 });
