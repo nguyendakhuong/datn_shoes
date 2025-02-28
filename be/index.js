@@ -5,27 +5,47 @@ const moment = require("moment");
 const cors = require("cors");
 const path = require("path");
 const db = require("./models");
-const adminAccount = require("./route/admin.route");
+
+const admin = require("./route/admin.route");
+const accounts = require("./route/account.route");
+const color = require("./route/color.route");
+const trademark = require("./route/trademark.route");
+const origin = require("./route/origin.route");
+const material = require("./route/material.route");
+const product = require("./route/product.route");
 
 const bodyParser = require("body-parser");
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+
 app.use(express.json());
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json({ limit: "50mb" }));
+app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
+const PORT = process.env.POST || 3001;
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 app.use(express.static("views"));
 
-app.use(bodyParser.json({ limit: "50mb" }));
-app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
-const PORT = process.env.POST || 3001;
-
 app.get("/", (req, res) => {
   res.render("ejs/example");
 });
 
-app.use("/", adminAccount);
+app.use("/", accounts);
+app.use("/admin", admin);
+app.use("/color", color);
+app.use("/trademark", trademark);
+app.use("/origin", origin);
+app.use("/material", material);
+app.use("/product", product);
 
 db.sequelize.sync().then(() => {
   app.listen(PORT, () => {

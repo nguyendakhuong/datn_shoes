@@ -16,32 +16,32 @@ const SignUp = () => {
     const [data, setData] = useState(null)
     const navigate = useNavigate();
     const [status, setStatus] = useState(false)
-    const [email, setEmail] = useState('')
+    const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     const [name, setName] = useState('')
+    const [creator, setCreator] = useState('')
     const [isButtonDisabled, setIsButtonDisabled] = useState(true)
     const [userCtx, dispatch] = useContext(UserContext)
     const token = APP_LOCAL.getTokenStorage()
     const [reloadData, setReloadData] = useState(false);
 
     const [listError, setListError] = useState({
-        email: '',
+        username: '',
         password: '',
         name: '',
     })
     const [formValue, setFormValue] = useState({
-        email: null,
+        username: '',
         password: null,
         name: null,
     })
     const clearForm = () => {
-        setEmail("")
+        setUsername("")
         setName("")
         setPassword("")
     };
     const handleNavigateSignUp = () => {
         setStatus(true)
-
     }
     const signupAdmin = () => {
         const handleBackProduct = () => {
@@ -50,7 +50,7 @@ const SignUp = () => {
         const handlerOnChangeInput = e => {
             const { name, value } = e.target
 
-            if (name === 'email') setEmail(value)
+            if (name === 'username') setUsername(value)
             if (name === 'password') setPassword(value)
             if (name === 'name') setName(value)
             const inputValue = value.trim()
@@ -75,7 +75,7 @@ const SignUp = () => {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`
                     },
-                    body: JSON.stringify({ email, password, name }),
+                    body: JSON.stringify({ username, password, name }),
                 }).then(res => {
                     return res.json()
 
@@ -98,7 +98,6 @@ const SignUp = () => {
         }
         return (
             <div>
-
                 <table className="header-table">
                     <thead>
                         <tr>
@@ -110,32 +109,23 @@ const SignUp = () => {
                                     </button>
                                     <span>{'Đăng ký tài khoản'}</span>
                                 </div>
-
                             </th>
-
-
                         </tr>
                     </thead>
                 </table>
-
-
                 <div className={styles.register}>
-
                     <div className={styles.register_content}>
-
                         <h2>Đăng ký tài khoản</h2>
                         <form onSubmit={e => e.preventDefault()}>
-
-
                             <InputAdmin
                                 required={true}
-                                label={'Email'}
+                                label={'Tên đăng nhập'}
                                 placeholder={'Nhập'}
-                                validate={'required|regEmail'}
+                                validate={'required'}
                                 onChange={handlerOnChangeInput}
-                                name={'email'}
-                                value={email}
-                                errorText={listError.email}
+                                name={'username'}
+                                value={username}
+                                errorText={listError.username}
                                 type={'text'}
                             />
                             <InputAdmin
@@ -179,24 +169,18 @@ const SignUp = () => {
 
     const getAccounts = async () => {
         const token = APP_LOCAL.getTokenStorage();
-        const requestOptions = {
+
+        const res = await fetch(`http://localhost:3001/admin/getAccountsAdmin/:token`, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
-        };
-        fetch(`http://localhost:3001/getAccounts`, requestOptions)
-            .then(res => {
-
-                return res.json()
-            }).then(data => {
-                if (data.status === 200) {
-                    setData(data.data)
-                } else {
-                    ToastApp.error('Error: ' + data.message)
-                }
-            }).catch(e => {
-                console.log(e)
-            })
+        });
+        const data = await res.json();
+        if (data.status === 200) {
+            setData(data.data)
+        } else {
+            ToastApp.error('Error: ' + data.message)
+        }
     }
 
     const handleDelete = (adminId) => {
@@ -244,9 +228,6 @@ const SignUp = () => {
 
 
     }
-
-
-
     useEffect(() => {
         getAccounts();
         setReloadData(false);
@@ -268,8 +249,6 @@ const SignUp = () => {
                                         <button className="product-button" onClick={handleNavigateSignUp}>+ Tạo tài khoản mới</button>
                                     </div>
                                 </th>
-
-
                             </tr>
                         </thead>
                     </table>
@@ -278,27 +257,38 @@ const SignUp = () => {
                         <table className="product-table">
                             <thead>
                                 <tr>
-                                    <th>ID</th>
+                                    <th>Mã nhân viên</th>
+                                    <th>Tên đăng nhập</th>
                                     <th>Tên</th>
                                     <th>Email</th>
-                                    <th>Xác thực Email</th>
-                                    <th>Vai trò</th>
-                                    <th>Hành động</th>
+                                    <th>Giới tính</th>
+                                    <th>Ngày sinh</th>
+                                    <th>Số điện thoại</th>
+                                    <th>Chức vụ</th>
+                                    <th>Người tạo</th>
+                                    <th>Người cập nhật</th>
+                                    <th>Trạng thái</th>
+                                    <th>Khóa</th>
                                     { }
                                 </tr>
                             </thead>
                             {
                                 data ? <tbody >
-                                    {data.map(product => (
-                                        <tr key={product.id} >
-                                            <td>{product.id}</td>
-                                            <td>{product.name}</td>
-                                            <td>{product.email}</td>
-                                            <td>{product.verifyEmail ? 'Đã xác thực' : 'Chưa xác thực'}</td>
-                                            <td>{product.role}</td>
-
+                                    {data.map(account => (
+                                        <tr key={account.id} >
+                                            <td>{account.employeeCode}</td>
+                                            <td>{account.username}</td>
+                                            <td>{account.name}</td>
+                                            <td>{account.email}</td>
+                                            <td>{account.sex}</td>
+                                            <td>{account.dob}</td>
+                                            <td>{account.phoneNumber}</td>
+                                            <td>{account.position}</td>
+                                            <td>{account.creator}</td>
+                                            <td>{account.updater}</td>
+                                            <td>{account.status === 1 ? 'Đang hoạt động' : 'Bị Khóa'}</td>
                                             <td>
-                                                <button onClick={() => handleDelete(product.id)}>
+                                                <button onClick={() => handleDelete(account.id)}>
                                                     <img src={AppImages.deleteItem} alt="Delete" style={{ width: '20px' }} />
                                                 </button>
                                             </td>

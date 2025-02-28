@@ -18,4 +18,5 @@ export const ERROR_CHECK_LIST_TYPE = {
   regexSizeAndQuantity: "Size(30-45) : Quantity(1-500)",
   checkRegexSize: "Không đúng định dạng size:quantity",
   checkSize: "Các giá trị Size không được trùng lặp",
+  checkColor: "Không đúng định dạng màu",
 };

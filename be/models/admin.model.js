@@ -8,30 +8,54 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
         autoIncrement: true,
       },
-      email: {
-        type: DataTypes.STRING,
+      employeeCode: {
+        // mã nhân viên
+        type: DataTypes.INTEGER,
         allowNull: false,
       },
       name: {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      password: {
+      sex: {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      verified: {
-        type: DataTypes.BOOLEAN,
+      address: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      phoneNumber: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      email: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      position: {
+        // chức vụ
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      dob: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      status: {
+        type: DataTypes.INTEGER,
         allowNull: false,
         defaultValue: false,
       },
-      role: {
-        type: DataTypes.INTEGER,
+      creator: {
+        // người tạo
+        type: DataTypes.STRING,
         allowNull: false,
       },
-      deletedAt: {
-        type: DataTypes.DATE,
-        allowNull: true,
+      updater: {
+        // người chỉnh sửa
+        type: DataTypes.STRING,
+        allowNull: false,
       },
     },
     { paranoid: true, timestamps: true }

@@ -8,7 +8,7 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
         autoIncrement: true,
       },
-      email: {
+      username: {
         type: DataTypes.STRING,
         allowNull: false,
       },
@@ -20,18 +20,33 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      verified: {
-        type: DataTypes.BOOLEAN,
+      accountType: {
+        // loại tài khoản
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      status: {
+        type: DataTypes.INTEGER,
         allowNull: false,
         defaultValue: false,
       },
-      role: {
-        type: DataTypes.INTEGER,
-        defaultValue: 1,
+      creator: {
+        type: DataTypes.STRING,
+        allowNull: false,
       },
-      deletedAt: {
-        type: DataTypes.DATE,
-        allowNull: true,
+      updater: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      employeeCode: {
+        // mã nhân viên
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      customerCode: {
+        // mã khách hàng
+        type: DataTypes.INTEGER,
+        allowNull: false,
       },
     },
     { paranoid: true, timestamps: true }

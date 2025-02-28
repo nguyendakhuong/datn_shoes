@@ -29,6 +29,7 @@ const apiAuth = async (req, res, next) => {
     return res.status(401).json({ status: 402, message: error.message });
   }
 };
+
 const loggedin = (req, res, next) => {
   if (req.session.loggedin) {
     res.locals.user = req.session.user;

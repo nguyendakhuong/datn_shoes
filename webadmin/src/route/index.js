@@ -10,8 +10,7 @@ import Order from "../modules/order/Order";
 import Statistical from "../modules/statistical/Statistical";
 import Discount from "../modules/discount/Discount";
 
-const AppRoute = (isAuth, role) => {
-  console.log(typeof role);
+const AppRoute = (isAuth, accountType) => {
   const route = [
     {
       path: "/",
@@ -21,7 +20,7 @@ const AppRoute = (isAuth, role) => {
       path: "/login",
       element: <Login />,
     },
-    ...(isAuth && (role == 0 || role == 1)
+    ...(isAuth && accountType === "admin"
       ? [
           {
             path: "/admin",
@@ -29,7 +28,7 @@ const AppRoute = (isAuth, role) => {
             children: [
               { index: true, element: <User /> },
               { path: "users", element: <User /> },
-              { path: "signUp", element: <SignUp /> },
+              { path: "accountAdmin", element: <SignUp /> },
               { path: "product", element: <Product /> },
               { path: "order", element: <Order /> },
               { path: "statistical", element: <Statistical /> },

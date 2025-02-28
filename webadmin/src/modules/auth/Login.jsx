@@ -16,22 +16,22 @@ import AppImages from '../../assets';
 const Login = () => {
     const navigate = useNavigate();
     const [userCtx, dispatch] = useContext(UserContext);
-    const [email, setEmail] = useState('');
+    const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [isButtonDisabled, setIsButtonDisabled] = useState(true);
     const [listError, setListError] = useState({
-        email: '',
+        username: '',
         password: '',
     });
     const [formValue, setFormValue] = useState({
-        email: null,
+        username: null,
         password: null,
     });
 
     const handlerOnChangeInput = e => {
         const { name, value } = e.target;
 
-        if (name === 'email') setEmail(value);
+        if (name === 'username') setUsername(value);
         if (name === 'password') setPassword(value);
         const inputValue = value.trim();
         const valid = e.target.getAttribute('validate');
@@ -55,7 +55,7 @@ const Login = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ email, password }),
+                body: JSON.stringify({ username, password }),
             }).then(res => {
                 return res.json();
             }).then(data => {
@@ -94,13 +94,13 @@ const Login = () => {
                     <form onSubmit={e => e.preventDefault()}>
                         <InputAdmin
                             required={true}
-                            label={'Email'}
+                            label={'Tên đăng nhập'}
                             placeholder={'Nhập ...'}
-                            validate={'required|regEmail'}
+                            validate={'required'}
                             onChange={handlerOnChangeInput}
-                            name={'email'}
-                            value={email}
-                            errorText={listError.email}
+                            name={'username'}
+                            value={username}
+                            errorText={listError.username}
                             type={'text'}
                         />
 

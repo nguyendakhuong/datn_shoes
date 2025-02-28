@@ -1,11 +1,11 @@
 import React from 'react';
-import './footer.scss'; // Đảm bảo import file CSS hoặc SCSS của bạn
+import './footer.scss';
 
 const Footer = () => {
     return (
         <footer >
             {/* <div className="footer-content">
-                <p>© 2024. Bản quyền thuộc về CUONGTO.</p>
+                <p>© 2024. Bản quyền thuộc về.</p>
 
             </div> */}
         </footer>

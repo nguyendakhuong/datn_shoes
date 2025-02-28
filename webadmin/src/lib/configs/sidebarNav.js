@@ -4,7 +4,11 @@ const sidebarNav = [
     section: "admin",
     text: "Quản lí người dùng",
   },
-
+  {
+    link: "/admin/accountAdmin",
+    section: "accountAdmin",
+    text: "Quản lí nhân viên",
+  },
   {
     link: "/admin/product",
     section: "product",

@@ -7,56 +7,57 @@ import AppRoute from "./route";
 import { ToastContainer } from "react-toastify";
 import Loading from "./modules/components/loading/Loading";
 import ToastApp from "./lib/notification/Toast";
-import { KEY_CONTEXT_USER } from "./context/use.reducer";
+import Modal from "./modules/components/modal/Index";
 
 function App() {
-  const [{ role }, dispatch] = useContext(UserContext);
-  const [isAuth, setIsAuth] = useState(APP_LOCAL.getTokenStorage);
+  const [{ isOpenModal }, dispatch] = useContext(UserContext);
+  const [isAuth, setIsAuth] = useState(false);
+  const [router, setRouter] = useState(null);
+  const [accountType, setAccountType] = useState("");
   useEffect(() => {
-    const getUser = async () => {
+    const checkLogin = async () => {
       const token = APP_LOCAL.getTokenStorage();
-      const requestOptions = {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      };
+      if (!token) {
+        setIsAuth(false);
+        return;
+      }
       try {
-        await fetch(
-          `http://localhost:3001/account/admin/:token`,
-          requestOptions
-        )
-          .then((res) => {
-            if (res.status === 200) {
-              return res.json();
-            } else {
-              ToastApp.error("Error: " + res.message);
-            }
-          })
-          .then((data) => {
-            dispatch({
-              type: KEY_CONTEXT_USER.SET_TOKEN,
-              payload: data.data.token,
-            });
-            dispatch({
-              type: KEY_CONTEXT_USER.SET_ROLE,
-              payload: data.data.role,
-            });
+        const res = await fetch(`http://localhost:3001/admin/:token`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (res.status === 200) {
+          const data = await res.json();
+          if (data?.data?.accountType) {
+            setAccountType(data?.data?.accountType);
             setIsAuth(true);
-          })
-          .catch((e) => {
-            console.log(e);
-          });
+          } else {
+            setIsAuth(false);
+          }
+        } else {
+          ToastApp.error("Error: " + res.statusText);
+          setIsAuth(false);
+        }
       } catch (error) {
         console.log(error);
+        setIsAuth(false);
       }
     };
-    getUser();
+    checkLogin();
   }, [dispatch]);
+
+  useEffect(() => {
+    if (accountType && isAuth) {
+      setRouter(AppRoute(isAuth, accountType));
+    }
+  }, [isAuth, accountType]);
   return (
     <div>
-      <RouterProvider router={AppRoute(isAuth, role)} />
+      {router ? <RouterProvider router={router} /> : <Loading />}
       <ToastContainer />
       <Loading />
+      {isOpenModal && <Modal />}
     </div>
   );
 }
