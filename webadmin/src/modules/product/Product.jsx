@@ -18,6 +18,7 @@ const Product = () => {
     const [filteredData, setFilteredData] = useState([]);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
+
     const getProducts = async () => {
         try {
             const response = await fetch(`http://localhost:3001/product/getProducts`, {
@@ -44,7 +45,16 @@ const Product = () => {
             setSearchData(value.trim())
         }
     }
-    const handleEdit = () => {
+    const handleEdit = (id, e) => {
+        e.stopPropagation();
+        dispatch({
+            type: KEY_CONTEXT_USER.SHOW_MODAL,
+            payload: {
+                typeModal: "EDIT_PRODUCT_MODAL",
+                dataModal: id,
+                titleModel: "Sửa thông tin sản phẩm!",
+            }
+        })
 
     }
     const handleDelete = (product, e) => {
@@ -107,6 +117,7 @@ const Product = () => {
     }
 
     const TableRow = ({ product, handleEdit, handleDelete, handleClick, handleClickStatus }) => {
+
         const buttonClass = product?.dataValues?.status === 1 ? 'active-product' : 'inactive-product';
         const formatter = new Intl.NumberFormat('vi-VN', {
             style: 'currency',
@@ -156,7 +167,7 @@ const Product = () => {
         <div>
             {navigateCreate ? (
                 <div>
-                    <CreateProduct />
+                    <CreateProduct handleBack={() => { setNavigateCreate(false) }} />
                 </div>
             ) : (
                 <div className='product-container'>

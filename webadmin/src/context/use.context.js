@@ -1,4 +1,6 @@
 import { createContext } from "react";
-const UserContext = createContext();
+import { InitState } from "./use.reducer";
+
+const UserContext = createContext([InitState, () => {}]);
 
 export default UserContext;

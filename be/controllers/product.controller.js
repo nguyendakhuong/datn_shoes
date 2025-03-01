@@ -35,7 +35,6 @@ const product = async (req, res) => {
     parsedDetails.forEach((detail, index) => {
       detail.image = req.files[index].path;
     });
-
     const decoded = jwt.verify(token, signPrivate);
     const account = await Account.findOne({ where: { id: decoded.id } });
     if (!account) {
@@ -104,8 +103,9 @@ const product = async (req, res) => {
           if (!imageIds[detail.image]) {
             const imageUrl = detail.image;
             const imageName = imageUrl.split("/").pop();
+
             let imageRecord = await Image.findOne({
-              where: { name: imageName },
+              where: { imageCode: imageUrl },
             });
             if (!imageRecord) {
               imageRecord = await Image.create({

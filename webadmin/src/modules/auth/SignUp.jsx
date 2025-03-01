@@ -14,16 +14,15 @@ import AppImages from '../../assets'
 
 const SignUp = () => {
     const [data, setData] = useState(null)
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
     const [status, setStatus] = useState(false)
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     const [name, setName] = useState('')
-    const [creator, setCreator] = useState('')
     const [isButtonDisabled, setIsButtonDisabled] = useState(true)
     const [userCtx, dispatch] = useContext(UserContext)
-    const token = APP_LOCAL.getTokenStorage()
     const [reloadData, setReloadData] = useState(false);
+
 
     const [listError, setListError] = useState({
         username: '',
@@ -68,32 +67,30 @@ const SignUp = () => {
             }
         }
         const handleOnClick = async () => {
+            const token = APP_LOCAL.getTokenStorage();
             try {
-                await fetch(`http://localhost:3001/register`, {
+                const response = await fetch(`http://localhost:3001/register/:token`, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({ username, password, name }),
-                }).then(res => {
-                    return res.json()
 
-                }).then(data => {
-                    if (data.status === 200) {
-                        ToastApp.success('Success ' + data.message)
-                        setReloadData(true)
-                        clearForm();
-                    } else {
-                        ToastApp.warning('Error: ' + data.message)
-                    }
-
-                }).catch(e => {
-                    console.log("Error đăng nhập: ", e)
                 })
+                const data = await response.json()
+                console.log(data)
+                if (data.status === 201) {
+                    ToastApp.success("Đăng kí thành công")
+                    setReloadData(true)
+                    clearForm()
+                } else {
+                    ToastApp.warning(data.message)
+                    setStatus(false)
+                }
 
             } catch (e) {
-                ToastApp.error("Error hệ thống: ", e)
+                console.log("Lỗi : ", e)
             }
         }
         return (
@@ -169,7 +166,6 @@ const SignUp = () => {
 
     const getAccounts = async () => {
         const token = APP_LOCAL.getTokenStorage();
-
         const res = await fetch(`http://localhost:3001/admin/getAccountsAdmin/:token`, {
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -238,7 +234,6 @@ const SignUp = () => {
                 status ? (
                     <div>{signupAdmin()}</div>
                 ) : <div className="product-container">
-
                     <table className="header-table">
                         <thead>
                             <tr>
@@ -252,7 +247,6 @@ const SignUp = () => {
                             </tr>
                         </thead>
                     </table>
-
                     <div className="product-table-container">
                         <table className="product-table">
                             <thead>

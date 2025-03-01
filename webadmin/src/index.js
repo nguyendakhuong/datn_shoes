@@ -3,11 +3,11 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-import UserProvider from "./context/use.provider";
-import "./lib/locales/index";
 
-const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(
+import "./lib/locales/index";
+import UserProvider from "./context/use.provider";
+
+ReactDOM.createRoot(document.getElementById("root")).render(
   <UserProvider>
     <App />
   </UserProvider>

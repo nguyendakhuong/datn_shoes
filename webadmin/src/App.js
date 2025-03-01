@@ -12,7 +12,7 @@ import Modal from "./modules/components/modal/Index";
 function App() {
   const [{ isOpenModal }, dispatch] = useContext(UserContext);
   const [isAuth, setIsAuth] = useState(false);
-  const [router, setRouter] = useState(null);
+  const [router, setRouter] = useState(false);
   const [accountType, setAccountType] = useState("");
   useEffect(() => {
     const checkLogin = async () => {
@@ -22,7 +22,7 @@ function App() {
         return;
       }
       try {
-        const res = await fetch(`http://localhost:3001/admin/:token`, {
+        const res = await fetch(`http://localhost:3001/admin/${token}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -40,21 +40,26 @@ function App() {
           setIsAuth(false);
         }
       } catch (error) {
-        console.log(error);
         setIsAuth(false);
       }
     };
     checkLogin();
-  }, [dispatch]);
+  }, []);
 
   useEffect(() => {
-    if (accountType && isAuth) {
-      setRouter(AppRoute(isAuth, accountType));
-    }
+    setRouter(isAuth && accountType);
   }, [isAuth, accountType]);
+
+  console.log(router);
+  console.log(accountType);
+  console.log(isAuth);
   return (
     <div>
-      {router ? <RouterProvider router={router} /> : <Loading />}
+      {router ? (
+        <RouterProvider router={AppRoute(isAuth, accountType)} />
+      ) : (
+        <RouterProvider router={AppRoute(isAuth, accountType)} />
+      )}
       <ToastContainer />
       <Loading />
       {isOpenModal && <Modal />}

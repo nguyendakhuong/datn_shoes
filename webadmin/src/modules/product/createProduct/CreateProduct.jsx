@@ -1,5 +1,3 @@
-
-import { data, useNavigate } from 'react-router-dom';
 import './CreateProduct.scss';
 import InputAdmin from '../../components/input/Input-admin';
 import { useEffect, useState } from 'react';
@@ -9,14 +7,12 @@ import ToastApp from '../../../lib/notification/Toast';
 import APP_LOCAL from '../../../lib/localStorage';
 import Select from "react-select";
 import ButtonWed from '../../components/button/Button-admin';
-const CreateProduct = () => {
-    const navigate = useNavigate();
+const CreateProduct = ({ handleBack }) => {
     const [colors, setColors] = useState([]);
     const [trademark, setTrademark] = useState([]);
     const [origin, setOrigin] = useState([]);
     const [material, setMaterial] = useState([]);
     const [selectedColor, setSelectedColor] = useState([]);
-
     const [imagePreview, setImagePreview] = useState({});
 
     const [listError, setListError] = useState({
@@ -40,6 +36,17 @@ const CreateProduct = () => {
 
     });
     const [dataProductDetails, setDataProductDetails] = useState([])
+
+    const clearForm = () => {
+        setDataCreateProduct({
+            name: '',
+            description: '',
+            material: '',
+            origin: '',
+            trademark: ''
+        });
+        setDataProductDetails([]);
+    }
 
     const getColor = async () => {
         try {
@@ -303,6 +310,7 @@ const CreateProduct = () => {
     const handleSubmit = async () => {
         const token = APP_LOCAL.getTokenStorage();
         let newErrors = { ...listError };
+
         for (let key in dataCreateProduct) {
             if (!dataCreateProduct[key]) {
                 ToastApp.warning("Vui lòng điền đầy đủ thông tin sản phẩm!");
@@ -353,6 +361,7 @@ const CreateProduct = () => {
             const data = await response.json();
             if (data.status === 200) {
                 ToastApp.success(data.message)
+                clearForm()
             } else {
                 ToastApp.warning(data.message)
             }
@@ -384,9 +393,8 @@ const CreateProduct = () => {
                         <th colSpan='1'>
                             <div className='headerCreateProduct'>
                                 <div className='button-back-product'>
-                                    <button onClick={() => { navigate(-1); }}>Quay lại</button>
+                                    <button onClick={handleBack}>Quay lại</button>
                                 </div>
-                                <div className='purple-line'></div>
                                 <span>Thêm sản phẩm</span>
                             </div>
                         </th>
@@ -394,7 +402,6 @@ const CreateProduct = () => {
                 </thead>
             </table>
             <div className='form_add'>
-                <h2>Thêm sản phẩm</h2>
                 <form onSubmit={(e) => e.preventDefault()} encType='multipart/form-data'>
                     <div className='item-flex '>
                         <div className='item_name input-product'>

@@ -43,6 +43,7 @@ const UserReducer = (state, action) => {
     case KEY_CONTEXT_USER.SET_LANGUAGE:
       return { ...state, language: action.payload };
     default:
+      return state;
   }
 };
 export { InitState, KEY_CONTEXT_USER };

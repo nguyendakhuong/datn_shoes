@@ -1,5 +1,28 @@
 .CreateProduct-container {
-  min-height: 800px;
+  min-height: 80rem;
+  margin-left: 20px;
+  // margin-right: 20px;
+  .header-table {
+    width: calc(100% - 40px);
+  }
+
+  .header-table th {
+    position: relative;
+    background-color: #f2f2f2;
+    font-weight: bold;
+    padding: 8px;
+    border: 1px solid #ddd;
+    text-align: left;
+    border-radius: 8px 8px 0 0;
+  }
+  .headerCreateProduct {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    span {
+      font-size: 12px;
+    }
+  }
   form {
     padding: 10px 10px;
     height: 100%;

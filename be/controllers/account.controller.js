@@ -16,7 +16,7 @@ const generateUniqueCode = async (model, columnName) => {
 const register = async (req, res) => {
   const signPrivate = process.env.SIGN_PRIVATE;
   try {
-    const { username, password, name, creator } = req.body;
+    const { username, password, name } = req.body;
     if (!username || !password || !name) {
       return res.json({
         status: 400,
@@ -24,7 +24,25 @@ const register = async (req, res) => {
       });
     }
 
-    const existingAccount = await Account.findOne({ where: { username } });
+    const token = req.headers.authorization.split(" ")[1];
+    if (!token) {
+      return res.json({
+        status: 400,
+        message: "Thiếu token",
+      });
+    }
+    const decoded = jwt.verify(token, signPrivate);
+    const adminCreate = await Account.findOne({ where: { id: decoded.id } });
+
+    if (!adminCreate) {
+      return res.json({
+        status: 400,
+        message: "Tài khoản không tồn tại!",
+      });
+    }
+    const existingAccount = await Account.findOne({
+      where: { username },
+    });
 
     if (existingAccount) {
       return res.json({
@@ -39,12 +57,11 @@ const register = async (req, res) => {
     let employeeCode = "";
     let customerCode = "";
     let clientId = "";
-
-    if (creator) {
+    if (adminCreate.name) {
       employeeCode = await generateUniqueCode(Admin, "employeeCode");
       await Admin.create({
         employeeCode,
-        name: "",
+        name,
         sex: "",
         address: "",
         phoneNumber: "",
@@ -52,20 +69,20 @@ const register = async (req, res) => {
         position: "",
         dob: "",
         status: 1,
-        creator,
+        creator: adminCreate.name,
         updater: "",
       });
     } else {
       customerCode = await generateUniqueCode(Client, "customerCode");
       const newClient = await Client.create({
         customerCode,
-        name: "",
+        name,
         sex: "",
         phoneNumber: "",
         email: "",
         dob: "",
         status: 1,
-        creator: username,
+        creator: name,
         updater: "",
       });
       clientId = newClient.id;
@@ -83,7 +100,7 @@ const register = async (req, res) => {
         district: "",
         commune: "",
         description: "",
-        creator: username,
+        creator: name,
         updater: "",
       });
     }
@@ -92,9 +109,9 @@ const register = async (req, res) => {
       username,
       name,
       password: hashedPassword,
-      accountType: creator ? "admin" : "user",
+      accountType: adminCreate.name ? "admin" : "user",
       status: 1,
-      creator: creator || "",
+      creator: adminCreate.name || "",
       updater: "",
       employeeCode,
       customerCode,
