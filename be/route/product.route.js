@@ -5,6 +5,11 @@ const uploadCloud = require("../config/cloudinary.config");
 
 router.get("/getProducts", Product.getProducts);
 router.post("/createProduct", uploadCloud.array("image"), Product.product);
+router.put(
+  "/updateProduct",
+  uploadCloud.single("image"),
+  Product.updateProduct
+);
 router.get("/statusProduct/:id", Product.statusProduct);
 router.get("/getProduct/:id", Product.getProduct);
 router.get("/delete/:id", Product.deleteProduct);

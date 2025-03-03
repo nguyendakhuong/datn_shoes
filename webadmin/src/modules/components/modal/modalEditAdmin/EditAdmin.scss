@@ -1,6 +1,6 @@
-.modal-editProduct {
-  width: 90rem;
-  height: 60rem;
+.modal-editAdmin {
+  width: 70rem;
+  height: 85rem;
   background-color: white;
   border-radius: 20px;
   display: flex;
@@ -15,29 +15,26 @@
     text-align: center;
     margin: 10px 0;
   }
-  .button {
-    display: flex;
-    justify-content: flex-end;
-    button {
-      margin: 10px;
-      width: 14rem;
-      height: 5rem;
-    }
-  }
+
   form {
-    display: flex;
     gap: 20px;
-    img {
-      width: 100%;
-    }
     .select-edit {
       display: flex;
       flex-direction: column;
       gap: 10px;
     }
-  }
-  .error-text {
-    font-size: 12px;
-    color: red;
+    .button {
+      display: flex;
+      justify-content: flex-end;
+      button {
+        margin: 10px;
+        width: 14rem;
+        height: 5rem;
+      }
+    }
+    .error-text {
+      font-size: 12px;
+      color: red;
+    }
   }
 }

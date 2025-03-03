@@ -13,6 +13,7 @@ const trademark = require("./route/trademark.route");
 const origin = require("./route/origin.route");
 const material = require("./route/material.route");
 const product = require("./route/product.route");
+const discount = require("./route/discount.route");
 
 const bodyParser = require("body-parser");
 
@@ -46,6 +47,7 @@ app.use("/trademark", trademark);
 app.use("/origin", origin);
 app.use("/material", material);
 app.use("/product", product);
+app.use("/discount", discount);
 
 db.sequelize.sync().then(() => {
   app.listen(PORT, () => {

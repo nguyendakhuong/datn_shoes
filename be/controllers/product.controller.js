@@ -353,6 +353,105 @@ const getProduct = async (req, res) => {
     });
   }
 };
+const updateProduct = async (req, res) => {
+  const signPrivate = process.env.SIGN_PRIVATE;
+  try {
+    const {
+      idProduct,
+      productDetailCode,
+      trademark,
+      origin,
+      material,
+      color,
+      idColor,
+      idSize,
+      quantity,
+      price,
+      imageUrl,
+    } = req.body;
+    const token = req.headers.authorization.split(" ")[1];
+    let imagePath = imageUrl;
+    if (req.file) imagePath = req.file.path;
+
+    const decoded = jwt.verify(token, signPrivate);
+    const account = await Account.findOne({ where: { id: decoded.id } });
+    if (!account) {
+      res.json({
+        status: 400,
+        message: "Không tìm thấy tài khoản",
+      });
+    }
+    const filterImage = await Image.findOne({
+      where: { imageCode: imagePath },
+    });
+    if (!filterImage) {
+      const imageName = imagePath.split("/").pop();
+      await Image.create({
+        imageCode: imagePath,
+        name: imageName,
+        status: 1,
+        creator: account.name,
+        updater: "",
+      });
+    }
+    const size = await Size.findOne({ where: { name: idSize } });
+    if (!size) {
+      let sizeCode = generateUniqueCode(Size, "sizeCode");
+      await Size.create({
+        sizeCode,
+        name: idSize,
+        status: 1,
+        creator: account.name,
+        updater: "",
+      });
+    }
+    const filterColor = await Color.findOne({ where: { name: color } });
+    if (filterColor) {
+      filterColor.colorCode = idColor;
+      filterColor.updater = account.name;
+      await filterColor.save();
+    } else {
+      return res.json({
+        status: 400,
+        message: "Không tìm thấy màu",
+      });
+    }
+    const product = await Products.findOne({
+      where: { productCode: idProduct },
+    });
+    if (!product) {
+      return res.json({
+        status: 400,
+        message: "Không tìm thấy sản phẩm",
+      });
+    }
+    product.idMaterial = material;
+    product.idTrademark = trademark;
+    product.idOrigin = origin;
+    (product.updater = account.name), await product.save();
+
+    const productDetail = await ProductDetails.findOne({
+      where: { productDetailCode },
+    });
+    productDetail.quantity = quantity;
+    productDetail.price = price;
+    productDetail.idColor = filterColor.colorCode;
+    productDetail.idSize = size.name;
+    productDetail.idImage = imagePath;
+    await productDetail.save();
+
+    return res.json({
+      status: 200,
+      message: "Cập nhật thành công!",
+    });
+  } catch (e) {
+    console.log("Lỗi cập nhật sản phẩm: ", e);
+    return res.json({
+      status: 500,
+      message: "Lỗi server",
+    });
+  }
+};
 
 module.exports = {
   product,
@@ -360,4 +459,5 @@ module.exports = {
   statusProduct,
   getProduct,
   deleteProduct,
+  updateProduct,
 };

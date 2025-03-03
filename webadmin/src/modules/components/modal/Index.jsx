@@ -1,4 +1,5 @@
 import DeleteItem from "./modalDelete/ModalDelete"
+import EditAdmin from "./modalEditAdmin/EditAdmin"
 import EditProduct from "./modalEditProduct/EditProduct"
 import styles from './styles.module.scss'
 const { useContext } = require("react")
@@ -8,7 +9,8 @@ const { KEY_CONTEXT_USER } = require("../../../context/use.reducer")
 export const TYPE_MODEL = {
     DELETE_ITEM: 'DELETE_ITEM',
     NOTIFICATION_MODAL: 'NOTIFICATION_MODAL',
-    EDIT_PRODUCT_MODAL: 'EDIT_PRODUCT_MODAL'
+    EDIT_PRODUCT_MODAL: 'EDIT_PRODUCT_MODAL',
+    EDIT_ADMIN_MODAL: 'EDIT_ADMIN_MODAL'
 }
 const Modal = () => {
     const [{ isOpenModal, dataModal, typeModal }, dispatch] = useContext(UserContext)
@@ -22,6 +24,7 @@ const Modal = () => {
             <div className={styles.show_modal}>
                 {typeModal === TYPE_MODEL.DELETE_ITEM && <DeleteItem />}
                 {typeModal === TYPE_MODEL.EDIT_PRODUCT_MODAL && <EditProduct id={dataModal} />}
+                {typeModal === TYPE_MODEL.EDIT_ADMIN_MODAL && <EditAdmin id={dataModal} />}
             </div>
 
         </div>

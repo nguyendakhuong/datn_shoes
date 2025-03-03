@@ -23,7 +23,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       promotionType: {
         // Hình thức khuyến mãi
-        type: DataTypes.STRING,
+        type: DataTypes.INTEGER,
         allowNull: false,
       },
       conditionsOfApplication: {

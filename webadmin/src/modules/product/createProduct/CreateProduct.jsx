@@ -164,20 +164,6 @@ const CreateProduct = ({ handleBack }) => {
 
             return newErrors;
         });
-
-        // Kiểm tra lỗi và disable button
-        // setIsButtonDisabled(prevErrors => {
-        //     const hasError = Object.values(prevErrors).some(errors =>
-        //         Object.values(errors).some(err => err)
-        //     );
-        //     return hasError;
-        // });
-
-        // if (Object.values(newListError).some((i) => i)) {
-        //     setIsButtonDisabled(true);
-        // } else {
-        //     setIsButtonDisabled(false);
-        // }
     }
 
     const handleChangeSelect = async (selectedOption, name, nameAPI) => {
@@ -544,7 +530,7 @@ const CreateProduct = ({ handleBack }) => {
                                                     name={"quantity"}
                                                     label={"Số lượng"}
                                                     placeholder={"Nhập số lượng ..."}
-                                                    validate={'required||checkNumber'}
+                                                    validate={'required||checkNumber||checkNegative'}
                                                     type={'number'}
                                                     onChange={(e) => onChangeInput(e, index)}
                                                     value={detail.quantity}
@@ -556,7 +542,7 @@ const CreateProduct = ({ handleBack }) => {
                                                     name={"price"}
                                                     label={"Giá"}
                                                     placeholder={"Nhập giá sản phẩm ..."}
-                                                    validate={'required||checkNumber'}
+                                                    validate={'required||checkNumber||checkNegative'}
                                                     type={'text'}
                                                     onChange={(e) => onChangeInput(e, index)}
                                                     value={detail.price}
@@ -568,7 +554,7 @@ const CreateProduct = ({ handleBack }) => {
                                                     name={"size"}
                                                     label={"Kích thước"}
                                                     placeholder={"Nhập size sản phẩm ..."}
-                                                    validate={'required||checkNumber'}
+                                                    validate={'required||checkNumber||checkNegative'}
                                                     type={'text'}
                                                     onChange={(e) => onChangeInput(e, index)}
                                                     value={detail.size}

@@ -8,7 +8,7 @@ import SignUp from "../modules/auth/SignUp";
 import Product from "../modules/product/Product";
 import Order from "../modules/order/Order";
 import Statistical from "../modules/statistical/Statistical";
-import Discount from "../modules/discount/Discount";
+import DiscountCode from "../modules/discount/DiscountCode";
 
 const AppRoute = (isAuth, accountType) => {
   const route = [
@@ -32,7 +32,7 @@ const AppRoute = (isAuth, accountType) => {
               { path: "product", element: <Product /> },
               { path: "order", element: <Order /> },
               { path: "statistical", element: <Statistical /> },
-              { path: "discount", element: <Discount /> },
+              { path: "discount", element: <DiscountCode /> },
             ],
           },
         ]

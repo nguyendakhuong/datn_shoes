@@ -19,7 +19,6 @@ const DeleteItem = () => {
             <h1>{userCTX.titleModel ?? "Thông báo"}</h1>
             <img className={styles.icon} src={AppImages.deleteModal} alt="" />
             <label>
-                {' '}
                 {userCTX.contentModel ?? "Bạn có đồng ý xóa mục này không ?"}
             </label>
             <div className={styles.button}>

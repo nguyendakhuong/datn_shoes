@@ -11,6 +11,7 @@ import UserContext from '../../context/use.context'
 import { KEY_CONTEXT_USER } from '../../context/use.reducer'
 // import { TYPE_MODEL } from '../components/modal'
 import AppImages from '../../assets'
+import ModalAdminDetail from '../components/modal/modalAdminDetails/ModalAdminDetail'
 
 const SignUp = () => {
     const [data, setData] = useState(null)
@@ -22,6 +23,8 @@ const SignUp = () => {
     const [isButtonDisabled, setIsButtonDisabled] = useState(true)
     const [userCtx, dispatch] = useContext(UserContext)
     const [reloadData, setReloadData] = useState(false);
+    const [idAdmin, setIdAdmin] = useState(null)
+    const [isDialogOpen, setIsDialogOpen] = useState(false)
 
 
     const [listError, setListError] = useState({
@@ -178,51 +181,82 @@ const SignUp = () => {
             ToastApp.error('Error: ' + data.message)
         }
     }
+    const clickItem = async (id) => {
+        setIdAdmin(id)
+        setIsDialogOpen(true);
+    }
+    const handleEdit = (id, e) => {
+        e.stopPropagation();
+        dispatch({
+            type: KEY_CONTEXT_USER.SHOW_MODAL,
+            payload: {
+                typeModal: "EDIT_ADMIN_MODAL",
+                dataModal: id,
+                titleModel: "Sửa thông tin admin!",
+                onClickConfirmModel: async (data, listError) => {
 
-    const handleDelete = (adminId) => {
-        if (adminId === 1) {
-            dispatch({
-                type: KEY_CONTEXT_USER.SHOW_MODAL,
-                payload: {
-                    typeModal: 'NOTIFICATION_MODAL',
-                    dataModal: '',
-                    titleModel: "Thông báo",
-                    contentModel: "Không được xóa superAdmin"
-                },
-            })
-        } else {
-            dispatch({
-                type: KEY_CONTEXT_USER.SHOW_MODAL,
-                payload: {
-                    typeModal: 'DELETE_ITEM',
-                    dataModal: adminId,
-                    onClickConfirmModel: async () => {
-                        const token = APP_LOCAL.getTokenStorage()
-                        try {
-                            const response = await fetch(`http://localhost:3001/deleteAdmin/${adminId}`,
-                                {
-                                    method: 'GET',
-                                    headers: {
-                                        'Authorization': `Bearer ${token}`
-                                    },
-                                });
-                            const data = await response.json();
-                            if (data.status === 200) {
-                                ToastApp.success('Deleted successfully');
-                                setReloadData(true);
-                            } else {
-                                ToastApp.error('Error: ' + data.message);
+                    const token = APP_LOCAL.getTokenStorage();
+                    try {
+                        let newErrors = { ...listError };
+                        for (let key in data) {
+                            if (key !== "updater" && !data[key]) {
+                                ToastApp.warning("Vui lòng điền đầy đủ thông tin!");
+                                return;
                             }
-
-                        } catch (e) {
-                            console.log("Lỗi xóa sản phẩm: ", e)
                         }
-                    },
-                },
-            })
+                        for (let key in newErrors) {
+                            if (newErrors[key]) {
+                                ToastApp.warning("Vui lòng nhập đúng dữ liệu!");
+                                return;
+                            }
+                        }
+                        const response = await fetch(`http://localhost:3001/admin/updateAdmin/${id}`, {
+                            method: "PUT",
+                            headers: {
+                                "Content-Type": "application/json",
+                                "Authorization": `Bearer ${token}`,
+                            },
+                            body: JSON.stringify(data),
+                        });
+
+                        const result = await response.json();
+                        console.log(result)
+                        if (result.status === 200) {
+                            ToastApp.success("Cập nhật thành công!");
+                            setReloadData(true)
+                            dispatch({ type: KEY_CONTEXT_USER.HIDE_MODAL });
+                        } else {
+                            ToastApp.warning(result.message || "Cập nhật thất bại!");
+                        }
+
+                    } catch (e) {
+                        console.log("Lỗi cập nhật admin: ", e)
+                    }
+                }
+            }
+        })
+    }
+    const handleStatus = async (e, id) => {
+        console.log(id)
+        e.stopPropagation();
+        try {
+            dispatch({ type: KEY_CONTEXT_USER.SET_LOADING, payload: true })
+            const response = await fetch(`http://localhost:3001/admin/updateStatus/${id}`,
+                {
+                    method: 'GET',
+                });
+            const data = await response.json();
+            if (data.status === 200) {
+                ToastApp.success("Cập nhật trạng thái thành công")
+                setReloadData(true)
+            } else {
+                ToastApp.error('Error: ' + data.message);
+            }
+        } catch (e) {
+            console.log("Lỗi", e)
+        } finally {
+            dispatch({ type: KEY_CONTEXT_USER.SET_LOADING, payload: false })
         }
-
-
     }
     useEffect(() => {
         getAccounts();
@@ -248,6 +282,7 @@ const SignUp = () => {
                         </thead>
                     </table>
                     <div className="product-table-container">
+                        <ModalAdminDetail isOpen={isDialogOpen} onClose={() => setIsDialogOpen(false)} id={idAdmin} />
                         <table className="product-table">
                             <thead>
                                 <tr>
@@ -269,7 +304,7 @@ const SignUp = () => {
                             {
                                 data ? <tbody >
                                     {data.map(account => (
-                                        <tr key={account.id} >
+                                        <tr key={account.id} onClick={() => { clickItem(account.id) }}>
                                             <td>{account.employeeCode}</td>
                                             <td>{account.username}</td>
                                             <td>{account.name}</td>
@@ -280,12 +315,16 @@ const SignUp = () => {
                                             <td>{account.position}</td>
                                             <td>{account.creator}</td>
                                             <td>{account.updater}</td>
-                                            <td>{account.status === 1 ? 'Đang hoạt động' : 'Bị Khóa'}</td>
+                                            <td><button onClick={(e) => handleStatus(e, account.id)} className={account?.status === 1 ? 'active-product' : 'inactive-product'}>
+                                                {account?.status === 1 ? "Hoạt động" : "Không hoạt động"}
+                                            </button></td>
                                             <td>
-                                                <button onClick={() => handleDelete(account.id)}>
-                                                    <img src={AppImages.deleteItem} alt="Delete" style={{ width: '20px' }} />
+
+                                                <button onClick={(e) => handleEdit(account.id, e)}>
+                                                    <img src={AppImages.editIcon} alt="Edit" style={{ width: "20px" }} />
                                                 </button>
                                             </td>
+
                                         </tr>
                                     ))}
                                 </tbody>

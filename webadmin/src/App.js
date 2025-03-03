@@ -50,16 +50,9 @@ function App() {
     setRouter(isAuth && accountType);
   }, [isAuth, accountType]);
 
-  console.log(router);
-  console.log(accountType);
-  console.log(isAuth);
   return (
     <div>
-      {router ? (
-        <RouterProvider router={AppRoute(isAuth, accountType)} />
-      ) : (
-        <RouterProvider router={AppRoute(isAuth, accountType)} />
-      )}
+      {router && <RouterProvider router={AppRoute(isAuth, accountType)} />}
       <ToastContainer />
       <Loading />
       {isOpenModal && <Modal />}
