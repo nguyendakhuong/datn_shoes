@@ -46,15 +46,25 @@ const ModalAddDiscount = ({ isOpen, onClose }) => {
         setType(parseInt(e.target.value));
     }
     const clearForm = () => {
-
+        setData({
+            name: "",
+            promotionLevel: "",
+            conditionsOfApplication: "",
+            maximumPromotion: "",
+            quantity: "",
+            startDate: "",
+            endDate: ""
+        })
     }
 
     const handleSubmit = async () => {
         const token = APP_LOCAL.getTokenStorage();
         try {
+            if (type === 2 && data.promotionLevel > 90) {
+                ToastApp.warning("Mức khuyến mại không được lớn hơn 90")
+                return
+            }
             setData({ ...data, promotionType: type })
-            // console.log(data)
-            // return
             const response = await fetch('http://localhost:3001/discount/createDiscount', {
                 method: 'POST',
                 headers: {

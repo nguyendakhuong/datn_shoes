@@ -53,6 +53,60 @@ const Product = () => {
                 typeModal: "EDIT_PRODUCT_MODAL",
                 dataModal: id,
                 titleModel: "Sửa thông tin sản phẩm!",
+                onClickConfirmModel: async (data, selectedFile, listError) => {
+                    const token = APP_LOCAL.getTokenStorage();
+                    try {
+                        let newErrors = { ...listError };
+                        for (let key in newErrors) {
+                            if (newErrors[key]) {
+                                ToastApp.warning("Vui lòng nhập đúng dữ liệu!");
+                                return;
+                            }
+                        }
+                        const formDataToSend = new FormData();
+                        formDataToSend.append('name', data.productName);
+                        formDataToSend.append('idProduct', data.idProduct);
+                        formDataToSend.append('productDetailCode', data.productDetailCode);
+                        formDataToSend.append('trademark', data.trademark.value);
+                        formDataToSend.append('origin', data.origin.value);
+                        formDataToSend.append('material', data.material.value);
+                        formDataToSend.append('color', data.color.value);
+                        formDataToSend.append('idColor', data.idColor)
+                        formDataToSend.append('idSize', data.idSize)
+                        formDataToSend.append('quantity', data.quantity)
+                        formDataToSend.append('price', data.price)
+                        if (selectedFile) {
+                            formDataToSend.append('image', selectedFile);
+                        } else {
+                            formDataToSend.append('imageUrl', data.idImage);
+                        }
+                        for (let [key, value] of formDataToSend.entries()) {
+                            if (value === undefined || value === null || value === "") {
+                                ToastApp.warning("Nhập đủ thông tin")
+                                console.error(`Lỗi: Trường "${key}" không được để trống.`);
+                                return;
+                            }
+                        }
+                        const response = await fetch(`http://localhost:3001/product/updateProduct`, {
+                            method: 'PUT',
+                            headers: {
+                                Authorization: `Bearer ${token}`
+                            },
+                            body: formDataToSend,
+                        });
+                        const result = await response.json()
+                        if (result.status === 200) {
+                            dispatch({ type: KEY_CONTEXT_USER.HIDE_MODAL });
+                            ToastApp.success("Cập nhật thành công!")
+                            setReloadData(true)
+                        } else {
+                            ToastApp.warning("Lỗi cập nhật: ", result.message)
+                        }
+
+                    } catch (e) {
+                        console.log("Lỗi cập nhật sản phẩm")
+                    }
+                }
             }
         })
 
@@ -123,6 +177,7 @@ const Product = () => {
             style: 'currency',
             currency: 'VND',
         });
+        console.log("check product", product.idSize)
         return (
             <tr onClick={() => { setIsDialogOpen(true); handleClick(product) }}>
                 <td>{product?.dataValues?.productDetailCode}</td>
@@ -131,7 +186,7 @@ const Product = () => {
                 <td>{formatter.format(product?.dataValues?.price)}</td>
                 <td>{product?.dataValues?.quantity}</td>
                 <td>{product?.dataValues?.idColor}</td>
-                <td>{product?.sizeName}</td>
+                <td>{product?.dataValues?.idSize}</td>
                 <td>
                     <button onClick={(e) => handleClickStatus(e, product?.dataValues?.id)} className={buttonClass}>
                         {product?.dataValues?.status === 1 ? "Hoạt động" : "Không hoạt động"}
@@ -163,11 +218,12 @@ const Product = () => {
         getProducts()
         setReloadData(false)
     }, [reloadData])
+    console.log(data)
     return (
         <div>
             {navigateCreate ? (
                 <div>
-                    <CreateProduct handleBack={() => { setNavigateCreate(false) }} />
+                    <CreateProduct handleBack={() => (setNavigateCreate(false), setReloadData(true))} />
                 </div>
             ) : (
                 <div className='product-container'>

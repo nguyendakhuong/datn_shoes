@@ -9,11 +9,12 @@ import APP_LOCAL from '../../../../lib/localStorage';
 import Select from "react-select";
 import { ParseValid } from '../../../../lib/validate/ParseValid';
 import { Validate } from '../../../../lib/validate/Validate';
-import Loading from '../../loading/Loading';
+
 
 const EditProduct = ({ id }) => {
     const [userCTX, dispatch] = useContext(UserContext);
     const [data, setData] = useState({});
+    console.log("data", data)
     const [trademark, setTrademark] = useState([]);
     const [origin, setOrigin] = useState([]);
     const [material, setMaterial] = useState([]);
@@ -276,7 +277,6 @@ const EditProduct = ({ id }) => {
     }
     const handleUpdate = async () => {
         const token = APP_LOCAL.getTokenStorage()
-
         try {
             let newErrors = { ...listError };
             for (let key in newErrors) {
@@ -302,16 +302,13 @@ const EditProduct = ({ id }) => {
             } else {
                 formDataToSend.append('imageUrl', data.idImage);
             }
-
             for (let [key, value] of formDataToSend.entries()) {
-                console.log("Vaof")
                 if (value === undefined || value === null || value === "") {
                     ToastApp.warning("Nhập đủ thông tin")
                     console.error(`Lỗi: Trường "${key}" không được để trống.`);
                     return;
                 }
             }
-            console.log("check")
             const response = await fetch(`http://localhost:3001/product/updateProduct`, {
                 method: 'PUT',
                 headers: {
@@ -493,7 +490,8 @@ const EditProduct = ({ id }) => {
                                 <ButtonWed
                                     buttonAuth={true}
                                     title={"OK"}
-                                    onClick={handleUpdate}
+                                    // onClick={handleUpdate}
+                                    onClick={() => { userCTX.onClickConfirmModel(data, selectedFile, listError) }}
                                 />
                             </div>
                         </div>

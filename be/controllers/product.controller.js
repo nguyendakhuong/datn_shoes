@@ -83,6 +83,8 @@ const product = async (req, res) => {
             colorIds[detail.color] = colorData.colorCode;
           }
 
+          colorIds[detail.color] = detail.colorCode;
+
           if (!sizeIds[detail.size]) {
             let sizeRecord = await Size.findOne({
               where: { name: detail.size },
@@ -173,7 +175,6 @@ const getProducts = async (req, res) => {
       ...new Set(listProductDetails.map((item) => item.idProduct)),
     ];
     const sizeIds = [...new Set(listProductDetails.map((item) => item.idSize))];
-
     const productList = await Products.findAll({
       where: { productCode: productIds },
       attributes: ["name", "productCode"],
@@ -181,7 +182,7 @@ const getProducts = async (req, res) => {
     });
 
     const sizeList = await Size.findAll({
-      where: { sizeCode: sizeIds },
+      where: { name: sizeIds },
       attributes: ["name", "sizeCode"],
       raw: true,
     });
@@ -194,11 +195,13 @@ const getProducts = async (req, res) => {
     sizeList.forEach((size) => {
       sizeMap[size.sizeCode] = size.name;
     });
-    const listProduct = listProductDetails.map((item) => ({
-      ...item,
-      productName: productMap[item.idProduct] || null,
-      sizeName: sizeMap[item.idSize] || null,
-    }));
+    const listProduct = listProductDetails.map((item) => {
+      return {
+        ...item,
+        productName: productMap[item.idProduct] || null,
+        sizeName: sizeMap[item.idSize] || null,
+      };
+    });
     return res.json({
       status: 200,
       message: "Thành công",
@@ -317,10 +320,11 @@ const getProduct = async (req, res) => {
     });
 
     const size = await Size.findOne({
-      where: { sizeCode: productDetail.idSize },
+      where: { name: productDetail.idSize },
       attributes: ["name"],
       raw: true,
     });
+
     const data = {
       id: productDetail.id,
       productDetailCode: productDetail.productDetailCode,
@@ -436,7 +440,7 @@ const updateProduct = async (req, res) => {
     productDetail.quantity = quantity;
     productDetail.price = price;
     productDetail.idColor = filterColor.colorCode;
-    productDetail.idSize = size.name;
+    productDetail.idSize = idSize;
     productDetail.idImage = imagePath;
     await productDetail.save();
 

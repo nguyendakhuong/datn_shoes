@@ -273,9 +273,9 @@ const SignUp = () => {
                             <tr>
                                 <th colSpan="10">
                                     <div className="purple-line"></div>
-                                    <div className={styles.creactAccount}>
+                                    <div className={styles.createAccount}>
                                         <span>Danh sách tài khoản quản lý</span>
-                                        <button className="product-button" onClick={handleNavigateSignUp}>+ Tạo tài khoản mới</button>
+                                        <button className={styles.createAdminButton} onClick={handleNavigateSignUp}>+ Tạo tài khoản mới</button>
                                     </div>
                                 </th>
                             </tr>

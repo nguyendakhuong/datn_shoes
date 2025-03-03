@@ -66,12 +66,13 @@
   }
 
   .discount-button {
-    width: 150px;
-    height: 35px;
-    margin-left: 880px;
-    border: none;
-    border-radius: 10px;
-    background-color: #a352cb;
+    border-radius: 5px;
+    background-color: #e898f8;
+    width: 20rem;
+    height: 40px;
+    margin-left: 5px;
     color: #ffffff;
+    border: none;
+    transition: background-color 0.3s;
   }
 }
