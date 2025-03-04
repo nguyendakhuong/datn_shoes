@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from 'react'
 import APP_LOCAL from '../../lib/localStorage'
 import ToastApp from '../../lib/notification/Toast'
-import styles from './styles.module.scss'
+import styles from './auth.module.scss'
 import { useNavigate } from 'react-router-dom'
 import InputAdmin from '../components/input/Input-admin'
 import ButtonWed from '../components/button/Button-admin'
@@ -72,7 +72,7 @@ const SignUp = () => {
         const handleOnClick = async () => {
             const token = APP_LOCAL.getTokenStorage();
             try {
-                const response = await fetch(`http://localhost:3001/register/:token`, {
+                const response = await fetch(`http://localhost:3001/register`, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -82,7 +82,6 @@ const SignUp = () => {
 
                 })
                 const data = await response.json()
-                console.log(data)
                 if (data.status === 201) {
                     ToastApp.success("Đăng kí thành công")
                     setReloadData(true)
@@ -91,7 +90,6 @@ const SignUp = () => {
                     ToastApp.warning(data.message)
                     setStatus(false)
                 }
-
             } catch (e) {
                 console.log("Lỗi : ", e)
             }
@@ -218,9 +216,7 @@ const SignUp = () => {
                             },
                             body: JSON.stringify(data),
                         });
-
                         const result = await response.json();
-                        console.log(result)
                         if (result.status === 200) {
                             ToastApp.success("Cập nhật thành công!");
                             setReloadData(true)
@@ -228,7 +224,6 @@ const SignUp = () => {
                         } else {
                             ToastApp.warning(result.message || "Cập nhật thất bại!");
                         }
-
                     } catch (e) {
                         console.log("Lỗi cập nhật admin: ", e)
                     }
@@ -237,7 +232,6 @@ const SignUp = () => {
         })
     }
     const handleStatus = async (e, id) => {
-        console.log(id)
         e.stopPropagation();
         try {
             dispatch({ type: KEY_CONTEXT_USER.SET_LOADING, payload: true })

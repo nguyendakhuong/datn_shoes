@@ -6,32 +6,34 @@ import UserContext from '../../context/use.context';
 import { ParseValid } from '../../lib/validate/ParseValid';
 import { Validate } from '../../lib/validate/Validate';
 import ButtonWed from '../components/button/Button-admin';
-import { KEY_CONTEXT_USER } from '../../context/use.reducer';
 import ToastApp from '../../lib/notification/Toast';
-import APP_LOCAL from '../../lib/localStorage';
 import AppImages from '../../assets';
 
 
-const Login = () => {
+const SignUpUser = () => {
     const navigate = useNavigate();
-    const [{ }, dispatch] = useContext(UserContext);
+    const [userCtx, dispatch] = useContext(UserContext);
     const [username, setUsername] = useState('');
+    const [name, setName] = useState('');
     const [password, setPassword] = useState('');
     const [isButtonDisabled, setIsButtonDisabled] = useState(true);
     const [listError, setListError] = useState({
         username: '',
         password: '',
+        name: ''
     });
     const [formValue, setFormValue] = useState({
         username: null,
         password: null,
+        name: null
     });
 
     const handlerOnChangeInput = e => {
         const { name, value } = e.target;
-
         if (name === 'username') setUsername(value);
+        if (name === 'name') setName(value);
         if (name === 'password') setPassword(value);
+
         const inputValue = value.trim();
         const valid = e.target.getAttribute('validate');
         const validObject = ParseValid(valid);
@@ -46,44 +48,36 @@ const Login = () => {
             setIsButtonDisabled(false);
         }
     };
-    const handleSignup = () => {
-        navigate('/signup');
+    const handleLogin = () => {
+        navigate('/login');
     }
+
     const handleOnClick = async () => {
         try {
-            await fetch(`http://localhost:3001/login`, {
+            await fetch(`http://localhost:3001/register`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ username, password }),
+                body: JSON.stringify({ username, name, password }),
             }).then(res => {
                 return res.json();
             }).then(data => {
-                if (data.status === 200) {
-                    const { token, result } = data.data;
-                    const userAccountType = result.accountType;
-                    APP_LOCAL.setTokenStorage(token)
-                    dispatch({
-                        type: KEY_CONTEXT_USER.SET_TOKEN,
-                        payload: token
-                    });
-                    dispatch({
-                        type: KEY_CONTEXT_USER.SET_ACCOUNT_TYPE,
-                        payload: userAccountType
-                    });
-                    ToastApp.success(data.message);
-                    navigate('/home')
+                if (data.status === 201) {
+                    ToastApp.success("Đăng ký thành công");
+                    navigate('/login');
                 } else {
                     ToastApp.warning('Error: ' + data.message);
                 }
+
             }).catch(e => {
-                console.log("Error login : ", e);
-            })
+                console.log("Error đăng kí : ", e);
+            });
         } catch (e) {
             ToastApp.error(e.message);
         }
     };
+
 
     return (
         <div className={styles.login}>
@@ -92,7 +86,7 @@ const Login = () => {
                     <img src={AppImages.login} alt="Login" />
                 </div>
                 <div className={styles.login_form}>
-                    <h2>Đăng nhập</h2>
+                    <h2>Đăng ký</h2>
                     <form onSubmit={e => e.preventDefault()}>
                         <InputAdmin
                             required={true}
@@ -103,6 +97,17 @@ const Login = () => {
                             name={'username'}
                             value={username}
                             errorText={listError.username}
+                            type={'text'}
+                        />
+                        <InputAdmin
+                            required={true}
+                            label={'Tên sử dụng'}
+                            placeholder={'Nhập ...'}
+                            validate={'required'}
+                            onChange={handlerOnChangeInput}
+                            name={'name'}
+                            value={name}
+                            errorText={listError.name}
                             type={'text'}
                         />
 
@@ -120,7 +125,7 @@ const Login = () => {
 
                         <div className={styles}>
                             <ButtonWed
-                                title={'Đăng nhập'}
+                                title={'Đăng ký'}
                                 buttonAuth
                                 disabledBtn={isButtonDisabled}
                                 onClick={handleOnClick}
@@ -128,12 +133,12 @@ const Login = () => {
                         </div>
                     </form>
                     <div className={styles.signUP}>
-                        <label> Bạn chưa có tài khoản?</label>
-                        <label className={styles.signUpNow} onClick={handleSignup}>Đăng ký ngay</label>
+                        <label> Bạn đã có tài khoản?</label>
+                        <label className={styles.signUpNow} onClick={handleLogin}>Đăng nhập ngay</label>
                     </div>
                 </div>
             </div>
         </div>
     );
 };
-export default Login;
+export default SignUpUser;

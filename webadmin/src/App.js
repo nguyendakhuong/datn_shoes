@@ -8,51 +8,48 @@ import { ToastContainer } from "react-toastify";
 import Loading from "./modules/components/loading/Loading";
 import ToastApp from "./lib/notification/Toast";
 import Modal from "./modules/components/modal/Index";
+import { KEY_CONTEXT_USER } from "./context/use.reducer";
 
 function App() {
-  const [{ isOpenModal }, dispatch] = useContext(UserContext);
-  const [isAuth, setIsAuth] = useState(false);
-  const [router, setRouter] = useState(false);
-  const [accountType, setAccountType] = useState("");
+  const [{ isOpenModal, accountType }, dispatch] = useContext(UserContext);
+  const [isAuth, setIsAuth] = useState(APP_LOCAL.getTokenStorage);
+
   useEffect(() => {
     const checkLogin = async () => {
       const token = APP_LOCAL.getTokenStorage();
-      if (!token) {
-        setIsAuth(false);
-        return;
-      }
       try {
         const res = await fetch(`http://localhost:3001/admin/${token}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-        if (res.status === 200) {
-          const data = await res.json();
-          if (data?.data?.accountType) {
-            setAccountType(data?.data?.accountType);
-            setIsAuth(true);
-          } else {
-            setIsAuth(false);
-          }
+        const data = await res.json();
+        if (data.status === 200) {
+          setIsAuth(true);
+          dispatch({
+            type: KEY_CONTEXT_USER.SET_TOKEN,
+            payload: APP_LOCAL.getTokenStorage(),
+          });
+          dispatch({
+            type: KEY_CONTEXT_USER.SET_ACCOUNT_TYPE,
+            payload: data?.data?.accountType,
+          });
         } else {
-          ToastApp.error("Error: " + res.statusText);
+          ToastApp.error("Error: " + data.message);
           setIsAuth(false);
+          APP_LOCAL.setTokenStorage("");
         }
       } catch (error) {
         setIsAuth(false);
+        APP_LOCAL.setTokenStorage("");
       }
     };
     checkLogin();
   }, []);
 
-  useEffect(() => {
-    setRouter(isAuth && accountType);
-  }, [isAuth, accountType]);
-
   return (
     <div>
-      {router && <RouterProvider router={AppRoute(isAuth, accountType)} />}
+      <RouterProvider router={AppRoute(isAuth, accountType)} />
       <ToastContainer />
       <Loading />
       {isOpenModal && <Modal />}

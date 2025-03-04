@@ -23,23 +23,20 @@ const register = async (req, res) => {
         message: "Thiếu dữ liệu(username || password || name)",
       });
     }
-
-    const token = req.headers.authorization.split(" ")[1];
-    if (!token) {
-      return res.json({
-        status: 400,
-        message: "Thiếu token",
-      });
+    const tokenUp = req.headers.authorization;
+    let adminCreate = "";
+    if (tokenUp) {
+      const token = tokenUp.split(" ")[1];
+      const decoded = jwt.verify(token, signPrivate);
+      adminCreate = await Account.findOne({ where: { id: decoded.id } });
+      if (!adminCreate) {
+        return res.json({
+          status: 400,
+          message: "Tài khoản không tồn tại!",
+        });
+      }
     }
-    const decoded = jwt.verify(token, signPrivate);
-    const adminCreate = await Account.findOne({ where: { id: decoded.id } });
 
-    if (!adminCreate) {
-      return res.json({
-        status: 400,
-        message: "Tài khoản không tồn tại!",
-      });
-    }
     const existingAccount = await Account.findOne({
       where: { username },
     });
@@ -57,7 +54,8 @@ const register = async (req, res) => {
     let employeeCode = "";
     let customerCode = "";
     let clientId = "";
-    if (adminCreate.name) {
+
+    if (adminCreate) {
       employeeCode = await generateUniqueCode(Admin, "employeeCode");
       await Admin.create({
         employeeCode,

@@ -277,7 +277,6 @@ const CreateProduct = ({ handleBack }) => {
     const handleImageChange = (e, index) => {
         const file = e.target.files[0];
         if (!file) return;
-        console.log(file);
         if (index < 0 || index >= dataCreateProduct.length) return;
         const newDetails = [...dataProductDetails];
         newDetails[index] = { ...newDetails[index], image: file };

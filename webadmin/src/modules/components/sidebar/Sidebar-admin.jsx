@@ -12,9 +12,7 @@ function Sidebar({ sidebarNav }) {
     const navigate = useNavigate()
     useEffect(() => {
         const curPath = window.location.pathname.split('/')[2]
-
         const locationItem = sidebarNav.findIndex(item => item.section === curPath)
-
         setAnActiveIndex(!curPath ? 0 : locationItem)
     }, [location])
     return (
@@ -37,15 +35,10 @@ function Sidebar({ sidebarNav }) {
                     <div
                         onClick={() => {
                             dispatch({
-                                type: KEY_CONTEXT_USER.SET_ROLE,
+                                type: KEY_CONTEXT_USER.SET_ACCOUNT_TYPE,
                                 payload: '',
                             })
-
-                            dispatch({
-                                type: KEY_CONTEXT_USER.SET_TOKEN,
-                                payload: '',
-                            })
-                            APP_LOCAL.setTokenStorage('TOKEN')
+                            APP_LOCAL.setTokenStorage('')
                             navigate('/login')
                         }}
                         className="sidebar__menu__item__txt">

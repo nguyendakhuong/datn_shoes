@@ -14,7 +14,6 @@ import { Validate } from '../../../../lib/validate/Validate';
 const EditProduct = ({ id }) => {
     const [userCTX, dispatch] = useContext(UserContext);
     const [data, setData] = useState({});
-    console.log("data", data)
     const [trademark, setTrademark] = useState([]);
     const [origin, setOrigin] = useState([]);
     const [material, setMaterial] = useState([]);
@@ -182,7 +181,6 @@ const EditProduct = ({ id }) => {
 
             }));
         }
-        console.log(data.material)
         if (name === "color") {
             setData(prev => ({
                 ...prev,

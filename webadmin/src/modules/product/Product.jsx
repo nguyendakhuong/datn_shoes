@@ -177,7 +177,6 @@ const Product = () => {
             style: 'currency',
             currency: 'VND',
         });
-        console.log("check product", product.idSize)
         return (
             <tr onClick={() => { setIsDialogOpen(true); handleClick(product) }}>
                 <td>{product?.dataValues?.productDetailCode}</td>
@@ -218,7 +217,6 @@ const Product = () => {
         getProducts()
         setReloadData(false)
     }, [reloadData])
-    console.log(data)
     return (
         <div>
             {navigateCreate ? (

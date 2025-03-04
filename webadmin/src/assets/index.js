@@ -6,6 +6,9 @@ import iconDropdown from "./icons/iconDropdown.png";
 import editIcon from "./image/edit.png";
 import deleteIcon from "./image/delete.png";
 import deleteModel from "./icons/deleteModal.svg";
+import banner1 from "./image/banner1.jpg";
+import banner2 from "./image/banner2.jpg";
+import banner3 from "./image/banner3.jpg";
 
 import logo from "./image/logo_shoe_store.png";
 import login from "./image/bg-login.png";
@@ -21,6 +24,9 @@ const AppImages = {
   editIcon,
   deleteIcon,
   deleteModel,
+  banner1,
+  banner2,
+  banner3,
 };
 
 export default AppImages;

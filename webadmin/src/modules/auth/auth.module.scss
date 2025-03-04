@@ -9,33 +9,32 @@
 
 .login_content {
   display: flex;
-  width: 800px;
-
+  width: 80rem;
   background-color: #ffffff;
   border-radius: 10px;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-  height: 500px;
+  height: 50rem;
 }
 
 .register {
-  width: 500px;
-  height: 500px;
+  width: 50rem;
+  height: 50rem;
   border-radius: 10px;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-left: 300px;
+  margin-left: 30rem;
   border: 1px;
 }
 
 .register_content {
-  width: 400px;
+  width: 40rem;
 }
 
 .login_image img {
-  width: 400px;
-  height: 500px;
+  width: 40rem;
+  height: 50rem;
   border-top-left-radius: 10px;
   border-bottom-left-radius: 10px;
 }
@@ -45,42 +44,29 @@
   padding: 0 20px;
   padding: 20px;
   border-radius: 3px;
-}
 
-.login_form h2 {
-  margin-bottom: 20px;
-  font-size: 24px;
-  color: #333;
-}
+  .login_form h2 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #333;
+  }
 
-.form-container {
-  width: 400px;
-  margin: 0 auto;
-  margin-left: 400px;
-}
-
-.iconBack {
-  width: 2rem;
-  margin-right: 10px;
-  img {
-    width: 100%;
+  .form-container {
+    width: 400px;
+    margin: 0 auto;
+    margin-left: 400px;
   }
 }
-.headerSignUp {
+.signUp {
   display: flex;
+  flex-direction: row;
   align-items: center;
-}
-.createAccount {
-  display: flex;
-  justify-content: space-between;
-}
-.createAdminButton {
-  border-radius: 5px;
-  background-color: #e898f8;
-  width: 20rem;
-  height: 40px;
-  margin-left: 5px;
-  color: #ffffff;
-  border: none;
-  transition: background-color 0.3s;
+  justify-content: center;
+  background-color: red;
+  label {
+    font-size: 200px;
+  }
+  .signUpNow {
+    background-color: red;
+  }
 }

@@ -9,39 +9,48 @@ import Product from "../modules/product/Product";
 import Order from "../modules/order/Order";
 import Statistical from "../modules/statistical/Statistical";
 import DiscountCode from "../modules/discount/DiscountCode";
+import LayoutUser from "../modules/client/layout/LayoutUser";
+import SignUpUser from "../modules/auth/SignUpUser";
 
 const AppRoute = (isAuth, accountType) => {
   const route = [
     {
       path: "/",
-      element: <Main />,
+      element: <LayoutUser />,
+      children: [
+        { index: true, element: <Main /> },
+        {
+          path: "/login",
+          element: <Login />,
+        },
+        {
+          path: "/signup",
+          element: <SignUpUser />,
+        },
+        {
+          path: "/home",
+          element: <Main />,
+        },
+      ],
     },
-    {
-      path: "/login",
-      element: <Login />,
-    },
-    ...(isAuth && accountType === "admin"
-      ? [
-          {
-            path: "/admin",
-            element: <LayoutWeb />,
-            children: [
-              { index: true, element: <User /> },
-              { path: "users", element: <User /> },
-              { path: "accountAdmin", element: <SignUp /> },
-              { path: "product", element: <Product /> },
-              { path: "order", element: <Order /> },
-              { path: "statistical", element: <Statistical /> },
-              { path: "discount", element: <DiscountCode /> },
-            ],
-          },
-        ]
-      : [
-          {
-            path: "*",
-            element: <ErrorPage />,
-          },
-        ]),
+    isAuth && accountType === "admin"
+      ? {
+          path: "/admin",
+          element: <LayoutWeb />,
+          children: [
+            { index: true, element: <User /> },
+            { path: "users", element: <User /> },
+            { path: "accountAdmin", element: <SignUp /> },
+            { path: "product", element: <Product /> },
+            { path: "order", element: <Order /> },
+            { path: "statistical", element: <Statistical /> },
+            { path: "discount", element: <DiscountCode /> },
+          ],
+        }
+      : {
+          path: "*",
+          element: <ErrorPage />,
+        },
   ];
 
   return createBrowserRouter(route);
