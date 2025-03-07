@@ -1,12 +1,16 @@
 import './CardItem.scss'
 
-const CardItem = ({ data, onClickItem, onAddToCart }) => {
+const CardItem = ({ data, onClickItem }) => {
+    const formatter = new Intl.NumberFormat('vi-VN', {
+        style: 'currency',
+        currency: 'VND',
+    });
     return (
         <div className="card-item" onClick={() => onClickItem(data)}>
             <img src={data.idImage} alt={data.name} className="card-image" />
             <div className="card-details">
                 <h3 className="card-name">{data.name}</h3>
-                <p className="card-price">{data.price.toLocaleString()} VND</p>
+                <p className="card-price">Giá: {formatter.format(data.price)}</p>
                 <p className="card-trademark">Thương hiệu: {data.trademark}</p>
                 <div className="card-colors">
                     {data.color.map((clr, index) => (
@@ -17,12 +21,6 @@ const CardItem = ({ data, onClickItem, onAddToCart }) => {
                         ></div>
                     ))}
                 </div>
-                <button className="add-to-cart" onClick={(e) => {
-                    e.stopPropagation();
-                    onAddToCart(data);
-                }}>
-                    Thêm vào giỏ hàng
-                </button>
             </div>
         </div>
     );

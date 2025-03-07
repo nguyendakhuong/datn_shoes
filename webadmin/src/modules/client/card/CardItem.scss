@@ -21,6 +21,9 @@
 
   .card-details {
     margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: start;
   }
 
   .card-name {
@@ -49,7 +52,7 @@
     width: 24px;
     height: 24px;
     border-radius: 50%;
-    border: 1px solid #ddd;
+    border: 1px solid black;
   }
 
   .add-to-cart {

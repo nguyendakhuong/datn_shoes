@@ -505,6 +505,90 @@ const getTenProductUser = async (req, res) => {
     });
   }
 };
+const getProductById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!id) {
+      return res.json({
+        status: 400,
+        message: "Thiếu id",
+      });
+    }
+    const product = await Products.findOne({ where: { productCode: id } });
+    if (!product) {
+      return res.json({
+        status: 400,
+        message: "Không tìm thấy sản phẩm! ",
+      });
+    }
+    const material = await Material.findOne({
+      where: { materialCode: product.idMaterial },
+    });
+    const trademark = await Trademark.findOne({
+      where: { brandCode: product.idTrademark },
+    });
+    const origin = await Origin.findOne({
+      where: { originCode: product.idOrigin },
+    });
+    const productDetails = await ProductDetails.findAll({
+      where: { idProduct: product.productCode, status: 1 },
+      utes: [
+        "id",
+        "productDetailCode",
+        "idImage",
+        "price",
+        "quantity",
+        "color",
+        "idSize",
+      ],
+    });
+
+    const sizeIds = [...new Set(productDetails.map((detail) => detail.idSize))];
+
+    const sizes = await Size.findAll({
+      where: { sizeCode: sizeIds },
+      attributes: ["sizeCode", "name"],
+    });
+
+    const sizeMap = sizes.reduce((acc, size) => {
+      acc[size.sizeCode] = size.name;
+      return acc;
+    }, {});
+
+    const productDetail = productDetails.map((detail) => {
+      return {
+        id: detail.id,
+        productDetailCode: detail.productDetailCode,
+        idImage: detail.idImage,
+        price: detail.price,
+        quantity: detail.quantity,
+        color: detail.idColor,
+        size: sizeMap[detail.idSize] || null,
+      };
+    });
+
+    const data = {
+      code: product.productCode,
+      name: product.name,
+      description: product.description,
+      material: material.name,
+      trademark: trademark.name,
+      origin: origin.name,
+      productDetail: productDetail,
+    };
+    return res.json({
+      status: 200,
+      message: "Thành công",
+      data,
+    });
+  } catch (e) {
+    console.log("Lỗi lấy thông tin sản phẩm theo id: ", e);
+    return res.json({
+      status: 500,
+      message: "Lỗi server ",
+    });
+  }
+};
 
 module.exports = {
   product,
@@ -514,4 +598,5 @@ module.exports = {
   deleteProduct,
   updateProduct,
   getTenProductUser,
+  getProductById,
 };

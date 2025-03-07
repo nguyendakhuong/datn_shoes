@@ -18,6 +18,7 @@ const UserInfoDetail = () => {
         phoneNumber: ""
     })
     const [typeSex, setTypeSex] = useState(1)
+
     const [reloadData, setReloadData] = useState(false)
     const [listError, setListError] = useState({
         name: "",
@@ -97,6 +98,11 @@ const UserInfoDetail = () => {
         getUser()
         setReloadData(false)
     }, [reloadData])
+    useEffect(() => {
+        if (data?.sex) {
+            setTypeSex(data.sex === "Nam" ? 1 : 2);
+        }
+    }, [data])
     return (
         <div className='userInfoDetail'>
             <h2>Cập nhật thông tin</h2>

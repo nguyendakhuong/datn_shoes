@@ -6,10 +6,13 @@ import "swiper/css/pagination";
 import "swiper/css/navigation";
 import "./Main.scss";
 import AppImages from "../assets";
-import CardItem from "./client/CardItem/CardItem";
 import { useEffect, useState } from "react";
+import CardItem from "./client/card/CardItem";
+import { useNavigate } from "react-router-dom";
+
 
 const Main = () => {
+    const navigate = useNavigate()
     const [data, setData] = useState([])
     const images = [
         AppImages.banner1,
@@ -24,7 +27,6 @@ const Main = () => {
                 },
             });
             const data = await response.json()
-            console.log(data)
             if (data.status === 200) {
                 setData(data.data)
             }
@@ -32,11 +34,8 @@ const Main = () => {
             console.log("Lỗi lấy sản phẩm người dùng: ", e)
         }
     }
-    const handleAddToCart = () => {
-
-    }
-    const handleClickItem = () => {
-
+    const handleClickItem = (v) => {
+        navigate(`/productDetail/${v.id}`);
     }
     useEffect(() => {
         getProduct();
@@ -64,7 +63,7 @@ const Main = () => {
             <div className="item-render">
                 {data ? data.map((v, i) => (
                     <div key={i}>
-                        <CardItem data={v} onAddToCart={handleAddToCart} onClickItem={handleClickItem} />
+                        <CardItem data={v} onClickItem={handleClickItem} />
                     </div>
                 )) : null}
             </div>

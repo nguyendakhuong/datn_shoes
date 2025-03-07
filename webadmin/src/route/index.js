@@ -12,6 +12,8 @@ import DiscountCode from "../modules/discount/DiscountCode";
 import LayoutUser from "../modules/client/layout/LayoutUser";
 import SignUpUser from "../modules/auth/SignUpUser";
 import InfoUser from "../modules/client/InfoUser/InfroUser";
+import Cart from "../modules/client/cart/Cart";
+import ProductDetail from "../modules/client/ProductDetail/ProductDetail";
 
 const AppRoute = (isAuth, accountType) => {
   const route = [
@@ -35,6 +37,14 @@ const AppRoute = (isAuth, accountType) => {
         {
           path: "/info-user",
           element: <InfoUser />,
+        },
+        {
+          path: "/cart",
+          element: <Cart />,
+        },
+        {
+          path: "/productDetail/:id",
+          element: <ProductDetail />,
         },
       ],
     },

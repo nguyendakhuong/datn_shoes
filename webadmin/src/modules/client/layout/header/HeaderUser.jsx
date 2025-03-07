@@ -43,12 +43,12 @@ const HeaderUser = () => {
     }, [showDropdown]);
     return (
         <header className="header-user">
-            <div className="logo" onClick={handleHome}>
+            <div className="logo">
                 <img src={AppImages.logo} alt="Logo" />
             </div>
             <nav className="nav-menu">
                 <ul>
-                    <li>GIỚI THIỆU</li>
+                    <li onClick={handleHome}>GIỚI THIỆU</li>
                     <li>NIKE</li>
                     <li>ADIDAS</li>
                     <li>JORDAN</li>
@@ -78,7 +78,7 @@ const HeaderUser = () => {
                                 </button>
                             </div>
                         )}
-                        <div className="cart-icon">
+                        <div className="cart-icon" onClick={() => { navigate('/cart') }}>
                             <FaShoppingCart className="icon" />
                             {cartItemCount > 0 && <span className="cart-count">{cartItemCount}</span>}
                         </div>

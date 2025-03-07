@@ -15,5 +15,6 @@ router.get("/getProduct/:id", Product.getProduct);
 router.get("/delete/:id", Product.deleteProduct);
 
 router.get("/getTenProductUser", Product.getTenProductUser);
+router.get("/getProductById/:id", Product.getProductById);
 
 module.exports = router;
