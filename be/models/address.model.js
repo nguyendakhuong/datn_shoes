@@ -8,7 +8,7 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
         autoIncrement: true,
       },
-      defaultAddress: {
+      address: {
         // địa chỉ mặc định
         type: DataTypes.STRING,
         allowNull: false,
@@ -45,6 +45,10 @@ module.exports = (sequelize, DataTypes) => {
       updater: {
         // người chỉnh sửa
         type: DataTypes.STRING,
+        allowNull: false,
+      },
+      status: {
+        type: DataTypes.INTEGER,
         allowNull: false,
       },
     },

@@ -1,0 +1,52 @@
+.addressUpdate {
+  width: 40rem;
+  height: 50rem;
+  background-color: white;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  .error-text {
+    color: red;
+    font-size: 10px;
+  }
+  .btn-update {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    button {
+      width: 20rem;
+      background-color: #007bff;
+      color: white;
+      border: none;
+    }
+  }
+  .infoAddress {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    span {
+      font-size: 14px;
+    }
+  }
+  .iconDeleteAddress {
+    width: 20px;
+    height: 20px;
+    background-color: red;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    text-align: center;
+    line-height: 20px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .textNoAddress {
+    margin-top: 20px;
+    text-align: center;
+    span {
+      font-size: 14px;
+    }
+  }
+}

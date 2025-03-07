@@ -1,0 +1,41 @@
+.info-user-container {
+  width: 100%;
+  min-height: 60rem;
+  max-width: 70rem;
+  margin: auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.tab-bar {
+  display: flex;
+  border-bottom: 2px solid #ddd;
+  margin-bottom: 20px;
+}
+
+.tab-bar button {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  background: none;
+  font-size: 16px;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.3s;
+}
+
+.tab-bar button.active {
+  border-bottom: 2px solid #007bff;
+  font-weight: bold;
+  color: #007bff;
+}
+
+.tab-bar button:hover {
+  color: #0056b3;
+}
+
+.tab-content {
+  padding: 10px;
+}

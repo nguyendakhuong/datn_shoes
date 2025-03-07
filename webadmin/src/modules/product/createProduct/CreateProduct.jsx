@@ -335,6 +335,7 @@ const CreateProduct = ({ handleBack }) => {
                 formDataToSend.append(`details[${index}][size]`, item.size);
                 formDataToSend.append(`image`, item.image);
             });
+
             const response = await fetch(`http://localhost:3001/product/createProduct`, {
                 method: "POST",
                 headers: {

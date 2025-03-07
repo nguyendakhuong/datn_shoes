@@ -10,8 +10,8 @@ export const Validate = (
   let error = null;
   const reg = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
   const regColor = /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/;
+  const phoneRegex = /^(01|03|08|09)[0-9]{8}$/;
   const today = new Date();
-
   const startDate = timeStart ? new Date(timeStart) : null;
   const endDate = timeEnd ? new Date(timeEnd) : null;
   const inputDate = inputValue ? new Date(inputValue) : null;
@@ -60,6 +60,23 @@ export const Validate = (
         break;
       case "checkColor":
         error = !regColor.test(inputValue) ? ERROR_CHECK_LIST_TYPE[key] : null;
+        break;
+      case "checkPhoneNumber":
+        error = !phoneRegex.test(inputValue)
+          ? ERROR_CHECK_LIST_TYPE[key]
+          : null;
+        break;
+      case "checkYear":
+        const currentYear = new Date().getFullYear();
+        const inputYear = parseInt(inputValue, 10);
+        error =
+          inputYear > currentYear - 16 ? ERROR_CHECK_LIST_TYPE[key] : null;
+        break;
+      case "checkPasswordMatch":
+        error =
+          inputValue !== listError["newPassword"]
+            ? ERROR_CHECK_LIST_TYPE[key]
+            : null;
         break;
       default:
     }

@@ -90,17 +90,6 @@ const register = async (req, res) => {
         idCustomer: clientId,
         idProductDetail: "",
       });
-
-      await Address.create({
-        idCustom: clientId,
-        defaultAddress: "Hà Nội",
-        province: "",
-        district: "",
-        commune: "",
-        description: "",
-        creator: name,
-        updater: "",
-      });
     }
 
     await Account.create({

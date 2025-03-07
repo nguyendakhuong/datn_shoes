@@ -456,6 +456,55 @@ const updateProduct = async (req, res) => {
     });
   }
 };
+const getTenProductUser = async (req, res) => {
+  try {
+    const products = await Products.findAll({
+      attributes: ["productCode", "name", "idTrademark"],
+      order: [["createdAt", "DESC"]],
+      limit: 10,
+    });
+
+    let data = [];
+
+    for (const product of products) {
+      const productDetails = await ProductDetails.findAll({
+        where: { idProduct: product.productCode },
+        attributes: ["idImage", "price", "idColor", "idProduct"],
+      });
+      const trademark = await Trademark.findOne({
+        where: { brandCode: product.idTrademark },
+      });
+      if (productDetails.length > 0) {
+        const { idImage, price, idProduct } = productDetails[0];
+        let allColors = new Set();
+        productDetails.forEach((detail) => {
+          allColors.add(detail.idColor);
+        });
+        data.push({
+          id: idProduct,
+          productCode: product.productCode,
+          name: product.name,
+          trademark: trademark.name,
+          idImage,
+          price,
+          color: Array.from(allColors),
+        });
+      }
+    }
+
+    return res.json({
+      status: 200,
+      message: "Lấy sản phẩm thành công",
+      data,
+    });
+  } catch (error) {
+    console.log("Lỗi lấy sản phẩm người dùng: ", error);
+    return res.json({
+      status: 500,
+      message: "Lỗi server",
+    });
+  }
+};
 
 module.exports = {
   product,
@@ -464,4 +513,5 @@ module.exports = {
   getProduct,
   deleteProduct,
   updateProduct,
+  getTenProductUser,
 };

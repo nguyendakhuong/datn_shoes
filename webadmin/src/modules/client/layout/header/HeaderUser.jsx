@@ -63,7 +63,7 @@ const HeaderUser = () => {
                         <FaUser className="icon" onClick={toggleDropdown} />
                         {showDropdown && (
                             <div className="dropdown">
-                                <button onClick={() => navigate('/profile')}>Trang cá nhân</button>
+                                <button onClick={() => navigate('/info-user')}>Trang cá nhân</button>
                                 {accountType === "admin" ? <button onClick={() => navigate('/admin')}>quản lí trang web</button> : null}
                                 <button onClick={() => {
                                     dispatch({
@@ -71,6 +71,7 @@ const HeaderUser = () => {
                                         payload: '',
                                     })
                                     APP_LOCAL.setTokenStorage('')
+                                    setShowDropdown(false)
                                     navigate('/login')
                                 }}>
                                     Đăng xuất

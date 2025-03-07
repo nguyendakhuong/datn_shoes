@@ -11,6 +11,7 @@ import Statistical from "../modules/statistical/Statistical";
 import DiscountCode from "../modules/discount/DiscountCode";
 import LayoutUser from "../modules/client/layout/LayoutUser";
 import SignUpUser from "../modules/auth/SignUpUser";
+import InfoUser from "../modules/client/InfoUser/InfroUser";
 
 const AppRoute = (isAuth, accountType) => {
   const route = [
@@ -30,6 +31,10 @@ const AppRoute = (isAuth, accountType) => {
         {
           path: "/home",
           element: <Main />,
+        },
+        {
+          path: "/info-user",
+          element: <InfoUser />,
         },
       ],
     },

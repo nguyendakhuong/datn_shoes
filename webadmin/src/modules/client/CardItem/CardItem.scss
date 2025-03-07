@@ -1,0 +1,68 @@
+.card-item {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.2s;
+  width: 30rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  &:hover {
+    transform: scale(1.05);
+  }
+  .card-image {
+    width: 100%;
+    height: 20rem;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+  }
+
+  .card-details {
+    margin-top: 10px;
+  }
+
+  .card-name {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 8px 0;
+  }
+
+  .card-price {
+    color: #f00;
+    font-size: 16px;
+    margin-bottom: 8px;
+  }
+  .card-trademark {
+    font-size: 14px;
+  }
+
+  .card-colors {
+    display: flex;
+    gap: 4px;
+    margin: 10px 0;
+    justify-content: center;
+  }
+
+  .card-color {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 1px solid #ddd;
+  }
+
+  .add-to-cart {
+    background-color: #ff6600;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background 0.3s;
+
+    &:hover {
+      background-color: #e65c00;
+    }
+  }
+}

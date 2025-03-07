@@ -17,4 +17,7 @@ export const ERROR_CHECK_LIST_TYPE = {
   checkTimeEnd: "Ngày kết thúc không được nhỏ hơn ngày bắt đầu",
   checkColor: "Không đúng định dạng màu",
   checkTimeStart: "Ngày bắt đầu phải nhỏ hơn ngày kết thúc",
+  checkPhoneNumber: "Số điện thoại không hợp lệ",
+  checkYear: "Tối thiểu 16 tuổi",
+  checkPasswordMatch: "Mật khẩu không khớp",
 };

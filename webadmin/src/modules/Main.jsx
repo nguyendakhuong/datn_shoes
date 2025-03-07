@@ -6,13 +6,41 @@ import "swiper/css/pagination";
 import "swiper/css/navigation";
 import "./Main.scss";
 import AppImages from "../assets";
+import CardItem from "./client/CardItem/CardItem";
+import { useEffect, useState } from "react";
 
 const Main = () => {
+    const [data, setData] = useState([])
     const images = [
         AppImages.banner1,
         AppImages.banner2,
         AppImages.banner3,
     ];
+    const getProduct = async () => {
+        try {
+            const response = await fetch(`http://localhost:3001/product/getTenProductUser`, {
+                headers: {
+                    Authorization: `Bearer `,
+                },
+            });
+            const data = await response.json()
+            console.log(data)
+            if (data.status === 200) {
+                setData(data.data)
+            }
+        } catch (e) {
+            console.log("Lỗi lấy sản phẩm người dùng: ", e)
+        }
+    }
+    const handleAddToCart = () => {
+
+    }
+    const handleClickItem = () => {
+
+    }
+    useEffect(() => {
+        getProduct();
+    }, [])
     return (
         <div className="main-container">
             <Swiper
@@ -33,6 +61,15 @@ const Main = () => {
             <div className="text-home">
                 <label>Sản phẩm mới</label>
             </div>
+            <div className="item-render">
+                {data ? data.map((v, i) => (
+                    <div key={i}>
+                        <CardItem data={v} onAddToCart={handleAddToCart} onClickItem={handleClickItem} />
+                    </div>
+                )) : null}
+            </div>
+
+
         </div>
     );
 };
