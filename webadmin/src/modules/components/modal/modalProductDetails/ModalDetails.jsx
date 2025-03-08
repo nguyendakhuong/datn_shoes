@@ -41,6 +41,7 @@ const ModalDetails = ({ id, onClose, isOpen }) => {
         style: 'currency',
         currency: 'VND',
     });
+
     return (
         isOpen && (
             <div className="dialog-overlay" onClick={handleClickOutside}>

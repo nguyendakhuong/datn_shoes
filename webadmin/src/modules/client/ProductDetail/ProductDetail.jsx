@@ -1,14 +1,16 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import "./ProductDetail.scss";
+import CardItem from "../card/CardItem";
 
 const ProductDetail = () => {
-    const { id } = useParams();
+    const { trademark, id } = useParams();
     const [data, setData] = useState(null);
-    const [selectedColor, setSelectedColor] = useState(""); // Màu đã chọn
-    const [filteredSizes, setFilteredSizes] = useState([]); // Danh sách size theo màu
-    const [selectedSize, setSelectedSize] = useState(""); // Kích thước đã chọn
-
+    const [dataTrademark, setDataTrademark] = useState([]);
+    const [selectedColor, setSelectedColor] = useState("");
+    const [filteredSizes, setFilteredSizes] = useState([]);
+    const [selectedSize, setSelectedSize] = useState("");
+    const navigate = useNavigate()
     const getProductById = async () => {
         try {
             const response = await fetch(`http://localhost:3001/product/getProductById/${id}`, {
@@ -24,10 +26,31 @@ const ProductDetail = () => {
             console.log("Lỗi lấy thông tin sản phẩm theo id: ", e);
         }
     };
+    const getProductByTrademark = async () => {
+        try {
+            const response = await fetch(`http://localhost:3001/product/getProductByTrademark`, {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer `,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ trademark })
+            });
+            const data = await response.json();
+            console.log(data)
+            if (data.status === 200) {
+                setDataTrademark(data.data)
+            }
+        } catch (e) {
+            console.log("Lỗi lấy thông tin sản phẩm theo trademark: ", e);
+        }
+    }
 
     useEffect(() => {
         getProductById();
-    }, []);
+        getProductByTrademark()
+    }, [id, trademark]);
+
     useEffect(() => {
         if (data?.productDetail.length > 0) {
             const firstColor = data.productDetail[0].color;
@@ -56,9 +79,14 @@ const ProductDetail = () => {
             price: selectedProduct.price,
             quantity: 1,
         });
-        // alert("Sản phẩm đã được thêm vào giỏ hàng!");
     };
-    console.log(filteredSizes)
+    const handleClickItem = (v) => {
+        navigate(`/productDetail/${v.trademark}/${v.id}`);
+    }
+    const formatter = new Intl.NumberFormat('vi-VN', {
+        style: 'currency',
+        currency: 'VND',
+    });
     return (
         <div className="productDetail-container">
             {filteredSizes.length > 0 && (
@@ -69,7 +97,7 @@ const ProductDetail = () => {
                             alt={data?.name}
                             className="product-image"
                         />
-                        <p className="product-description">{data?.description}</p>
+
                     </div>
                     <div className="product-right">
                         <h2>{data?.name}</h2>
@@ -77,7 +105,7 @@ const ProductDetail = () => {
                             <b>Chất liệu:</b> {data?.material}
                         </p>
                         <p>
-                            <b>Xuất xứ:</b> {data?.origin}
+                            <b>Sản xuất:</b> {data?.origin}
                         </p>
                         <p>
                             <b>Thương hiệu:</b> {data?.trademark}
@@ -109,15 +137,32 @@ const ProductDetail = () => {
                         </div>
                         <p>
                             <b>Giá:</b>{" "}
-                            {filteredSizes.find((v) => v.size === selectedSize)?.price || "N/A"}
+                            {formatter.format(filteredSizes.find((v) => v.size === selectedSize)?.price || "N/A")}
                         </p>
 
                         <button className="add-to-cart" onClick={handleAddToCart}>
                             Thêm vào giỏ hàng
                         </button>
                     </div>
+                    <div className="description">
+                        <span>Mô tả</span>
+                        <p className="product-description">{data?.description}</p>
+                    </div>
                 </div>
             )}
+            <div className="product-category">
+                <h3>Sản phẩm bạn có thể thích</h3>
+
+                <div className="item-render">
+                    {dataTrademark.length > 0 ? dataTrademark.map((v, i) => (
+                        <div key={i}>
+                            <CardItem data={v} onClickItem={handleClickItem} />
+                        </div>
+                    )) : <div className="text-title">
+                        <span>Chưa có sản phẩm hoạt động</span>
+                    </div>}
+                </div>
+            </div>
         </div>
     );
 };

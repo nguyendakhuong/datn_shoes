@@ -16,5 +16,6 @@ router.get("/delete/:id", Product.deleteProduct);
 
 router.get("/getTenProductUser", Product.getTenProductUser);
 router.get("/getProductById/:id", Product.getProductById);
+router.post("/getProductByTrademark", Product.getProductByTrademark);
 
 module.exports = router;

@@ -35,8 +35,9 @@ const Main = () => {
         }
     }
     const handleClickItem = (v) => {
-        navigate(`/productDetail/${v.id}`);
+        navigate(`/productDetail/${v.trademark}/${v.id}`);
     }
+    console.log(data)
     useEffect(() => {
         getProduct();
     }, [])
@@ -61,11 +62,13 @@ const Main = () => {
                 <label>Sản phẩm mới</label>
             </div>
             <div className="item-render">
-                {data ? data.map((v, i) => (
+                {data.length > 0 ? data.map((v, i) => (
                     <div key={i}>
                         <CardItem data={v} onClickItem={handleClickItem} />
                     </div>
-                )) : null}
+                )) : <div className="text-title">
+                    <span>Chưa có sản phẩm hoạt động</span>
+                </div>}
             </div>
 
 

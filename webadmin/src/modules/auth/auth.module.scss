@@ -15,6 +15,17 @@
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
   height: 50rem;
 }
+.containerSignup {
+  .headerSignUp {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    span {
+      font-size: 16px;
+    }
+  }
+}
 
 .register {
   width: 50rem;

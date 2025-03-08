@@ -132,6 +132,12 @@ const login = async (req, res) => {
     if (!result) {
       return res.json({ status: 401, message: "Tài khoản không tồn tại" });
     }
+    if (result.status === 2) {
+      return res.json({
+        status: 400,
+        message: "Tài khoản của bạn đã bị khóa",
+      });
+    }
 
     const isPasswordMatch = await bcrypt.compare(password, result.password);
 

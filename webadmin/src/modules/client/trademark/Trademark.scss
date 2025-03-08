@@ -1,0 +1,20 @@
+.filter-container {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  .btn-filter {
+    margin: 0;
+    button {
+      width: 10rem;
+      height: 4rem;
+      background-color: #007bff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      color: white;
+    }
+  }
+}
+h2 {
+  font-size: 24px;
+  margin: 10px 0;
+}

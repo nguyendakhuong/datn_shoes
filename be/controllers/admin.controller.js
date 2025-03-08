@@ -1,4 +1,4 @@
-const { Token, Admin, Account } = require("../models");
+const { Token, Admin, Account, Client } = require("../models");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
@@ -66,7 +66,6 @@ const getAccountsAdmin = async (req, res) => {
         status: account ? account.status : null,
       };
     });
-    console.log(listAdminWithUsername);
     return res.json({
       status: 200,
       message: "Thành công",
@@ -209,6 +208,85 @@ const updateStatus = async (req, res) => {
     });
   }
 };
+const updateStatusUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const user = await Client.findOne({ where: { id } });
+    if (!user) {
+      return res.json({
+        status: 400,
+        message: "Không tìm thấy tài khoản user",
+      });
+    }
+    const account = await Account.findOne({
+      where: { customerCode: user.customerCode },
+    });
+    if (!account) {
+      return res.json({
+        status: 400,
+        message: "Không tìm thấy tài khoản đăng nhập của user",
+      });
+    }
+    if (account.status === 1) {
+      account.status = 2;
+      await account.save();
+      return res.json({
+        status: 200,
+        message: "Cập nhật thành công!",
+      });
+    }
+    if (account.status === 2) {
+      account.status = 1;
+      await account.save();
+      return res.json({
+        status: 200,
+        message: "Cập nhật thành công!",
+      });
+    }
+  } catch (e) {
+    console.log("Lỗi cập nhật trạng thái admin", e);
+    return res.json({
+      status: 500,
+      message: "Lỗi server",
+    });
+  }
+};
+const getClients = async (req, res) => {
+  try {
+    const listClients = await Client.findAll();
+    if (!listClients || listClients.length === 0) {
+      return res.json({ status: 400, message: "Chưa có người dùng nào" });
+    }
+    const customerCode = listClients.map((users) => users.customerCode);
+
+    const accounts = await Account.findAll({
+      where: { customerCode: customerCode },
+      attributes: ["customerCode", "username", "status"],
+    });
+
+    const listClientWithUsername = listClients.map((user) => {
+      const account = accounts.find(
+        (acc) => acc.customerCode === user.customerCode
+      );
+      return {
+        ...user.toJSON(),
+        username: account ? account.username : null,
+        status: account ? account.status : null,
+      };
+    });
+    return res.json({
+      status: 200,
+      message: "Thành công",
+      data: listClientWithUsername,
+    });
+  } catch (e) {
+    console.log("Lỗi lấy danh sách người dùng: ", e);
+    return res.json({
+      status: 501,
+      message: "Lỗi server a",
+    });
+  }
+};
 
 module.exports = {
   getAdmin,
@@ -216,4 +294,6 @@ module.exports = {
   getAdminId,
   updateAdmin,
   updateStatus,
+  getClients,
+  updateStatusUser,
 };

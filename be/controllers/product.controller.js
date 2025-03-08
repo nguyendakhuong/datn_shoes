@@ -51,6 +51,9 @@ const product = async (req, res) => {
       return res.json({ status: 400, message: "Sản phẩm đã tồn tại" });
     }
     let productCode = await generateUniqueCode(Products, "productCode");
+    const idMaterial = await Material.findOne({ where: { name: material } });
+    const idTrademark = await Trademark.findOne({ where: { name: trademark } });
+    const idOrigin = await Origin.findOne({ where: { name: origin } });
 
     if (productCode) {
       const newProduct = await Products.create({
@@ -60,9 +63,9 @@ const product = async (req, res) => {
         status: 2,
         creator: account.name,
         updater: "",
-        idMaterial: material,
-        idTrademark: trademark,
-        idOrigin: origin,
+        idMaterial: idMaterial.materialCode,
+        idTrademark: idTrademark.brandCode,
+        idOrigin: idOrigin.originCode,
       });
 
       if (newProduct) {
@@ -175,6 +178,7 @@ const getProducts = async (req, res) => {
       ...new Set(listProductDetails.map((item) => item.idProduct)),
     ];
     const sizeIds = [...new Set(listProductDetails.map((item) => item.idSize))];
+
     const productList = await Products.findAll({
       where: { productCode: productIds },
       attributes: ["name", "productCode"],
@@ -182,7 +186,7 @@ const getProducts = async (req, res) => {
     });
 
     const sizeList = await Size.findAll({
-      where: { name: sizeIds },
+      where: { sizeCode: sizeIds },
       attributes: ["name", "sizeCode"],
       raw: true,
     });
@@ -202,6 +206,7 @@ const getProducts = async (req, res) => {
         sizeName: sizeMap[item.idSize] || null,
       };
     });
+
     return res.json({
       status: 200,
       message: "Thành công",
@@ -318,13 +323,12 @@ const getProduct = async (req, res) => {
       attributes: ["name"],
       raw: true,
     });
-
+    console.log(productDetail.idSize);
     const size = await Size.findOne({
-      where: { name: productDetail.idSize },
+      where: { sizeCode: productDetail.idSize },
       attributes: ["name"],
       raw: true,
     });
-
     const data = {
       id: productDetail.id,
       productDetailCode: productDetail.productDetailCode,
@@ -468,9 +472,15 @@ const getTenProductUser = async (req, res) => {
 
     for (const product of products) {
       const productDetails = await ProductDetails.findAll({
-        where: { idProduct: product.productCode },
+        where: { idProduct: product.productCode, status: 1 },
         attributes: ["idImage", "price", "idColor", "idProduct"],
       });
+      if (!productDetails || productDetails.length === 0) {
+        return res.json({
+          status: 400,
+          message: "Không có sản phẩm hoạt động",
+        });
+      }
       const trademark = await Trademark.findOne({
         where: { brandCode: product.idTrademark },
       });
@@ -589,6 +599,80 @@ const getProductById = async (req, res) => {
     });
   }
 };
+const getProductByTrademark = async (req, res) => {
+  try {
+    const { trademark } = req.body;
+    if (!trademark) {
+      return res.json({
+        status: 400,
+        message: "Thiếu dữ liệu thương hiệu",
+      });
+    }
+    const getTrademark = await Trademark.findOne({
+      where: { name: trademark },
+    });
+    if (!getTrademark) {
+      return res.json({
+        status: 400,
+        message: "Không tìm thấy thương hiệu",
+      });
+    }
+    const products = await Products.findAll({
+      where: { idTrademark: getTrademark.brandCode },
+      attributes: ["productCode", "name"],
+      order: [["createdAt", "DESC"]],
+    });
+
+    if (products.length === 0) {
+      return res.json({
+        status: 400,
+        message: "Không thấy sản phẩm có thương hiệu này",
+      });
+    }
+    let data = [];
+
+    for (const product of products) {
+      const productDetails = await ProductDetails.findAll({
+        where: { idProduct: product.productCode, status: 1 },
+        attributes: ["idImage", "price", "idColor", "idProduct"],
+      });
+      if (!productDetails || productDetails.length === 0) {
+        return res.json({
+          status: 400,
+          message: "Không có sản phẩm hoạt động",
+        });
+      }
+
+      if (productDetails.length > 0) {
+        const { idImage, price, idProduct } = productDetails[0];
+        let allColors = new Set();
+        productDetails.forEach((detail) => {
+          allColors.add(detail.idColor);
+        });
+        data.push({
+          id: idProduct,
+          productCode: product.productCode,
+          name: product.name,
+          trademark,
+          idImage,
+          price,
+          color: Array.from(allColors),
+        });
+      }
+    }
+    return res.json({
+      status: 200,
+      message: "Thành công",
+      data,
+    });
+  } catch (e) {
+    console.log("Lỗi lấy sản phẩm theo thương hiệu: ", e);
+    return res.json({
+      status: 500,
+      message: "Lỗi server",
+    });
+  }
+};
 
 module.exports = {
   product,
@@ -599,4 +683,5 @@ module.exports = {
   updateProduct,
   getTenProductUser,
   getProductById,
+  getProductByTrademark,
 };

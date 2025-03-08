@@ -59,7 +59,7 @@ const ShippingAddress = () => {
                 },
             })
             const data = await response.json()
-            console.log(data)
+
             if (data.status === 200) {
                 setData(data.data)
                 clearForm()
@@ -111,7 +111,7 @@ const ShippingAddress = () => {
                 },
             })
             const data = await response.json()
-            console.log(data)
+
             if (data.status === 200) {
                 setReloadData(true)
                 ToastApp.success("Xóa thành công !")

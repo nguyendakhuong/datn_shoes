@@ -14,6 +14,7 @@ import SignUpUser from "../modules/auth/SignUpUser";
 import InfoUser from "../modules/client/InfoUser/InfroUser";
 import Cart from "../modules/client/cart/Cart";
 import ProductDetail from "../modules/client/ProductDetail/ProductDetail";
+import TrademarkUser from "../modules/client/trademark/Trademark";
 
 const AppRoute = (isAuth, accountType) => {
   const route = [
@@ -43,8 +44,12 @@ const AppRoute = (isAuth, accountType) => {
           element: <Cart />,
         },
         {
-          path: "/productDetail/:id",
+          path: "/productDetail/:trademark/:id",
           element: <ProductDetail />,
+        },
+        {
+          path: "/trademarkUser/:trademark",
+          element: <TrademarkUser />,
         },
       ],
     },

@@ -46,6 +46,7 @@ const CreateProduct = ({ handleBack }) => {
             trademark: ''
         });
         setDataProductDetails([]);
+        setImagePreview({})
     }
 
     const getColor = async () => {
@@ -138,9 +139,18 @@ const CreateProduct = ({ handleBack }) => {
         const { name, value } = e.target;
         setDataCreateProduct({ ...dataCreateProduct, [name]: value });
 
-        setDataProductDetails(prev => prev.map((detail, i) =>
-            i === index ? { ...detail, [name]: value } : detail
-        ));
+        setDataProductDetails(prev => {
+            if (name === "colorCode") {
+                const updatedColor = prev[index].color;
+                return prev.map(item =>
+                    item.color === updatedColor ? { ...item, colorCode: value } : item
+                );
+            } else {
+                return prev.map((detail, i) =>
+                    i === index ? { ...detail, [name]: value } : detail
+                );
+            }
+        });
 
         const inputValue = value.trim();
         const valid = e.target.getAttribute('validate');
@@ -228,6 +238,7 @@ const CreateProduct = ({ handleBack }) => {
     }
 
     const handleChangeColor = async (selectedOption) => {
+
         if (!selectedOption) return;
         const token = APP_LOCAL.getTokenStorage();
         if (!token) {
@@ -235,18 +246,23 @@ const CreateProduct = ({ handleBack }) => {
         }
         setSelectedColor(selectedOption);
 
+
         setDataProductDetails(prev => {
-            return [
-                ...prev,
-                {
-                    quantity: '',
-                    price: '',
-                    color: selectedOption.label,
-                    colorCode: selectedOption.colorCode || "",
-                    size: '',
-                    image: null
-                }
-            ];
+            const existingItem = prev.find(item => item.color === selectedOption.label);
+            const colorCode = selectedOption.colorCode || (existingItem ? existingItem.colorCode : "");
+            const image = existingItem ? existingItem.image : null;
+            return prev.map(item =>
+                item.color === selectedOption.label
+                    ? { ...item, colorCode, image }
+                    : item
+            ).concat({
+                quantity: '',
+                price: '',
+                color: selectedOption.label,
+                colorCode,
+                size: '',
+                image,
+            });
         });
         if (selectedOption.__isNew__) {
             try {
@@ -277,19 +293,34 @@ const CreateProduct = ({ handleBack }) => {
     const handleImageChange = (e, index) => {
         const file = e.target.files[0];
         if (!file) return;
-        if (index < 0 || index >= dataCreateProduct.length) return;
-        const newDetails = [...dataProductDetails];
-        newDetails[index] = { ...newDetails[index], image: file };
-        setDataProductDetails(newDetails);
+        if (index < 0 || index >= dataProductDetails.length) return;
+
         const objectURL = URL.createObjectURL(file);
-        setImagePreview(prev => ({
-            ...prev,
-            [index]: objectURL,
-        }));
+        const updatedColor = dataProductDetails[index].color;
+
+        setDataProductDetails(prev => prev.map(item =>
+            item.color === updatedColor
+                ? { ...item, image: file }
+                : item
+        ));
+
+        setImagePreview(prev => {
+            const newPreview = { ...prev };
+            dataProductDetails.forEach((item, i) => {
+                if (item.color === updatedColor) {
+                    newPreview[i] = objectURL;
+                }
+            });
+            return newPreview;
+        });
     };
 
     const handleDeleteItem = (index) => {
-        setDataProductDetails((prev) => prev.filter((_, i) => i !== index));
+        setDataProductDetails((prev) => {
+            const updatedList = prev.filter((_, i) => i !== index);
+            setImagePreview(updatedList.map(item => item.image || null));
+            return updatedList;
+        });
     };
 
     const handleSubmit = async () => {
@@ -320,13 +351,24 @@ const CreateProduct = ({ handleBack }) => {
                 return;
             }
         }
+        const checkDuplicateSize = {};
+        for (let item of dataProductDetails) {
+            const { color, size } = item;
+            const key = `${color}-${size}`;
+
+            if (checkDuplicateSize[key]) {
+                return ToastApp.warning(`Màu ${color} đã tồn tại kích thước ${size}, vui lòng chọn size khác!`);
+            }
+
+            checkDuplicateSize[key] = true;
+        }
         try {
             const formDataToSend = new FormData();
             formDataToSend.append('name', dataCreateProduct.name);
             formDataToSend.append('description', dataCreateProduct.description);
-            formDataToSend.append('trademark', dataCreateProduct.trademark.value);
-            formDataToSend.append('origin', dataCreateProduct.origin.value);
-            formDataToSend.append('material', dataCreateProduct.material.value);
+            formDataToSend.append('trademark', dataCreateProduct.trademark.label);
+            formDataToSend.append('origin', dataCreateProduct.origin.label);
+            formDataToSend.append('material', dataCreateProduct.material.label);
             dataProductDetails.forEach((item, index) => {
                 formDataToSend.append(`details[${index}][color]`, item.color);
                 formDataToSend.append(`details[${index}][colorCode]`, item.colorCode);
@@ -371,6 +413,7 @@ const CreateProduct = ({ handleBack }) => {
         }),
         option: (provided) => ({ ...provided, colors: "black" })
     }
+    console.log(imagePreview)
     return (
         <div className='CreateProduct-container'>
             <table className='header-table'>
@@ -388,7 +431,10 @@ const CreateProduct = ({ handleBack }) => {
                 </thead>
             </table>
             <div className='form_add'>
-                <form onSubmit={(e) => e.preventDefault()} encType='multipart/form-data'>
+                <form
+                    onSubmit={(e) => e.preventDefault()}
+                    encType='multipart/form-data'
+                    onKeyDown={(e) => e.key === "Enter" && e.preventDefault()}>
                     <div className='item-flex '>
                         <div className='item_name input-product'>
                             <InputAdmin

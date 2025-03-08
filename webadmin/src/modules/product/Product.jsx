@@ -185,7 +185,7 @@ const Product = () => {
                 <td>{formatter.format(product?.dataValues?.price)}</td>
                 <td>{product?.dataValues?.quantity}</td>
                 <td>{product?.dataValues?.idColor}</td>
-                <td>{product?.dataValues?.idSize}</td>
+                <td>{product?.sizeName}</td>
                 <td>
                     <button onClick={(e) => handleClickStatus(e, product?.dataValues?.id)} className={buttonClass}>
                         {product?.dataValues?.status === 1 ? "Hoạt động" : "Không hoạt động"}
@@ -217,6 +217,7 @@ const Product = () => {
         getProducts()
         setReloadData(false)
     }, [reloadData])
+    console.log(data)
     return (
         <div>
             {navigateCreate ? (

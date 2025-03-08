@@ -14,6 +14,7 @@ const HeaderUser = () => {
     const navigate = useNavigate();
     const token = APP_LOCAL.getTokenStorage();
     const dropdownRef = useRef(null);
+    const [data, setData] = useState([])
 
     const handleLogin = () => {
         navigate('/Login');
@@ -24,13 +25,36 @@ const HeaderUser = () => {
     const toggleDropdown = () => {
         setShowDropdown(!showDropdown);
     }
+    const getTrademarks = async () => {
+        try {
+            const response = await fetch(`http://localhost:3001/trademark/getTrademarks`, {
+                headers: {
+                    Authorization: `Bearer `,
+                    "Content-Type": "application/json"
+                },
+            })
+            const data = await response.json()
+            if (data.status === 200) {
+                setData(data.data)
+            } else {
+                console.log("Lỗi lấy thương hiệu")
+            }
+        } catch (e) {
+
+        }
+    }
+    const handleClickTrademark = (name) => {
+        navigate(`/trademarkUser/${name}`);
+    }
+    useEffect(() => {
+        getTrademarks()
+    }, [])
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
                 setShowDropdown(false);
             }
         };
-
         if (showDropdown) {
             document.addEventListener("mousedown", handleClickOutside);
         } else {
@@ -49,11 +73,12 @@ const HeaderUser = () => {
             <nav className="nav-menu">
                 <ul>
                     <li onClick={handleHome}>GIỚI THIỆU</li>
-                    <li>NIKE</li>
-                    <li>ADIDAS</li>
-                    <li>JORDAN</li>
-                    <li>YEEZY</li>
-                    <li>OTHER BRANDS</li>
+                    {data.length > 0 ? data.map((v, i) => (
+                        <div>
+                            <li onClick={() => handleClickTrademark(v.name)}>{v.name}</li>
+                        </div>
+                    )) : null}
+                    <li>HÃNG KHÁC</li>
                 </ul>
             </nav>
             <div className="header-icons">
@@ -63,8 +88,8 @@ const HeaderUser = () => {
                         <FaUser className="icon" onClick={toggleDropdown} />
                         {showDropdown && (
                             <div className="dropdown">
-                                <button onClick={() => navigate('/info-user')}>Trang cá nhân</button>
                                 {accountType === "admin" ? <button onClick={() => navigate('/admin')}>quản lí trang web</button> : null}
+                                {accountType === "user" ? <button onClick={() => navigate('/info-user')}>Trang cá nhân</button> : null}
                                 <button onClick={() => {
                                     dispatch({
                                         type: KEY_CONTEXT_USER.SET_ACCOUNT_TYPE,

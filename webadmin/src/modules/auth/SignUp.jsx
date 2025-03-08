@@ -14,6 +14,7 @@ import AppImages from '../../assets'
 import ModalAdminDetail from '../components/modal/modalAdminDetails/ModalAdminDetail'
 
 const SignUp = () => {
+    const [userCtx, dispatch] = useContext(UserContext)
     const [data, setData] = useState(null)
     // const navigate = useNavigate();
     const [status, setStatus] = useState(false)
@@ -21,7 +22,7 @@ const SignUp = () => {
     const [password, setPassword] = useState('')
     const [name, setName] = useState('')
     const [isButtonDisabled, setIsButtonDisabled] = useState(true)
-    const [userCtx, dispatch] = useContext(UserContext)
+
     const [reloadData, setReloadData] = useState(false);
     const [idAdmin, setIdAdmin] = useState(null)
     const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -95,16 +96,18 @@ const SignUp = () => {
             }
         }
         return (
-            <div>
+            <div className={styles.containerSignup}>
                 <table className="header-table">
                     <thead>
                         <tr>
                             <th colSpan="10">
                                 <div className="purple-line"></div>
                                 <div className={styles.headerSignUp}>
-                                    <button className={styles.iconBack} onClick={handleBackProduct} >
-                                        <img src={AppImages.iconBack} alt='Error icon' />
-                                    </button>
+                                    <div>
+                                        <button className={styles.iconBack} onClick={handleBackProduct} >
+                                            <img src={AppImages.iconBack} alt='Error icon' />
+                                        </button>
+                                    </div>
                                     <span>{'Đăng ký tài khoản'}</span>
                                 </div>
                             </th>
@@ -166,17 +169,22 @@ const SignUp = () => {
     }
 
     const getAccounts = async () => {
-        const token = APP_LOCAL.getTokenStorage();
-        const res = await fetch(`http://localhost:3001/admin/getAccountsAdmin/:token`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-        const data = await res.json();
-        if (data.status === 200) {
-            setData(data.data)
-        } else {
-            ToastApp.error('Error: ' + data.message)
+        try {
+            const token = APP_LOCAL.getTokenStorage();
+            const res = await fetch(`http://localhost:3001/admin/getAccountsAdmin/:token`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            const data = await res.json();
+            if (data.status === 200) {
+                setData(data.data)
+            } else {
+                ToastApp.error('Error: ' + data.message)
+            }
+
+        } catch (e) {
+            console.log("Lỗi lấy danh sách tài khoảng admin")
         }
     }
     const clickItem = async (id) => {

@@ -1,4 +1,4 @@
-const { Trademark, Account } = require("../models");
+const { Trademark, Account, Products, ProductDetails } = require("../models");
 const { Op, where } = require("sequelize");
 const jwt = require("jsonwebtoken");
 require("dotenv").config;
@@ -87,7 +87,53 @@ const createTrademark = async (req, res) => {
     });
   }
 };
+
+const getTrademarks = async (req, res) => {
+  try {
+    const trademarks = await Trademark.findAll();
+    const products = await Products.findAll();
+    const productDetails = await ProductDetails.findAll();
+
+    const trademarkCount = {};
+    for (const product of products) {
+      const detailsCount = productDetails.filter(
+        (detail) => detail.idProduct === product.productCode
+      ).length;
+      if (!trademarkCount[product.idTrademark]) {
+        trademarkCount[product.idTrademark] = 0;
+      }
+      trademarkCount[product.idTrademark] += detailsCount;
+    }
+    const sortedTrademarks = Object.entries(trademarkCount)
+      .map(([brandCode, count]) => {
+        const numericBrandCode = Number(brandCode);
+        const trademark = trademarks.find(
+          (t) => t.brandCode === numericBrandCode
+        );
+        return {
+          brandCode: numericBrandCode,
+          name: trademark ? trademark.name : null,
+          totalProducts: count,
+        };
+      })
+      .sort((a, b) => b.totalProducts - a.totalProducts)
+      .slice(0, 3);
+
+    return res.json({
+      status: 200,
+      message: "Thành công!",
+      data: sortedTrademarks,
+    });
+  } catch (e) {
+    console.log("Lỗi lấy thương hiệu: ", e);
+    return res.json({
+      status: 500,
+      message: "Lỗi server",
+    });
+  }
+};
 module.exports = {
   getTrademark,
   createTrademark,
+  getTrademarks,
 };
