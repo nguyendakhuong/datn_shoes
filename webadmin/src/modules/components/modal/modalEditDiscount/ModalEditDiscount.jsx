@@ -48,23 +48,23 @@ const ModalEditDiscount = ({ data, isOpen, onClose }) => {
 
     const handleSubmit = async () => {
         const token = APP_LOCAL.getTokenStorage();
-        try {
-            const updateFormData = { ...formData, promotionType: type }
-            if (type === 2 && updateFormData.promotionLevel > 90) {
-                ToastApp.warning("Mức khuyến mại không được lớn hơn 90")
-                return
+        const updateFormData = { ...formData, promotionType: type }
+        if (type === 2 && updateFormData.promotionLevel > 90) {
+            ToastApp.warning("Mức khuyến mại không được lớn hơn 90")
+            return
+        }
+        const errors = {};
+        Object.entries(updateFormData).forEach(([key, value]) => {
+            if (key !== "deletedAt" && !value) {
+                errors[key] = "Trường này không được để trống";
             }
-            const errors = {};
-            Object.entries(updateFormData).forEach(([key, value]) => {
-                if (key !== "deletedAt" && !value) {
-                    errors[key] = "Trường này không được để trống";
-                }
-            });
+        });
 
-            if (Object.keys(errors).length > 0) {
-                ToastApp.warning("Vui lòng điền đúng thông tin!");
-                return;
-            }
+        if (Object.keys(errors).length > 0) {
+            ToastApp.warning("Vui lòng điền đúng thông tin!");
+            return;
+        }
+        try {
             const response = await fetch('http://localhost:3001/discount/updateCreate', {
                 method: 'PUT',
                 headers: {

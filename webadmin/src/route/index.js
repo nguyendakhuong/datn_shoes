@@ -15,6 +15,8 @@ import InfoUser from "../modules/client/InfoUser/InfroUser";
 import Cart from "../modules/client/cart/Cart";
 import ProductDetail from "../modules/client/ProductDetail/ProductDetail";
 import TrademarkUser from "../modules/client/trademark/Trademark";
+import OtherTrademark from "../modules/client/otherTrademark/OtherTrademark";
+import OrderUser from "../modules/client/order-user/OrderUser";
 
 const AppRoute = (isAuth, accountType) => {
   const route = [
@@ -50,6 +52,14 @@ const AppRoute = (isAuth, accountType) => {
         {
           path: "/trademarkUser/:trademark",
           element: <TrademarkUser />,
+        },
+        {
+          path: "/otherTrademark",
+          element: <OtherTrademark />,
+        },
+        {
+          path: "/order-user",
+          element: <OrderUser />,
         },
       ],
     },

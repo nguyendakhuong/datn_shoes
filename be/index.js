@@ -16,6 +16,8 @@ const material = require("./route/material.route");
 const product = require("./route/product.route");
 const discount = require("./route/discount.route");
 const address = require("./route/address.route");
+const cart = require("./route/cart.route");
+const order = require("./route/order.route");
 
 const bodyParser = require("body-parser");
 
@@ -52,6 +54,8 @@ app.use("/material", material);
 app.use("/product", product);
 app.use("/discount", discount);
 app.use("/address", address);
+app.use("/cart", cart);
+app.use("/order", order);
 
 db.sequelize.sync().then(() => {
   app.listen(PORT, () => {

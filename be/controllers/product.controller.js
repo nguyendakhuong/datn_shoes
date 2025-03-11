@@ -673,6 +673,58 @@ const getProductByTrademark = async (req, res) => {
     });
   }
 };
+const getAllProduct = async (req, res) => {
+  try {
+    const products = await Products.findAll({
+      attributes: ["productCode", "name", "idTrademark"],
+    });
+
+    let data = [];
+
+    for (const product of products) {
+      const productDetails = await ProductDetails.findAll({
+        where: { idProduct: product.productCode, status: 1 },
+        attributes: ["idImage", "price", "idColor", "idProduct"],
+      });
+      if (!productDetails || productDetails.length === 0) {
+        return res.json({
+          status: 400,
+          message: "Không có sản phẩm hoạt động",
+        });
+      }
+      const trademark = await Trademark.findOne({
+        where: { brandCode: product.idTrademark },
+      });
+      if (productDetails.length > 0) {
+        const { idImage, price, idProduct } = productDetails[0];
+        let allColors = new Set();
+        productDetails.forEach((detail) => {
+          allColors.add(detail.idColor);
+        });
+        data.push({
+          id: idProduct,
+          productCode: product.productCode,
+          name: product.name,
+          trademark: trademark.name,
+          idImage,
+          price,
+          color: Array.from(allColors),
+        });
+      }
+    }
+    return res.json({
+      status: 200,
+      message: "Lấy sản phẩm thành công",
+      data,
+    });
+  } catch (e) {
+    console.log("Lỗi lấy toàn bộ sản phẩm: ", e);
+    return res.json({
+      status: 500,
+      message: "Lỗi server",
+    });
+  }
+};
 
 module.exports = {
   product,
@@ -684,4 +736,5 @@ module.exports = {
   getTenProductUser,
   getProductById,
   getProductByTrademark,
+  getAllProduct,
 };

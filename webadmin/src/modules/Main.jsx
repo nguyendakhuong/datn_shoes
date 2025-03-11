@@ -37,7 +37,6 @@ const Main = () => {
     const handleClickItem = (v) => {
         navigate(`/productDetail/${v.trademark}/${v.id}`);
     }
-    console.log(data)
     useEffect(() => {
         getProduct();
     }, [])
@@ -70,8 +69,6 @@ const Main = () => {
                     <span>Chưa có sản phẩm hoạt động</span>
                 </div>}
             </div>
-
-
         </div>
     );
 };

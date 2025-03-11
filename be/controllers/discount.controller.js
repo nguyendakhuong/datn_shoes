@@ -1,6 +1,7 @@
-const { Promotion, Account } = require("../models");
+const { Promotion, Account, Order } = require("../models");
 const { Op } = require("sequelize");
 const jwt = require("jsonwebtoken");
+const moment = require("moment");
 require("dotenv").config;
 
 const generateUniqueCode = async (model, columnName) => {
@@ -141,9 +142,118 @@ const deleteDiscount = async (req, res) => {
     message: "Xóa thành công!",
   });
 };
+
+const useDiscount = async (req, res) => {
+  const signPrivate = process.env.SIGN_PRIVATE;
+  try {
+    const { discount, total } = req.body;
+    if (!discount || !total) {
+      return res.json({
+        status: 400,
+        message: "Thiếu mã giảm giá hoặc tổng tiền",
+      });
+    }
+    const token = req.headers.authorization.split(" ")[1];
+    if (!token) {
+      return res.json({
+        status: 400,
+        message: "Thiếu token!",
+      });
+    }
+    const decoded = jwt.verify(token, signPrivate);
+    const account = await Account.findOne({ where: { id: decoded.id } });
+    if (!account) {
+      return res.json({
+        status: 400,
+        message: "Không tìm thấy tài khoản",
+      });
+    }
+    const getDiscount = await Promotion.findOne({ where: { name: discount } });
+    if (!getDiscount) {
+      return res.json({
+        status: 400,
+        message: "Mã không tồn tại",
+      });
+    }
+    if (getDiscount.quantity === 0) {
+      return res.json({
+        status: 400,
+        message: "Đã hết số lượng sử dụng mã giảm giá",
+      });
+    }
+
+    const currentDate = moment();
+    const startDate = moment(getDiscount.startDate);
+    const endDate = moment(getDiscount.endDate);
+    if (
+      startDate.isAfter(currentDate) ||
+      endDate.isBefore(currentDate) ||
+      startDate.isAfter(endDate)
+    ) {
+      return res.json({
+        status: 400,
+        message: "Mã không còn hoạt động",
+      });
+    }
+    const checkOrderDiscount = await Order.findOne({
+      where: {
+        customerCode: account.customerCode,
+        discountCode: getDiscount.promotionCode,
+      },
+    });
+    if (checkOrderDiscount) {
+      return res.json({
+        status: 400,
+        message: "Bạn đã sử dụng mã giảm giá này rồi",
+      });
+    }
+    const formatter = new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    });
+    const maxPromotion = Number(getDiscount.maximumPromotion);
+    if (total < maxPromotion) {
+      return res.json({
+        status: 400,
+        message: `Mãi khuyến mại này chỉ áp dụng với các hóa đơn có giá trị từ ${formatter.format(
+          getDiscount.promotionLevel
+        )} trở lên`,
+      });
+    }
+    if (getDiscount.promotionType === 1) {
+      const newTotal = total - getDiscount.promotionLevel;
+      const finalTotal = newTotal >= 0 ? newTotal : 0;
+      return res.json({
+        status: 200,
+        message: " Thành công",
+        data: finalTotal,
+        discount: getDiscount,
+        totalPromotion: getDiscount.promotionLevel,
+      });
+    }
+    if (getDiscount.promotionType === 2) {
+      const discountAmount = (total * getDiscount.promotionLevel) / 100;
+      const newTotal = total - discountAmount;
+      return res.json({
+        status: 200,
+        message: " Thành công",
+        data: newTotal,
+        discount: getDiscount,
+        totalPromotion: discountAmount,
+      });
+    }
+  } catch (e) {
+    console.log("Lỗi sử dụng phiếu khuyến mại: ", e);
+    return res.json({
+      status: 500,
+      message: "Lỗi server",
+    });
+  }
+};
 module.exports = {
   getDiscounts,
   createDiscount,
   deleteDiscount,
   updateCreate,
+  useDiscount,
 };

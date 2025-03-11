@@ -1,10 +1,15 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import "./ProductDetail.scss";
 import CardItem from "../card/CardItem";
+import APP_LOCAL from "../../../lib/localStorage";
+import ToastApp from "../../../lib/notification/Toast";
+import UserContext from "../../../context/use.context";
+import { KEY_CONTEXT_USER } from "../../../context/use.reducer";
 
 const ProductDetail = () => {
     const { trademark, id } = useParams();
+    const [userCtx, dispatch] = useContext(UserContext)
     const [data, setData] = useState(null);
     const [dataTrademark, setDataTrademark] = useState([]);
     const [selectedColor, setSelectedColor] = useState("");
@@ -37,7 +42,6 @@ const ProductDetail = () => {
                 body: JSON.stringify({ trademark })
             });
             const data = await response.json();
-            console.log(data)
             if (data.status === 200) {
                 setDataTrademark(data.data)
             }
@@ -68,18 +72,36 @@ const ProductDetail = () => {
         }
     }, [selectedColor, data]);
 
-    const handleAddToCart = () => {
+    const handleAddToCart = async () => {
         const selectedProduct = filteredSizes.find((item) => item.size === selectedSize);
         if (!selectedProduct) return;
-        console.log("Thêm vào giỏ hàng:", {
-            productId: data.code,
-            name: data.name,
-            color: selectedColor,
-            size: selectedSize,
-            price: selectedProduct.price,
-            quantity: 1,
-        });
+        const token = APP_LOCAL.getTokenStorage()
+        try {
+            const response = await fetch(`http://localhost:3001/cart/productToCart/${selectedProduct.productDetailCode}`, {
+                method: "GET",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                },
+            });
+            const data = await response.json();
+            if (data.status === 200) {
+                ToastApp.success("Thêm vào giỏ hàng thành công")
+                console.log(data)
+                const newCart = [...userCtx.cart]
+                newCart.push({ id: selectedProduct.productDetailCode })
+                dispatch({
+                    type: KEY_CONTEXT_USER.SET_CART,
+                    payload: newCart,
+                })
+            } else {
+                ToastApp.warning(data.message)
+            }
+        } catch (e) {
+            console.log("Lỗi thêm sản phẩm vào giỏ hàng: ", e)
+        }
     };
+
     const handleClickItem = (v) => {
         navigate(`/productDetail/${v.trademark}/${v.id}`);
     }

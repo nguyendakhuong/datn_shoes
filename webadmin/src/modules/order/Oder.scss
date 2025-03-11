@@ -1,0 +1,156 @@
+.order-table-container {
+  padding: 20px;
+}
+
+.header-table {
+  width: 100%;
+  .header-order {
+    span {
+      font-size: 24px;
+    }
+    .search-box-oder {
+      width: 20rem;
+      margin-left: 20px;
+    }
+  }
+}
+
+.discount-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #ddd;
+  margin-bottom: 20px;
+}
+
+.active {
+  color: rgb(0, 98, 255);
+}
+
+.inactive {
+  color: red;
+}
+
+.active-text {
+  font-weight: bold;
+}
+
+.inactive-text {
+  font-style: bold;
+}
+
+.discount-table th,
+.discount-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.discount-table th {
+  background-color: #f2f2f2;
+}
+
+.discount-table tr:hover {
+  background-color: #f5f5f5;
+}
+
+.discount-table td div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.discount-button {
+  width: 150px;
+  height: 35px;
+  margin-left: 20px;
+  border: none;
+  border-radius: 10px;
+  background-color: #a352cb;
+  color: #ffffff;
+}
+
+.btn-config-oder {
+  width: 80px;
+  height: 30px;
+  background-color: rgb(48, 255, 58);
+  color: #ffffff;
+  border: none;
+  border-radius: 5px;
+}
+
+.btn-cancle-oder {
+  width: 100px;
+  height: 30px;
+  background-color: rgb(255, 48, 48);
+  color: #ffffff;
+  border: none;
+  border-radius: 5px;
+}
+
+.btn-configOder {
+  width: 100px;
+  height: 30px;
+  background-color: rgb(117, 105, 191);
+  color: #ffffff;
+  border: none;
+  border-radius: 5px;
+}
+
+.header-table span {
+  font-size: 13px;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  list-style-type: none;
+  margin-top: 5rem;
+}
+
+.page-item {
+  margin: 0 10px;
+}
+
+.pageLink {
+  padding: 10px;
+  border: 1px solid rgb(78, 87, 209);
+  border-radius: 10px;
+  font-size: 12px;
+}
+
+.inactivePagination {
+  display: none;
+}
+
+.selectPagination {
+  select {
+    width: 5rem;
+    padding: 8px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+
+  select:focus {
+    outline: none;
+    border-color: blue;
+    box-shadow: 0 0 0 2px rgba(0, 0, 255, 0.3);
+  }
+}
+.buttonPrint {
+  background-color: #8aa2db;
+  padding: 7px;
+  border: none;
+  border-right: #ffffff solid 1px;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+  font-size: 12px;
+}
+.item-order {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: start;
+}

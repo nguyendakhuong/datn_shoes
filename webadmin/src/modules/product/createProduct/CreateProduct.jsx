@@ -238,7 +238,6 @@ const CreateProduct = ({ handleBack }) => {
     }
 
     const handleChangeColor = async (selectedOption) => {
-
         if (!selectedOption) return;
         const token = APP_LOCAL.getTokenStorage();
         if (!token) {

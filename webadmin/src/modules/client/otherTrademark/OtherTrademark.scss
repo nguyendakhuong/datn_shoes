@@ -1,0 +1,47 @@
+.other-container {
+  .text-home {
+    text-align: center;
+    margin: 10px 0;
+    label {
+      font-weight: 600;
+      font-size: 24px;
+    }
+  }
+  .item-render {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    .text-title {
+      margin-top: 5rem;
+      text-align: center;
+      width: 100%;
+    }
+    span {
+      text-align: center;
+      font-size: 16px;
+    }
+  }
+  .filter-container {
+    display: flex;
+    gap: 10px;
+    .btn-filter {
+      margin: 0;
+      button {
+        width: 10rem;
+        height: 4rem;
+        background-color: #007bff;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        color: white;
+        margin: 0;
+      }
+    }
+    .select-filter {
+      height: 4rem;
+      select {
+        height: 4rem;
+        border-radius: 8px;
+      }
+    }
+  }
+}

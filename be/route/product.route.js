@@ -15,6 +15,7 @@ router.get("/getProduct/:id", Product.getProduct);
 router.get("/delete/:id", Product.deleteProduct);
 
 router.get("/getTenProductUser", Product.getTenProductUser);
+router.get("/getAllProduct", Product.getAllProduct);
 router.get("/getProductById/:id", Product.getProductById);
 router.post("/getProductByTrademark", Product.getProductByTrademark);
 

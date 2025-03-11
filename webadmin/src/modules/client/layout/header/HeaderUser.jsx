@@ -8,7 +8,7 @@ import UserContext from '../../../../context/use.context';
 import { KEY_CONTEXT_USER } from '../../../../context/use.reducer';
 
 const HeaderUser = () => {
-    const [{ accountType }, dispatch] = useContext(UserContext);
+    const [{ accountType, cart }, dispatch] = useContext(UserContext);
     const [showDropdown, setShowDropdown] = useState(false);
     const cartItemCount = 3;
     const navigate = useNavigate();
@@ -74,15 +74,24 @@ const HeaderUser = () => {
                 <ul>
                     <li onClick={handleHome}>GIỚI THIỆU</li>
                     {data.length > 0 ? data.map((v, i) => (
-                        <div>
+                        <div key={i}>
                             <li onClick={() => handleClickTrademark(v.name)}>{v.name}</li>
                         </div>
                     )) : null}
-                    <li>HÃNG KHÁC</li>
+                    <li onClick={() => navigate('/otherTrademark')}>HÃNG KHÁC</li>
                 </ul>
             </nav>
             <div className="header-icons">
-                <FaSearch className="icon" />
+                <div className="header-right">
+                    <div className="icon-container">
+                        <div className="icon imgVN-icon">
+                            <img src={AppImages.imgVN} alt="Mail Icon" className="mail-icon-img" />
+                        </div>
+                        <div className="icon imgUK-icon">
+                            <img src={AppImages.imgUK} alt="Notification Icon" className="notification-icon-img" />
+                        </div>
+                    </div>
+                </div>
                 {token ? (
                     <div className="user-menu" ref={dropdownRef}>
                         <FaUser className="icon" onClick={toggleDropdown} />
@@ -90,6 +99,7 @@ const HeaderUser = () => {
                             <div className="dropdown">
                                 {accountType === "admin" ? <button onClick={() => navigate('/admin')}>quản lí trang web</button> : null}
                                 {accountType === "user" ? <button onClick={() => navigate('/info-user')}>Trang cá nhân</button> : null}
+                                {accountType === "user" ? <button onClick={() => navigate('/order-user')}>Đơn hàng</button> : null}
                                 <button onClick={() => {
                                     dispatch({
                                         type: KEY_CONTEXT_USER.SET_ACCOUNT_TYPE,
@@ -105,7 +115,7 @@ const HeaderUser = () => {
                         )}
                         <div className="cart-icon" onClick={() => { navigate('/cart') }}>
                             <FaShoppingCart className="icon" />
-                            {cartItemCount > 0 && <span className="cart-count">{cartItemCount}</span>}
+                            {cartItemCount > 0 && <span className="cart-count">{cart.length}</span>}
                         </div>
                     </div>
                 ) : (

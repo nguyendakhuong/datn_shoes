@@ -44,7 +44,16 @@ function App() {
         APP_LOCAL.setTokenStorage("");
       }
     };
+    const getCart = async () => {
+      try {
+        const cartLocal = APP_LOCAL.getCart();
+        dispatch({ type: KEY_CONTEXT_USER.SET_CART, payload: cartLocal });
+      } catch (error) {
+      } finally {
+      }
+    };
     checkLogin();
+    getCart();
   }, []);
 
   return (

@@ -1,0 +1,128 @@
+.cart-container {
+  padding: 5rem;
+  display: flex;
+  .cart {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    .cart-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 60%;
+      .icon-delete {
+        p {
+          font-size: 16px;
+          color: red;
+          cursor: pointer;
+        }
+      }
+    }
+    .cart-item {
+      flex: 2;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px;
+      .cart-image {
+        width: 15rem;
+        img {
+          width: 100%;
+        }
+      }
+      .cart-info {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        h3 {
+          font-size: 24px;
+        }
+        span {
+          font-size: 12px;
+        }
+      }
+      .cartItem-color {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        span {
+          font-size: 16px;
+        }
+        .card-color {
+          width: 24px;
+          height: 24px;
+          border-radius: 50%;
+          border: 1px solid black;
+        }
+      }
+      .cart-price {
+        display: flex;
+        font-size: 16px;
+        gap: 10px;
+        margin: 0px 10px;
+        p {
+          color: red;
+        }
+      }
+      .cart-size {
+        display: flex;
+        font-size: 16px;
+        gap: 10px;
+        margin: 0px 10px;
+      }
+      .btn-quantity {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        .btn-decrease {
+          width: 2rem;
+          height: 2rem;
+        }
+        .btn-increase {
+          width: 2rem;
+          height: 2rem;
+        }
+      }
+    }
+    .icon-delete {
+      width: 2rem;
+      margin-right: 3rem;
+      img {
+        width: 100%;
+        cursor: pointer;
+      }
+    }
+  }
+  .form-total {
+    flex: 1;
+    max-width: 40rem;
+    max-height: 15rem;
+    min-height: 15rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding-left: 10px;
+
+    .total {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      h2 {
+        font-size: 20px;
+      }
+      p {
+        color: red;
+        font-size: 20px;
+      }
+    }
+    .btn-total {
+      width: 100%;
+      margin-top: 10px;
+      button {
+        width: 90%;
+        background-color: #007bff;
+        color: white;
+      }
+    }
+  }
+}

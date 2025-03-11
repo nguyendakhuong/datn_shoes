@@ -7,6 +7,7 @@ const InitState = {
   dataModal: null,
   isLoading: false,
   language: "",
+  cart: [],
 };
 const KEY_CONTEXT_USER = {
   SET_TOKEN: "SET_TOKEN",
@@ -16,6 +17,7 @@ const KEY_CONTEXT_USER = {
   SHOW_MODAL: "SHOW_MODAL",
   HIDE_MODAL: "HIDE_MODAL",
   SET_LANGUAGE: "SET_LANGUAGE",
+  SET_CART: "SET_CART",
 };
 const UserReducer = (state, action) => {
   switch (action.type) {
@@ -45,6 +47,9 @@ const UserReducer = (state, action) => {
       };
     case KEY_CONTEXT_USER.SET_LANGUAGE:
       return { ...state, language: action.payload };
+    case KEY_CONTEXT_USER.SET_CART:
+      APP_LOCAL.setCart(JSON.stringify(action.payload));
+      return { ...state, cart: action.payload };
     default:
       return state;
   }

@@ -45,7 +45,6 @@ const TrademarkUser = () => {
 
         return isMatchName && isMatchPrice;
     });
-    console.log(filteredProducts)
     return (
         <div>
             <div className='filter-container'>

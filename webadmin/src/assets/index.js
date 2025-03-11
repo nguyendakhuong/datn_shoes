@@ -10,6 +10,9 @@ import banner1 from "./image/banner1.jpg";
 import banner2 from "./image/banner2.jpg";
 import banner3 from "./image/banner3.jpg";
 
+import imgVN from "./image/imageVn.png";
+import imgUK from "./image/imgUK.png";
+
 import logo from "./image/logo_shoe_store.png";
 import login from "./image/bg-login.png";
 
@@ -27,6 +30,8 @@ const AppImages = {
   banner1,
   banner2,
   banner3,
+  imgVN,
+  imgUK,
 };
 
 export default AppImages;

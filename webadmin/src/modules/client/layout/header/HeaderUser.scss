@@ -99,6 +99,13 @@
       }
     }
   }
+  .icon-container {
+    display: flex;
+    gap: 10px;
+    .icon {
+      width: 24px;
+    }
+  }
 }
 @media (max-width: 768px) {
   .nav-menu ul {
