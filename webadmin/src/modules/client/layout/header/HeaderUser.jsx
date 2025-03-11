@@ -65,6 +65,7 @@ const HeaderUser = () => {
             document.removeEventListener("mousedown", handleClickOutside);
         };
     }, [showDropdown]);
+    console.log(accountType)
     return (
         <header className="header-user">
             <div className="logo">
@@ -113,10 +114,12 @@ const HeaderUser = () => {
                                 </button>
                             </div>
                         )}
-                        <div className="cart-icon" onClick={() => { navigate('/cart') }}>
-                            <FaShoppingCart className="icon" />
-                            {cartItemCount > 0 && <span className="cart-count">{cart.length}</span>}
-                        </div>
+                        {accountType === "user" ?
+                            (<div className="cart-icon" onClick={() => { navigate('/cart') }}>
+                                <FaShoppingCart className="icon" />
+                                {cartItemCount > 0 && <span className="cart-count">{cart.length}</span>}
+                            </div>)
+                            : null}
                     </div>
                 ) : (
                     <div className="flex">
