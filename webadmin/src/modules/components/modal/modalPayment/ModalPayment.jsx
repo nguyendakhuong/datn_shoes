@@ -34,10 +34,10 @@ const ModalPayment = ({ data, total, isOpen, onClose }) => {
                     'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify({ discount, total })
-
             });
             const result = await response.json();
             if (result.status === 200) {
+                console.log(result)
                 ToastApp.success("Sử dụng phiếu giảm giá thành công")
                 setDiscountAPI(result.discount)
                 setTotalAfterDiscount(result.data)
@@ -185,7 +185,8 @@ const ModalPayment = ({ data, total, isOpen, onClose }) => {
                                 <div className='flex'>
                                     <span>Mã giảm giá : {discountAPI.name}</span>
                                     <span>Hình thức: {discountAPI.promotionType === 1 ? "Giảm tiền" : "Giảm theo %"}</span>
-                                    <span>Áp dụng với các đơn hàng từ {formatter.format(discountAPI.maximumPromotion)} trở lên</span>
+                                    <span>Mô tải: {discountAPI.conditionsOfApplication}</span>
+                                    <span>Hạn mức tối đa: {discountAPI.maximumPromotion ? formatter.format(discountAPI.maximumPromotion) : "0đ"}</span>
                                     <span>Bạn đã tích kiệm được {formatter.format(discountAPI.promotionLevel)}</span>
                                 </div>
                             ) : null}
