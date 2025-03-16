@@ -111,7 +111,8 @@
 }
 .flex {
   display: flex;
-  width: 10rem;
+  width: 20rem;
+  gap: 10px;
   justify-content: space-between;
   padding: 10px 0px;
 }

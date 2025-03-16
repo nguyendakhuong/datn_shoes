@@ -4,15 +4,17 @@ import HeaderUser from './header/HeaderUser'
 import './LayoutUser.scss'
 const LayoutUser = () => {
     return (
-        <div className='layout-user'>
-            <div className='header'>
+        <div className='layout-user-layout'>
+            <div className='header-user-layout'>
                 <HeaderUser />
             </div>
 
-            <div className='main-user'>
+            <div className='main-user-layout'>
                 <Outlet />
             </div>
-            <FooterUser />
+            <div className='footer-user-layout'>
+                <FooterUser />
+            </div>
         </div>
     )
 }

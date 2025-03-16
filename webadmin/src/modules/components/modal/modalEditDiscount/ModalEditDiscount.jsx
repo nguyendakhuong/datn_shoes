@@ -24,7 +24,6 @@ const ModalEditDiscount = ({ data, isOpen, onClose }) => {
         promotionLevel: "", // mức khuyến mại
         promotionType: "", // hình thức khuyến mại
         conditionsOfApplication: "", // điều kiện áp dụng
-        maximumPromotion: "", // hạn mức tối đa
         quantity: ""
     });
     const handleChange = (e) => {
@@ -53,14 +52,15 @@ const ModalEditDiscount = ({ data, isOpen, onClose }) => {
             ToastApp.warning("Mức khuyến mại không được lớn hơn 90")
             return
         }
+        if (type === 2 && !updateFormData.maximumPromotion) {
+            ToastApp.warning("Khuyến mãi theo % phải có mức khuyến mãi tối đa")
+            return
+        }
         const errors = {};
-        Object.entries(updateFormData).forEach(([key, value]) => {
-            if (key !== "deletedAt" && !value) {
-                errors[key] = "Trường này không được để trống";
-            }
-        });
+
 
         if (Object.keys(errors).length > 0) {
+            console.log(errors)
             ToastApp.warning("Vui lòng điền đúng thông tin!");
             return;
         }
@@ -123,7 +123,7 @@ const ModalEditDiscount = ({ data, isOpen, onClose }) => {
                             />
                             {listError.promotionLevel && <label className='error-text'>{listError.promotionLevel}</label>}
                             <InputAdmin
-                                label={"Điều khiện áp dụng"}
+                                label={"Mô tả"}
                                 name={"conditionsOfApplication"}
                                 validate={'required'}
                                 type={'text'}
@@ -157,10 +157,11 @@ const ModalEditDiscount = ({ data, isOpen, onClose }) => {
                             <InputAdmin
                                 label={"Mức khuyến mại tối đa"}
                                 name={"maximumPromotion"}
-                                validate={'required||checkNegative||checkNumber'}
+                                validate={'checkNegative||checkNumber'}
                                 type={'text'}
                                 value={formData.maximumPromotion}
                                 onChange={handleChange}
+                                readOnly={type === 1 ? true : false}
                             />
                             {listError.maximumPromotion && <label className='error-text'>{listError.maximumPromotion}</label>}
                             <InputAdmin

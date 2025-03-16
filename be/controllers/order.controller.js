@@ -96,6 +96,7 @@ const createOrder = async (req, res) => {
         price: item.price,
         size: item.size,
         nameProduct: item.name,
+        color: item.colorName,
         productDetailCode: item.productDetailCode,
       });
       const cart = await Cart.findOne({
@@ -299,9 +300,55 @@ const getAllOrderByUser = async (req, res) => {
     });
   }
 };
+const searchOrderByPhoneNumber = async (req, res) => {
+  try {
+    const { phoneNumber } = req.body;
+    const orders = await Order.findAll({
+      where: {
+        phoneNumber,
+      },
+    });
+    if (orders.length === 0) {
+      return res.json({
+        status: 400,
+        message: "Không tìm thấy đơn hàng",
+      });
+    }
+    const orderCodes = orders.map((order) => order.orderCode);
+
+    const orderDetails = await OrderDetail.findAll({
+      where: { orderCode: { [Op.in]: orderCodes } },
+    });
+
+    const orderDetailMap = {};
+    orderDetails.forEach((detail) => {
+      if (!orderDetailMap[detail.orderCode]) {
+        orderDetailMap[detail.orderCode] = [];
+      }
+      orderDetailMap[detail.orderCode].push(detail);
+    });
+
+    const data = orders.map((order) => ({
+      ...order.toJSON(),
+      orderDetails: orderDetailMap[order.orderCode] || [],
+    }));
+    return res.json({
+      status: 200,
+      message: "Thành công",
+      data,
+    });
+  } catch (e) {
+    console.log("Lỗi tìm kiếm đơn hàng theo số điện thoại: ", e);
+    return res.json({
+      status: 500,
+      message: "Lỗi server",
+    });
+  }
+};
 module.exports = {
   createOrder,
   getAllOrders,
   verifyOrder,
   getAllOrderByUser,
+  searchOrderByPhoneNumber,
 };

@@ -40,7 +40,9 @@ export const Validate = (
         break;
       case "checkDate":
         error =
-          new Date(inputValue) <= today ? ERROR_CHECK_LIST_TYPE[key] : null;
+          new Date(inputValue) < new Date(today.setHours(0, 0, 0, 0))
+            ? ERROR_CHECK_LIST_TYPE[key]
+            : null;
         break;
 
       case "checkTimeEnd":

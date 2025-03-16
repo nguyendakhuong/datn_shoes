@@ -8,6 +8,7 @@ import Select from "react-select";
 import UserContext from '../../../../context/use.context';
 import { KEY_CONTEXT_USER } from '../../../../context/use.reducer';
 import { useNavigate } from 'react-router-dom';
+
 const ModalPayment = ({ data, total, isOpen, onClose }) => {
     const [userCtx, dispatch] = useContext(UserContext)
     const [discount, setDiscount] = useState("")

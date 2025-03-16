@@ -29,7 +29,6 @@ const Cart = () => {
             });
             const data = await response.json();
             if (data.status === 200) {
-                console.log(data.data)
                 setData(data.data)
                 setQuantities(prevQuantities => {
                     const newQuantities = { ...prevQuantities };

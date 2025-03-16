@@ -2,15 +2,27 @@
   padding: 20px;
 }
 
-.header-table {
+.header-order {
   width: 100%;
-  .header-order {
-    span {
-      font-size: 24px;
-    }
-    .search-box-oder {
-      width: 20rem;
-      margin-left: 20px;
+  display: flex;
+  justify-content: space-between;
+  padding: 0px 20px;
+  margin-top: 10px;
+  height: 3rem;
+  span {
+    font-size: 24px;
+  }
+  .search-box-oder {
+    display: flex;
+    gap: 10px;
+    .btn-search-order {
+      button {
+        width: 10rem;
+        height: 4rem;
+        background-color: #8aa2db;
+        color: white;
+        border-radius: 8px;
+      }
     }
   }
 }

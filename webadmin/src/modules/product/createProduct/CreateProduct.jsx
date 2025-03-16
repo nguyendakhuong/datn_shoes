@@ -18,7 +18,6 @@ const CreateProduct = ({ handleBack }) => {
     const [listError, setListError] = useState({
         name: "Không được để trống",
         description: "Không được để trống",
-
     });
     const [listErrorDetails, setListErrorDetails] = useState({
         quantity: {},
@@ -33,7 +32,6 @@ const CreateProduct = ({ handleBack }) => {
         material: '', // chất liệu
         origin: '', // xuất xứ
         trademark: '', // thương hiệu
-
     });
     const [dataProductDetails, setDataProductDetails] = useState([])
 
@@ -244,8 +242,6 @@ const CreateProduct = ({ handleBack }) => {
             return ToastApp.warning("Bạn cần phải đăng nhập! ")
         }
         setSelectedColor(selectedOption);
-
-
         setDataProductDetails(prev => {
             const existingItem = prev.find(item => item.color === selectedOption.label);
             const colorCode = selectedOption.colorCode || (existingItem ? existingItem.colorCode : "");
@@ -361,6 +357,7 @@ const CreateProduct = ({ handleBack }) => {
 
             checkDuplicateSize[key] = true;
         }
+
         try {
             const formDataToSend = new FormData();
             formDataToSend.append('name', dataCreateProduct.name);
@@ -412,7 +409,6 @@ const CreateProduct = ({ handleBack }) => {
         }),
         option: (provided) => ({ ...provided, colors: "black" })
     }
-    console.log(imagePreview)
     return (
         <div className='CreateProduct-container'>
             <table className='header-table'>

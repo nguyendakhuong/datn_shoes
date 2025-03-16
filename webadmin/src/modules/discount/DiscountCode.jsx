@@ -45,6 +45,7 @@ const DiscountCode = () => {
         setIsModalOpen(false);
         setIsModalOpenEdit(false)
     };
+
     const handleDeleteItem = (e, value) => {
         e.stopPropagation();
         dispatch({
@@ -97,7 +98,7 @@ const DiscountCode = () => {
             <table className="header-table">
                 <thead>
                     <tr>
-                        <th colSpan="10" className="flex">
+                        <th colSpan="10" className="flex header-discount">
                             <span>Quản lí mã giảm giá</span>
                             <button className="discount-button" onClick={handleOpenModal}>+ Thêm mã giảm giá</button>
                         </th>
@@ -112,7 +113,7 @@ const DiscountCode = () => {
                             <th>Tên giảm giá</th>
                             <th>Mức khuyến mại</th>
                             <th>Hình thức khuyến mại</th>
-                            <th>Điều kiện áp dụng</th>
+                            <th>Mô tả</th>
                             <th>Hạn mức tối đa</th>
                             <th>Số lượng</th>
                             <th>Ngày bắt đầu</th>

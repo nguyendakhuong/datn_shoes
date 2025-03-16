@@ -63,6 +63,7 @@ const createDiscount = async (req, res) => {
         message: "Mã đã tồn tại",
       });
     }
+    console.log(data);
     let promotionCode = await generateUniqueCode(Promotion, "promotionCode");
     await Promotion.create({
       promotionCode,
@@ -81,7 +82,7 @@ const createDiscount = async (req, res) => {
       message: "Thêm mới thành công!",
     });
   } catch (error) {
-    console.log("Lỗi get color: ", error);
+    console.log("Lỗi thêm mã giảm giá: ", error);
     return res.json({
       status: 500,
       message: "Lỗi server",
@@ -211,15 +212,7 @@ const useDiscount = async (req, res) => {
       style: "currency",
       currency: "VND",
     });
-    const maxPromotion = Number(getDiscount.maximumPromotion);
-    if (total < maxPromotion) {
-      return res.json({
-        status: 400,
-        message: `Mãi khuyến mại này chỉ áp dụng với các hóa đơn có giá trị từ ${formatter.format(
-          getDiscount.promotionLevel
-        )} trở lên`,
-      });
-    }
+
     if (getDiscount.promotionType === 1) {
       const newTotal = total - getDiscount.promotionLevel;
       const finalTotal = newTotal >= 0 ? newTotal : 0;
@@ -232,15 +225,28 @@ const useDiscount = async (req, res) => {
       });
     }
     if (getDiscount.promotionType === 2) {
+      const maxPromotion = Number(getDiscount.maximumPromotion);
       const discountAmount = (total * getDiscount.promotionLevel) / 100;
-      const newTotal = total - discountAmount;
-      return res.json({
-        status: 200,
-        message: " Thành công",
-        data: newTotal,
-        discount: getDiscount,
-        totalPromotion: discountAmount,
-      });
+      if (discountAmount > maxPromotion) {
+        const newTotal = total - maxPromotion;
+        return res.json({
+          status: 200,
+          message: " Thành công",
+          data: newTotal,
+          discount: getDiscount,
+          totalPromotion: maxPromotion,
+        });
+      }
+      if (discountAmount < maxPromotion) {
+        const newTotal = total - discountAmount;
+        return res.json({
+          status: 200,
+          message: " Thành công",
+          data: newTotal,
+          discount: getDiscount,
+          totalPromotion: discountAmount,
+        });
+      }
     }
   } catch (e) {
     console.log("Lỗi sử dụng phiếu khuyến mại: ", e);

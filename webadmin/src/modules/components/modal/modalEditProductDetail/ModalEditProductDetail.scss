@@ -1,0 +1,56 @@
+.modal-editProductDetail {
+  width: 40rem;
+  //   height: 50rem;
+  background-color: white;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  .div-image {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  .div-image div {
+    width: 150px;
+    height: 150px;
+    border: 2px dashed #ccc;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    border-radius: 10px;
+    background: #f9f9f9;
+  }
+  .div-image img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: cover;
+  }
+  .div-image input[type="file"] {
+    cursor: pointer;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background: #fff;
+    transition: background 0.2s;
+  }
+
+  .div-image input[type="file"]:hover {
+    background: #eee;
+  }
+  .btn-update-modalProductDetail {
+    display: flex;
+    gap: 10px;
+    justify-content: end;
+    margin-top: 10px;
+    button {
+      width: 13rem;
+    }
+  }
+  .error-text {
+    color: red;
+    font-size: 10px;
+  }
+}

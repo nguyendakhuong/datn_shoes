@@ -22,8 +22,7 @@ const ModalAddDiscount = ({ isOpen, onClose }) => {
         name: "",
         promotionLevel: "", // mức khuyến mại
         promotionType: "", // hình thức khuyến mại
-        conditionsOfApplication: "", // điều kiện áp dụng
-        maximumPromotion: "", // hạn mức tối đa
+        conditionsOfApplication: "", // mô tả
         quantity: ""
     });
     const handleChange = (e) => {
@@ -62,6 +61,9 @@ const ModalAddDiscount = ({ isOpen, onClose }) => {
         if (type === 2 && data.promotionLevel > 90) {
             ToastApp.warning("Mức khuyến mại không được lớn hơn 90")
             return
+        }
+        if (type === 2 && !data.maximumPromotion) {
+            return ToastApp.warning("Khuyến mại % phải có mức khuyến mãi tối đa!")
         }
         setData({ ...data, promotionType: type })
         try {
@@ -112,7 +114,7 @@ const ModalAddDiscount = ({ isOpen, onClose }) => {
                             />
                             {listError.promotionLevel && <label className='error-text'>{listError.promotionLevel}</label>}
                             <InputAdmin
-                                label={"Điều khiện áp dụng"}
+                                label={"Mô tả"}
                                 name={"conditionsOfApplication"}
                                 validate={'required'}
                                 type={'text'}
@@ -146,10 +148,11 @@ const ModalAddDiscount = ({ isOpen, onClose }) => {
                             <InputAdmin
                                 label={"Mức khuyến mại tối đa"}
                                 name={"maximumPromotion"}
-                                validate={'required||checkNumber||checkNegative'}
+                                validate={'checkNumber||checkNegative'}
                                 type={'text'}
                                 value={data.maximumPromotion}
                                 onChange={handleChange}
+                                readOnly={type === 1 ? true : false}
                             />
                             {listError.maximumPromotion && <label className='error-text'>{listError.maximumPromotion}</label>}
                             <InputAdmin
@@ -182,7 +185,7 @@ const ModalAddDiscount = ({ isOpen, onClose }) => {
 
                             <div className="modal-buttons">
                                 <button onClick={handleSubmit} type="submit">Thêm</button>
-                                <button className="exit-button" onClick={onClose}>Hủy</button>
+                                <button className="exit-button" onClick={() => { onClose(); clearForm(); }}>Hủy</button>
                             </div>
                         </form>
                     </div>

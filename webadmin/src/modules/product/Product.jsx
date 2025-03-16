@@ -8,8 +8,8 @@ import AppImages from '../../assets';
 import { KEY_CONTEXT_USER } from '../../context/use.reducer';
 import UserContext from '../../context/use.context';
 import ModalDetails from '../components/modal/modalProductDetails/ModalDetails';
+import ModalAddProduct from '../components/modal/mdalAddProduct/ModalAddProduct';
 const Product = () => {
-    const [navigateCreate, setNavigateCreate] = useState(false);
     const [{ }, dispatch] = useContext(UserContext);
     const [searchData, setSearchData] = useState('');
     const [reloadData, setReloadData] = useState(false);
@@ -17,7 +17,7 @@ const Product = () => {
     const [data, setData] = useState([])
     const [filteredData, setFilteredData] = useState([]);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
-
+    const [isOpenModalAddProduct, setIsOpenModalAddProduct] = useState(false)
 
     const getProducts = async () => {
         try {
@@ -27,7 +27,6 @@ const Product = () => {
                 },
             });
             const data = await response.json();
-
             if (data.status === 200) {
                 setData(data.data)
             } else {
@@ -38,7 +37,6 @@ const Product = () => {
         }
 
     }
-
     const handleInputSearch = (e) => {
         const { name, value } = e.target
         if (name === "search") {
@@ -53,46 +51,30 @@ const Product = () => {
                 typeModal: "EDIT_PRODUCT_MODAL",
                 dataModal: id,
                 titleModel: "Sửa thông tin sản phẩm!",
-                onClickConfirmModel: async (data, selectedFile, listError) => {
+                onClickConfirmModel: async (data, listError) => {
+                    console.log(data)
                     const token = APP_LOCAL.getTokenStorage();
+                    let newErrors = { ...listError };
+                    for (let key in newErrors) {
+                        if (newErrors[key]) {
+                            ToastApp.warning("Vui lòng nhập đúng dữ liệu!");
+                            return;
+                        }
+                    }
+                    for (let key in data) {
+                        if (!data[key]) {
+                            ToastApp.warning("Vui lòng điền đầy đủ thông tin sản phẩm!");
+                            return;
+                        }
+                    }
                     try {
-                        let newErrors = { ...listError };
-                        for (let key in newErrors) {
-                            if (newErrors[key]) {
-                                ToastApp.warning("Vui lòng nhập đúng dữ liệu!");
-                                return;
-                            }
-                        }
-                        const formDataToSend = new FormData();
-                        formDataToSend.append('name', data.productName);
-                        formDataToSend.append('idProduct', data.idProduct);
-                        formDataToSend.append('productDetailCode', data.productDetailCode);
-                        formDataToSend.append('trademark', data.trademark.value);
-                        formDataToSend.append('origin', data.origin.value);
-                        formDataToSend.append('material', data.material.value);
-                        formDataToSend.append('color', data.color.value);
-                        formDataToSend.append('idColor', data.idColor)
-                        formDataToSend.append('idSize', data.idSize)
-                        formDataToSend.append('quantity', data.quantity)
-                        formDataToSend.append('price', data.price)
-                        if (selectedFile) {
-                            formDataToSend.append('image', selectedFile);
-                        } else {
-                            formDataToSend.append('imageUrl', data.idImage);
-                        }
-                        for (let [key, value] of formDataToSend.entries()) {
-                            if (value === undefined || value === null || value === "") {
-                                ToastApp.warning("Nhập đủ thông tin")
-                                console.error(`Lỗi: Trường "${key}" không được để trống.`);
-                                return;
-                            }
-                        }
                         const response = await fetch(`http://localhost:3001/product/updateProduct`, {
                             method: 'PUT',
                             headers: {
+                                "Content-Type": "application/json",
                                 Authorization: `Bearer ${token}`
                             },
-                            body: formDataToSend,
+                            body: JSON.stringify(data),
                         });
                         const result = await response.json()
                         if (result.status === 200) {
@@ -145,9 +127,8 @@ const Product = () => {
         })
     }
     const handleClickItem = (product) => {
-        setIdProduct(product?.dataValues?.id)
+        setIdProduct(product?.dataValues?.productCode)
     }
-
     const handleStatus = async (e, id) => {
         e.stopPropagation();
         try {
@@ -169,23 +150,22 @@ const Product = () => {
             dispatch({ type: KEY_CONTEXT_USER.SET_LOADING, payload: false })
         }
     }
+    const handleCloseModalAddProduct = () => {
+        setIsOpenModalAddProduct(false)
+    }
 
     const TableRow = ({ product, handleEdit, handleDelete, handleClick, handleClickStatus }) => {
-
         const buttonClass = product?.dataValues?.status === 1 ? 'active-product' : 'inactive-product';
-        const formatter = new Intl.NumberFormat('vi-VN', {
-            style: 'currency',
-            currency: 'VND',
-        });
+        const description = product?.dataValues?.description;
         return (
-            <tr onClick={() => { setIsDialogOpen(true); handleClick(product) }}>
-                <td>{product?.dataValues?.productDetailCode}</td>
-                <td><img src={product?.dataValues?.idImage} alt={product.productName} /></td>
-                <td>{product?.productName}</td>
-                <td>{formatter.format(product?.dataValues?.price)}</td>
-                <td>{product?.dataValues?.quantity}</td>
-                <td>{product?.dataValues?.idColor}</td>
-                <td>{product?.sizeName}</td>
+            <tr onClick={() => { setIsDialogOpen(true); handleClick(product) }} key={product?.dataValues?.productCode}>
+                <td>{product?.dataValues?.productCode}</td>
+                <td>{product?.dataValues.name}</td>
+                <td>{description?.length > 15 ? `${description.slice(0, 15)}...` : description}</td>
+                <td>{product?.trademark}</td>
+                <td>{product?.origin}</td>
+                <td>{product?.material}</td>
+                <td>{product?.dataValues.creator}</td>
                 <td>
                     <button onClick={(e) => handleClickStatus(e, product?.dataValues?.id)} className={buttonClass}>
                         {product?.dataValues?.status === 1 ? "Hoạt động" : "Không hoạt động"}
@@ -207,7 +187,7 @@ const Product = () => {
             setFilteredData(data);
         } else {
             const filtered = data.filter((item) =>
-                item.productName?.toLowerCase().includes(searchData.toLowerCase())
+                item.dataValues.name?.toLowerCase().includes(searchData.toLowerCase())
             );
             setFilteredData(filtered);
         }
@@ -217,69 +197,60 @@ const Product = () => {
         getProducts()
         setReloadData(false)
     }, [reloadData])
-    console.log(data)
     return (
         <div>
-            {navigateCreate ? (
-                <div>
-                    <CreateProduct handleBack={() => (setNavigateCreate(false), setReloadData(true))} />
+            <div className='product-container'>
+                <div className='header-table-container'>
+                    <table className="header-table">
+                        <thead>
+                            <tr>
+                                <th colSpan="10">
+                                    <div className="purple-line"></div>
+                                    <span>Danh sách sản phẩm</span>
+                                    <div className="search-box">
+                                        <input type="text"
+                                            placeholder='Tìm kiếm'
+                                            name='search'
+                                            value={searchData}
+                                            onChange={handleInputSearch} />
+                                        <button type="product-button" onClick={() => { setIsOpenModalAddProduct(true) }}>+ Thêm sản phẩm</button>
+                                    </div>
+                                </th>
+                            </tr>
+                        </thead>
+                    </table>
                 </div>
-            ) : (
-                <div className='product-container'>
-
-                    <div className='header-table-container'>
-
-                        <table className="header-table">
-                            <thead>
-                                <tr>
-                                    <th colSpan="10">
-                                        <div className="purple-line"></div>
-                                        <span>Danh sách sản phẩm</span>
-                                        <div className="search-box">
-                                            <input type="text"
-                                                placeholder='Tìm kiếm'
-                                                name='search'
-                                                value={searchData}
-                                                onChange={handleInputSearch} />
-                                            <button type="product-button" onClick={() => { setNavigateCreate(true) }}>+ Thêm sản phẩm</button>
-                                        </div>
-                                    </th>
-                                </tr>
-                            </thead>
-                        </table>
-                    </div>
-                    <div className="product-table-container">
-                        <ModalDetails isOpen={isDialogOpen} onClose={() => setIsDialogOpen(false)} id={idProduct} />
-                        <table className="product-table">
-                            <thead>
-                                <tr>
-                                    <th>Mã sản phẩm</th>
-                                    <th>Ảnh</th>
-                                    <th>Tên sản phẩm</th>
-                                    <th>Giá</th>
-                                    <th>Số lượng</th>
-                                    <th>Màu</th>
-                                    <th>Size</th>
-                                    <th>Trạng thái</th>
-                                    <th>Hành động</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {filteredData && searchData && filteredData.length > 0 ? (
-                                    filteredData.map((product) => (
-                                        <TableRow product={product} handleEdit={handleEdit} handleDelete={handleDelete} key={product.id} handleClick={handleClickItem} handleClickStatus={handleStatus} />
-                                    ))
-                                ) : data && data.length > 0 ? (
-                                    data.map((product) => (
-                                        <TableRow product={product} handleEdit={handleEdit} handleDelete={handleDelete} key={product.id} handleClick={handleClickItem} handleClickStatus={handleStatus} />
-                                    ))
-                                ) : null}
-                            </tbody>
-                        </table>
-                    </div>
+                <div className="product-table-container">
+                    <ModalDetails isOpen={isDialogOpen} onClose={() => setIsDialogOpen(false)} id={idProduct} />
+                    <table className="product-table">
+                        <thead>
+                            <tr>
+                                <th>Mã sản phẩm</th>
+                                <th>Tên sản phẩm</th>
+                                <th>Mô tả</th>
+                                <th>Thương hiệu</th>
+                                <th>Sản xuất</th>
+                                <th>Chất liệu</th>
+                                <th>Người khởi tạo</th>
+                                <th>Trạng thái</th>
+                                <th>Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {filteredData && searchData && filteredData.length > 0 ? (
+                                filteredData.map((product) => (
+                                    <TableRow product={product} handleEdit={handleEdit} handleDelete={handleDelete} key={product.id} handleClick={handleClickItem} handleClickStatus={handleStatus} />
+                                ))
+                            ) : data && data.length > 0 ? (
+                                data.map((product) => (
+                                    <TableRow product={product} handleEdit={handleEdit} handleDelete={handleDelete} key={product.id} handleClick={handleClickItem} handleClickStatus={handleStatus} />
+                                ))
+                            ) : null}
+                        </tbody>
+                    </table>
                 </div>
-            )}
-
+            </div>
+            <ModalAddProduct isOpen={isOpenModalAddProduct} onClose={handleCloseModalAddProduct} />
         </div>
     );
 };

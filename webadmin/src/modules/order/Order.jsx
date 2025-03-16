@@ -70,6 +70,7 @@ const Order = () => {
     const viewOrderDetail = async (order) => {
         setSelectedOrder(order);
     }
+
     const verifyOrder = async (order) => {
         const token = APP_LOCAL.getTokenStorage();
         console.log(typeof (order.status))
@@ -112,7 +113,7 @@ const Order = () => {
                 <td>{order.orderCode}</td>
                 <td>{order.userName}</td>
                 <td>{order.phoneNumber}</td>
-                <td>
+                {/* <td>
                     {order.orderDetails ? order?.orderDetails.map((product, index) => (
                         <div key={index} className='item-order'>
                             <div>
@@ -124,7 +125,7 @@ const Order = () => {
                         </div>
                     )) : null}
 
-                </td>
+                </td> */}
                 <td>{formatter.format(order.totalDefault)}</td>
                 <td>{formatter.format(order.totalPromotion)}</td>
                 <td>{formatter.format(order.totalPayment)}</td>
@@ -163,6 +164,27 @@ const Order = () => {
         getAllOrder();
         setReloadData(false)
     }, [reloadData])
+
+    const handleSearch = async () => {
+        try {
+            const response = await fetch(`http://localhost:3001/order/searchOrderByPhoneNumber`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ phoneNumber: searchDataOder })
+            });
+            const searchData = await response.json();
+            if (searchData.status === 200) {
+                setDataSearch(searchData.data);
+            } else {
+                ToastApp.error('Error: ' + searchData.message);
+            }
+        } catch (e) {
+            console.log("Error search:" + e)
+        }
+    }
+
     const formatter = new Intl.NumberFormat('vi-VN', {
         style: 'currency',
         currency: 'VND',
@@ -173,33 +195,33 @@ const Order = () => {
                 <OrderDetail order={selectedOrder} onClose={() => setSelectedOrder(null)} />
             ) : (
                 <div>
-                    <table className="header-table">
-                        <thead>
-                            <tr>
-                                <th colSpan="10" className='header-order'>
-                                    <span>Quản lí đơn hàng</span>
-                                    <div className="search-box-oder">
-                                        <InputAdmin
-                                            label={"Tìm kiếm"}
-                                            type="text"
-                                            placeholder={"Số điện thoại ..."}
-                                            name="search"
-                                            value={searchDataOder}
-                                            onChange={handleInputSearch} />
-                                    </div>
-                                </th>
-                            </tr>
-                        </thead>
-                    </table>
+                    <div className='header-order'>
+                        <span>Quản lí đơn hàng</span>
+                        <div className='search-box-oder'>
+                            <div className='input-search-order'>
+                                <InputAdmin
+                                    // label={"Tìm kiếm"}
+                                    type="text"
+                                    placeholder={"Số điện thoại ..."}
+                                    name="search"
+                                    value={searchDataOder}
+                                    onChange={handleInputSearch} />
+                            </div>
+                            <div className='btn-search-order'>
+                                <button onClick={handleSearch}>
+                                    TÌm kiếm
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                     <div className="order-table-container">
-
                         <table className="discount-table">
                             <thead>
                                 <tr>
                                     <th>Mã đơn hàng</th>
                                     <th>Tên người đặt</th>
                                     <th>Số điện thoại</th>
-                                    <th>Sản phẩm</th>
+                                    {/* <th>Sản phẩm</th> */}
                                     <th>Giá ban đầu </th>
                                     <th>Giá khuyến mại </th>
                                     <th>Giá thanh toán </th>
@@ -211,10 +233,10 @@ const Order = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {dataSearch && searchDataOder ? (
+                                {dataSearch.length > 0 && searchDataOder > 0 ? (
                                     dataSearch.map((order, index) => (
                                         <OrderTableRow
-                                            key={order.id}
+                                            key={index}
                                             order={order}
                                             handleConfirmOrder={handleConfirmOrder}
                                             handleCancelOrder={handleCancelOrder}
@@ -226,7 +248,7 @@ const Order = () => {
                                     records && records.length > 0 ? (
                                         records.map((order, index) => (
                                             <OrderTableRow
-                                                key={order.id}
+                                                key={index}
                                                 order={order}
                                                 handleConfirmOrder={handleConfirmOrder}
                                                 handleCancelOrder={handleCancelOrder}

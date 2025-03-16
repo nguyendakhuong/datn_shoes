@@ -1,47 +1,31 @@
-import { useContext, useEffect, useState } from 'react';
-import './EditProdcut.scss'
-import UserContext from '../../../../context/use.context';
-import { KEY_CONTEXT_USER } from '../../../../context/use.reducer';
-import ButtonWed from '../../button/Button-admin';
-import InputAdmin from '../../input/Input-admin';
+import { useEffect, useState } from 'react';
+import InputAdmin from '../../input/Input-admin'
+import './ModalAddProduct.scss'
 import ToastApp from '../../../../lib/notification/Toast';
-import APP_LOCAL from '../../../../lib/localStorage';
 import Select from "react-select";
+import ButtonWed from '../../button/Button-admin';
+import APP_LOCAL from '../../../../lib/localStorage';
 import { ParseValid } from '../../../../lib/validate/ParseValid';
 import { Validate } from '../../../../lib/validate/Validate';
 
+const ModalAddProduct = ({ isOpen, onClose }) => {
 
-const EditProduct = ({ id }) => {
-    const [userCTX, dispatch] = useContext(UserContext);
-    const [data, setData] = useState({});
     const [trademark, setTrademark] = useState([]);
     const [origin, setOrigin] = useState([]);
     const [material, setMaterial] = useState([]);
-    const [listError, setListError] = useState({});
-    const getProduct = async () => {
-        try {
-            const response = await fetch(`http://localhost:3001/product/getProduct/${id}`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer`
-                }
-            });
-            const data = await response.json();
-            if (data.status === 200) {
-                const filteredData = {
-                    ...data.data,
-                    trademark: "",
-                    origin: "",
-                    material: "",
-                };
-                setData(filteredData);
-            } else {
-                ToastApp.warning(data.message);
-            }
-        } catch (e) {
-            console.log(e)
-        }
-    };
+
+    const [listError, setListError] = useState({
+        name: "Không được để trống",
+        description: "Không được để trống",
+    });
+
+    const [dataCreateProduct, setDataCreateProduct] = useState({
+        name: '',
+        description: '',
+        material: '', // chất liệu
+        origin: '', // xuất xứ
+        trademark: '', // thương hiệu
+    });
 
     const getTrademark = async () => {
         try {
@@ -50,8 +34,8 @@ const EditProduct = ({ id }) => {
                     Authorization: `Bearer`,
                 }
             })
-            const data = await response.json();
-            if (data.status === 200) {
+            if (response.status === 200) {
+                const data = await response.json()
                 const formattedTrademark = data?.data.map((trademark) => ({
                     label: trademark.name,
                     value: trademark.brandCode,
@@ -71,8 +55,8 @@ const EditProduct = ({ id }) => {
                     Authorization: `Bearer`,
                 }
             })
-            const data = await response.json();
-            if (data.status === 200) {
+            if (response.status === 200) {
+                const data = await response.json()
                 const formattedOrigin = data?.data.map((origin) => ({
                     label: origin.name,
                     value: origin.originCode,
@@ -92,8 +76,8 @@ const EditProduct = ({ id }) => {
                     Authorization: `Bearer`,
                 }
             })
-            const data = await response.json();
-            if (data.status === 200) {
+            if (response.status === 200) {
+                const data = await response.json()
                 const formattedMaterial = data?.data.map((material) => ({
                     label: material.name,
                     value: material.materialCode,
@@ -106,12 +90,10 @@ const EditProduct = ({ id }) => {
             console.log("Lỗi web get list material: ", error)
         }
     }
-    const onChangeInput = (e) => {
+
+    const onChangeInput = (e, index) => {
         const { name, value } = e.target;
-        setData((prev) => ({
-            ...prev,
-            [name]: value,
-        }));
+        setDataCreateProduct({ ...dataCreateProduct, [name]: value });
         const inputValue = value.trim();
         const valid = e.target.getAttribute('validate');
         const validObject = ParseValid(valid);
@@ -119,10 +101,10 @@ const EditProduct = ({ id }) => {
             name,
             inputValue,
             validObject,
-        );
+        )
         const newListError = { ...listError, [name]: error };
         setListError(newListError);
-    };
+    }
 
     const handleChangeSelect = async (selectedOption, name, nameAPI) => {
         if (!selectedOption) return;
@@ -130,10 +112,11 @@ const EditProduct = ({ id }) => {
         if (!token) {
             return ToastApp.warning("Bạn cần phải đăng nhập! ")
         }
-        setData(prev => ({
+        setDataCreateProduct(prev => ({
             ...prev,
             [name]: selectedOption
         }));
+
         if (selectedOption.__isNew__) {
             try {
                 const response = await fetch(`http://localhost:3001/${name}/${nameAPI}`, {
@@ -150,7 +133,7 @@ const EditProduct = ({ id }) => {
                     if (name === 'trademark') {
                         const newTrademark = { label: selectedOption.label, value: selectedOption.label };
                         setTrademark(prevTrademark => [...prevTrademark, newTrademark]);
-                        setData(prev => ({
+                        setDataCreateProduct(prev => ({
                             ...prev,
                             trademark: selectedOption
                         }));
@@ -158,8 +141,8 @@ const EditProduct = ({ id }) => {
                     }
                     if (name === 'origin') {
                         const newOrigin = { label: selectedOption.label, value: selectedOption.label };
-                        setOrigin(prevOrigin => [...prevOrigin, newOrigin]);
-                        setData(prev => ({
+                        setOrigin(prevTrademark => [...prevTrademark, newOrigin]);
+                        setDataCreateProduct(prev => ({
                             ...prev,
                             origin: selectedOption
                         }));
@@ -167,13 +150,14 @@ const EditProduct = ({ id }) => {
                     }
                     if (name === 'material') {
                         const newMaterial = { label: selectedOption.label, value: selectedOption.label };
-                        setMaterial(prevMaterial => [...prevMaterial, newMaterial]);
-                        setData(prev => ({
+                        setMaterial(prevTrademark => [...prevTrademark, newMaterial]);
+                        setDataCreateProduct(prev => ({
                             ...prev,
                             material: selectedOption
                         }));
                         ToastApp.success("Thêm xuất xứ thành công!");
                     }
+
                 } else {
                     ToastApp.error(data.message);
                 }
@@ -183,18 +167,59 @@ const EditProduct = ({ id }) => {
         }
     }
 
-    const onClickClone = () => {
-        dispatch({
-            type: KEY_CONTEXT_USER.HIDE_MODAL,
-        })
+    const clearForm = () => {
+        setDataCreateProduct({
+            name: '',
+            description: '',
+            material: '',
+            origin: '',
+            trademark: ''
+        });
     }
 
+    const handleSubmit = async () => {
+        const token = APP_LOCAL.getTokenStorage();
+        let newErrors = { ...listError };
+
+        for (let key in dataCreateProduct) {
+            if (!dataCreateProduct[key]) {
+                ToastApp.warning("Vui lòng điền đầy đủ thông tin sản phẩm!");
+                return;
+            }
+        }
+        for (let key in newErrors) {
+            if (newErrors[key]) {
+                ToastApp.warning("Vui lòng nhập đúng dữ liệu!");
+                return;
+            }
+        }
+        try {
+            const response = await fetch(`http://localhost:3001/product/createProduct`, {
+                method: "POST",
+                headers: {
+                    // "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify(dataCreateProduct),
+            });
+            const data = await response.json();
+            if (data.status === 200) {
+                ToastApp.success("Thêm sản phẩm thành công !")
+                clearForm()
+                onClose()
+            } else {
+                ToastApp.warning(data.message)
+            }
+        } catch (error) {
+            console.log("Lỗi: ", error)
+        }
+
+    }
     useEffect(() => {
-        getProduct();
         getTrademark();
-        getOrigin();
         getMaterial();
-    }, [id]);
+        getOrigin();
+    }, [])
 
     const customStyles = {
         control: (provided) => ({
@@ -206,23 +231,18 @@ const EditProduct = ({ id }) => {
         option: (provided) => ({ ...provided, colors: "black" })
     }
     return (
-        <div className="modal-editProduct">
-            <h1>{userCTX.titleModel ?? "Thông báo"}</h1>
-            {
-                data ? (
-                    <div>
+        <>
+            {isOpen && (
+                <div className="modal-overlay-product" onClick={onClose}>
+                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                        <h2>Thêm sản phẩm</h2>
                         <form onSubmit={e => e.preventDefault()} >
                             <InputAdmin
-                                label={"Mã sản phẩm"}
-                                value={data.code}
-                                readOnly={true}
-                            />
-                            <InputAdmin
                                 label={"Tên sản phẩm"}
-                                name={"productName"}
+                                name={"name"}
                                 validate={'required'}
                                 type={'text'}
-                                value={data.productName}
+                                value={dataCreateProduct.name}
                                 onChange={onChangeInput}
                             />
                             {listError.name && <label className='error-text'>{listError.name}</label>}
@@ -236,7 +256,7 @@ const EditProduct = ({ id }) => {
                                         isClearable
                                         isSearchable
                                         placeholder="Chọn hoặc nhập thương hiệu mới ..."
-                                        value={data.trademark}
+                                        value={dataCreateProduct.trademark}
                                         onKeyDown={(e) => {
                                             if (e.key === "Enter" && e.target.value) {
                                                 const newOption = { label: e.target.value, value: e.target.value, __isNew__: true };
@@ -257,7 +277,7 @@ const EditProduct = ({ id }) => {
                                         isClearable
                                         isSearchable
                                         placeholder="Chọn hoặc nhập xuất xứ mới ..."
-                                        value={data.origin}
+                                        value={dataCreateProduct.origin}
                                         onKeyDown={(e) => {
                                             if (e.key === "Enter" && e.target.value) {
                                                 const newOption = { label: e.target.value, value: e.target.value, __isNew__: true };
@@ -277,7 +297,7 @@ const EditProduct = ({ id }) => {
                                         isClearable
                                         isSearchable
                                         placeholder="Chọn hoặc nhập chất liệu mới ..."
-                                        value={data.material}
+                                        value={dataCreateProduct.material}
                                         onKeyDown={(e) => {
                                             if (e.key === "Enter" && e.target.value) {
                                                 const newOption = { label: e.target.value, value: e.target.value, __isNew__: true };
@@ -292,29 +312,21 @@ const EditProduct = ({ id }) => {
                                     placeholder={"Nhập mô tả sản phẩm ..."}
                                     onChange={onChangeInput}
                                     name={'description'}
-                                    value={data.description || ''}
+                                    value={dataCreateProduct.description || ''}
                                     validate={'required'}
                                 ></textarea>
                                 {listError.description && <label className='error-text'>{listError.description}</label>}
                             </div>
-                        </form>
-                        <div className="button">
-                            <div>
-                                <ButtonWed buttonAuth={false} title={"Hủy"} onClick={onClickClone} />
-                            </div>
-                            <div>
+                            <div className='btn_submit'>
                                 <ButtonWed
-                                    buttonAuth={true}
-                                    title={"OK"}
-                                    onClick={() => userCTX.onClickConfirmModel(data, listError)}
-                                />
+                                    title={"Thêm sản phẩm"}
+                                    onClick={handleSubmit} />
                             </div>
-                        </div>
+                        </form>
                     </div>
-                ) : ""
-            }
-
-        </div>
+                </div>
+            )}
+        </>
     )
 }
-export default EditProduct
+export default ModalAddProduct

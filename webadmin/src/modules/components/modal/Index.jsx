@@ -2,6 +2,7 @@ import DeleteItem from "./modalDelete/ModalDelete"
 import ModalEditAddress from "./modalEditAddress/ModalEditAddress"
 import EditAdmin from "./modalEditAdmin/EditAdmin"
 import EditProduct from "./modalEditProduct/EditProduct"
+import ModalEditProductDetail from "./modalEditProductDetail/ModalEditProductDetail"
 import styles from './styles.module.scss'
 const { useContext } = require("react")
 const { default: UserContext } = require("../../../context/use.context")
@@ -13,6 +14,7 @@ export const TYPE_MODEL = {
     EDIT_PRODUCT_MODAL: 'EDIT_PRODUCT_MODAL',
     EDIT_ADMIN_MODAL: 'EDIT_ADMIN_MODAL',
     EDIT_ADDRESS_MODAL: 'EDIT_ADDRESS_MODAL',
+    EDIT_PRODUCT_DETAIL_MODAL: 'EDIT_PRODUCT_DETAIL_MODAL',
 }
 const Modal = () => {
     const [{ isOpenModal, dataModal, typeModal }, dispatch] = useContext(UserContext)
@@ -28,6 +30,7 @@ const Modal = () => {
                 {typeModal === TYPE_MODEL.EDIT_PRODUCT_MODAL && <EditProduct id={dataModal} />}
                 {typeModal === TYPE_MODEL.EDIT_ADMIN_MODAL && <EditAdmin id={dataModal} />}
                 {typeModal === TYPE_MODEL.EDIT_ADDRESS_MODAL && <ModalEditAddress data={dataModal} />}
+                {typeModal === TYPE_MODEL.EDIT_PRODUCT_DETAIL_MODAL && <ModalEditProductDetail data={dataModal} />}
             </div>
 
         </div>

@@ -1,9 +1,24 @@
-.modal-editProduct {
-  background-color: white;
-  border-radius: 20px;
+.modal-overlay-product {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
   display: flex;
-  flex-direction: column;
-  padding: 10px;
+  justify-content: center;
+  align-items: center;
+  .modal-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    width: 400px;
+    max-width: 90%;
+    z-index: 1000;
+  }
+
   .close-button {
     position: absolute;
     top: 10px;
@@ -54,16 +69,20 @@
     padding: 5px;
   }
   .textarea {
-    display: flex;
-    flex-direction: column;
     border-radius: 10px;
     margin-right: 20px;
   }
-  .button {
-    display: flex;
-    gap: 10px;
+  .btn_submit {
     button {
-      width: 15rem;
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+      width: 100%;
     }
   }
 }

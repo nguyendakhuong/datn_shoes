@@ -18,7 +18,7 @@ const ProductDetail = () => {
     const navigate = useNavigate()
     const getProductById = async () => {
         try {
-            const response = await fetch(`http://localhost:3001/product/getProductById/${id}`, {
+            const response = await fetch(`http://localhost:3001/product/getProductByIdForUser/${id}`, {
                 headers: {
                     Authorization: `Bearer `,
                 },
@@ -31,6 +31,7 @@ const ProductDetail = () => {
             console.log("Lỗi lấy thông tin sản phẩm theo id: ", e);
         }
     };
+
     const getProductByTrademark = async () => {
         try {
             const response = await fetch(`http://localhost:3001/product/getProductByTrademark`, {
@@ -87,7 +88,6 @@ const ProductDetail = () => {
             const data = await response.json();
             if (data.status === 200) {
                 ToastApp.success("Thêm vào giỏ hàng thành công")
-                console.log(data)
                 const newCart = [...userCtx.cart]
                 newCart.push({ id: selectedProduct.productDetailCode })
                 dispatch({

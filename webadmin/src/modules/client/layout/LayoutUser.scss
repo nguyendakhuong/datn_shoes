@@ -1,16 +1,22 @@
-.layout-user {
+.layout-user-layout {
   display: flex;
   flex-direction: column;
-  .header {
+  min-height: 100vh;
+  .header-user-layout {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     z-index: 999;
   }
-  .main-user {
+  .main-user-layout {
     margin-top: 80px;
     padding: 20px;
-    min-height: 80rem;
+    // min-height: 80rem;
+    flex: 1;
+    // background-color: red;
+  }
+  .footer-user-layout {
+    margin-top: 10px;
   }
 }

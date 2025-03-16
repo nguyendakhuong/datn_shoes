@@ -33,7 +33,8 @@ const OrderDetail = ({ order, onClose }) => {
                                         <div className="info">
                                             <p><strong>{item.nameProduct}</strong></p>
                                             <div className="flex">
-                                                <p>Size<strong> {item.size}</strong></p>
+                                                <p>Size:<strong> {item.size}</strong></p>
+                                                <p>Màu:<strong> {item.color}</strong></p>
                                                 <p>x<strong>{item.quantity}</strong></p>
                                             </div>
 
