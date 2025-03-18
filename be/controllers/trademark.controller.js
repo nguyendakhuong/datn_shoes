@@ -91,8 +91,10 @@ const createTrademark = async (req, res) => {
 const getTrademarks = async (req, res) => {
   try {
     const trademarks = await Trademark.findAll();
-    const products = await Products.findAll();
-    const productDetails = await ProductDetails.findAll();
+    const products = await Products.findAll({ where: { status: 1 } });
+    const productDetails = await ProductDetails.findAll({
+      where: { status: 1 },
+    });
 
     const trademarkCount = {};
     for (const product of products) {

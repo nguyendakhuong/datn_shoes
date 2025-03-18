@@ -10,14 +10,13 @@ const ModalAddDiscount = ({ isOpen, onClose }) => {
     const [data, setData] = useState({
         name: "",
         promotionLevel: "", // mức khuyến mại
-        promotionType: "", // hình thức khuyến mại
+        promotionType: 1, // hình thức khuyến mại
         conditionsOfApplication: "", // điều kiện áp dụng
         maximumPromotion: "", // hạn mức tối đa
         quantity: "",
         startDate: "",
         endDate: ""
     })
-    const [type, setType] = useState(1);
     const [listError, setListError] = useState({
         name: "",
         promotionLevel: "", // mức khuyến mại
@@ -42,7 +41,7 @@ const ModalAddDiscount = ({ isOpen, onClose }) => {
         setListError(newListError);
     }
     const handleChangeRadio = (e) => {
-        setType(parseInt(e.target.value));
+        setData({ ...data, promotionType: parseInt(e.target.value) })
     }
     const clearForm = () => {
         setData({
@@ -58,14 +57,13 @@ const ModalAddDiscount = ({ isOpen, onClose }) => {
 
     const handleSubmit = async () => {
         const token = APP_LOCAL.getTokenStorage();
-        if (type === 2 && data.promotionLevel > 90) {
+        if (data.promotionType === 2 && data.promotionLevel > 90) {
             ToastApp.warning("Mức khuyến mại không được lớn hơn 90")
             return
         }
-        if (type === 2 && !data.maximumPromotion) {
+        if (data.promotionType === 2 && !data.maximumPromotion) {
             return ToastApp.warning("Khuyến mại % phải có mức khuyến mãi tối đa!")
         }
-        setData({ ...data, promotionType: type })
         try {
             const response = await fetch('http://localhost:3001/discount/createDiscount', {
                 method: 'POST',
@@ -129,7 +127,7 @@ const ModalAddDiscount = ({ isOpen, onClose }) => {
                                         type="radio"
                                         name="type"
                                         value={1}
-                                        checked={type === 1}
+                                        checked={data.promotionType === 1}
                                         onChange={handleChangeRadio}
                                     />
                                     <span></span> VNĐ
@@ -139,7 +137,7 @@ const ModalAddDiscount = ({ isOpen, onClose }) => {
                                         type="radio"
                                         name="type"
                                         value={2}
-                                        checked={type === 2}
+                                        checked={data.promotionType === 2}
                                         onChange={handleChangeRadio}
                                     />
                                     <span></span> %
@@ -152,7 +150,7 @@ const ModalAddDiscount = ({ isOpen, onClose }) => {
                                 type={'text'}
                                 value={data.maximumPromotion}
                                 onChange={handleChange}
-                                readOnly={type === 1 ? true : false}
+                                readOnly={data.promotionType === 1 ? true : false}
                             />
                             {listError.maximumPromotion && <label className='error-text'>{listError.maximumPromotion}</label>}
                             <InputAdmin

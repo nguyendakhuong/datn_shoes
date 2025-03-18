@@ -80,6 +80,13 @@ export const Validate = (
             ? ERROR_CHECK_LIST_TYPE[key]
             : null;
         break;
+      case "checkSize":
+        error =
+          inputValue < 30 || inputValue > 50
+            ? ERROR_CHECK_LIST_TYPE[key]
+            : null;
+        break;
+
       default:
     }
     if (error) {

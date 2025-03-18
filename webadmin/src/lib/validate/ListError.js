@@ -20,4 +20,5 @@ export const ERROR_CHECK_LIST_TYPE = {
   checkPhoneNumber: "Số điện thoại không hợp lệ",
   checkYear: "Tối thiểu 16 tuổi",
   checkPasswordMatch: "Mật khẩu không khớp",
+  checkSize: "Size từ 30 đến 50",
 };

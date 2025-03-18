@@ -150,94 +150,102 @@ const ModalPayment = ({ data, total, isOpen, onClose }) => {
             {isOpen && (
                 <div className='modal-pay' onClick={onClose}>
                     <div className='modal-content' onClick={(e) => e.stopPropagation()}>
-                        <h3>Chi tiết hóa đơn</h3>
-                        {data.map((v, i) => (
-                            <div key={i} >
-                                <div className='item'>
-                                    <div className='item-image'>
-                                        <img src={v.image} alt={v.name} />
+                        <div className='item-order-payment'>
+                            <h3>Chi tiết hóa đơn</h3>
+                            {data.map((v, i) => (
+                                <div key={i} >
+                                    <div className='item'>
+                                        <div className='item-image'>
+                                            <img src={v.image} alt={v.name} />
+                                        </div>
+                                        <div>
+                                            <h4>Tên: {v.name}</h4>
+                                            <p>Màu : {v.colorName}</p>
+                                            <p>Giá : {formatter.format(v.price)}</p>
+                                            <p>Số lượng : {v.quantity}</p>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <h4>Tên: {v.name}</h4>
-                                        <p>Màu : {v.colorName}</p>
-                                        <p>Giá : {formatter.format(v.price)}</p>
-                                        <p>Số lượng : {v.quantity}</p>
-                                    </div>
+                                    <hr />
                                 </div>
-                                <hr />
-                            </div>
-                        ))}
-                        <div className='form-discount'>
-                            <InputAdmin
-                                label={"Mã giảm giá"}
-                                name={"discount"}
-                                type={"text"}
-                                value={discount}
-                                onChange={(e) => setDiscount(e.target.value)}
-                                placeholder={"Nhập mã giảm giá"}
-                            />
-                            <div>
-                                <ButtonWed title={"Áp dụng"} onClick={handleDiscount} />
-                            </div>
+                            ))}
                         </div>
+
                         <div>
-                            {discountAPI ? (
-                                <div className='flex'>
-                                    <span>Mã giảm giá : {discountAPI.name}</span>
-                                    <span>Hình thức: {discountAPI.promotionType === 1 ? "Giảm tiền" : "Giảm theo %"}</span>
-                                    <span>Mô tải: {discountAPI.conditionsOfApplication}</span>
-                                    <span>Hạn mức tối đa: {discountAPI.maximumPromotion ? formatter.format(discountAPI.maximumPromotion) : "0đ"}</span>
-                                    <span>Bạn đã tích kiệm được {formatter.format(discountAPI.promotionLevel)}</span>
+                            <div className='form-discount'>
+                                <InputAdmin
+                                    label={"Mã giảm giá"}
+                                    name={"discount"}
+                                    type={"text"}
+                                    value={discount}
+                                    onChange={(e) => setDiscount(e.target.value)}
+                                    placeholder={"Nhập mã giảm giá"}
+                                />
+                                <div>
+                                    <ButtonWed title={"Áp dụng"} onClick={handleDiscount} />
                                 </div>
-                            ) : null}
-                            <div className='flex'>
-                                <span>Số tiền ban đầu: {formatter.format(total)}</span>
-                                <span>Số tiền sau giảm giá:   {totalAfterDiscount > 0 ? formatter.format(totalAfterDiscount) : formatter.format(total)}</span>
                             </div>
-                        </div>
-                        <div className="type-input">
-                            <label>
-                                <span>Hình thức thanh toán:</span>
-                                <input
-                                    type="radio"
-                                    name="type"
-                                    value={1}
-                                    checked={type === 1}
-                                    onChange={handleChangeRadio}
+                            <div>
+                                {discountAPI ? (
+                                    <div className='flex'>
+                                        <span>Mã giảm giá : {discountAPI.name}</span>
+                                        <span>Hình thức: {discountAPI.promotionType === 1 ? "Giảm tiền" : "Giảm theo %"}</span>
+                                        <span>Mô tải: {discountAPI.conditionsOfApplication}</span>
+                                        <span>
+                                            Hạn mức tối đa: {discountAPI.maximumPromotion ? `${discountAPI.maximumPromotion}%` : "0đ"}
+                                        </span>
+
+                                        <span>Bạn đã tích kiệm được {formatter.format(discountAPI.promotionLevel)}</span>
+                                    </div>
+                                ) : null}
+                                <div className='flex'>
+                                    <span>Số tiền ban đầu: {formatter.format(total)}</span>
+                                    <span>Số tiền sau giảm giá:   {totalAfterDiscount > 0 ? formatter.format(totalAfterDiscount) : formatter.format(total)}</span>
+                                </div>
+                            </div>
+                            <div className="type-input">
+                                <label>
+                                    <span>Hình thức thanh toán:</span>
+                                    <input
+                                        type="radio"
+                                        name="type"
+                                        value={1}
+                                        checked={type === 1}
+                                        onChange={handleChangeRadio}
+                                    />
+                                    <span></span> COD
+                                </label>
+                                <label>
+                                    <input
+                                        type="radio"
+                                        name="type"
+                                        value={2}
+                                        checked={type === 2}
+                                        onChange={handleChangeRadio}
+                                    />
+                                    <span></span> Payment
+                                </label>
+                            </div>
+                            <div className='select-address'>
+                                <h4>Chọn địa chỉ:</h4>
+                                <Select
+                                    options={options}
+                                    value={options.find((option) => option.value === selectedAddress)}
+                                    onChange={(selected) => setSelectedAddress(selected.label)}
+                                    placeholder="Chọn địa chỉ..."
                                 />
-                                <span></span> COD
-                            </label>
-                            <label>
-                                <input
-                                    type="radio"
-                                    name="type"
-                                    value={2}
-                                    checked={type === 2}
-                                    onChange={handleChangeRadio}
-                                />
-                                <span></span> Payment
-                            </label>
-                        </div>
-                        <div className='select-address'>
-                            <h4>Chọn địa chỉ:</h4>
-                            <Select
-                                options={options}
-                                value={options.find((option) => option.value === selectedAddress)}
-                                onChange={(selected) => setSelectedAddress(selected.label)}
-                                placeholder="Chọn địa chỉ..."
-                            />
-                        </div>
-                        <div className='info-user'>
-                            <span>Tên người tạo đơn hàng: {dataUser.name}</span>
-                            <span>Số điện thoại: {dataUser.phoneNumber}</span>
-                            <span>Email: {dataUser.email}</span>
-                        </div>
-                        <div className='flex-total'>
-                            <span>Số tiền bạn cần thành toán: </span>
-                            <p>{totalAfterDiscount > 0 ? formatter.format(totalAfterDiscount) : formatter.format(total)}</p>
-                        </div>
-                        <div className='btn-payment'>
-                            <ButtonWed title={"Thanh toán hóa đơn"} onClick={handlePayment} />
+                            </div>
+                            <div className='info-user'>
+                                <span>Tên người tạo đơn hàng: {dataUser.name}</span>
+                                <span>Số điện thoại: {dataUser.phoneNumber}</span>
+                                <span>Email: {dataUser.email}</span>
+                            </div>
+                            <div className='flex-total'>
+                                <span>Số tiền bạn cần thành toán: </span>
+                                <p>{totalAfterDiscount > 0 ? formatter.format(totalAfterDiscount) : formatter.format(total)}</p>
+                            </div>
+                            <div className='btn-payment'>
+                                <ButtonWed title={"Thanh toán hóa đơn"} onClick={handlePayment} />
+                            </div>
                         </div>
                     </div>
                 </div>

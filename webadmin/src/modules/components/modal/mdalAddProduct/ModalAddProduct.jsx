@@ -197,7 +197,7 @@ const ModalAddProduct = ({ isOpen, onClose }) => {
             const response = await fetch(`http://localhost:3001/product/createProduct`, {
                 method: "POST",
                 headers: {
-                    // "Content-Type": "application/json",
+                    "Content-Type": "application/json",
                     Authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify(dataCreateProduct),

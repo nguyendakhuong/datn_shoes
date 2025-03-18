@@ -1,7 +1,6 @@
 
 import { useContext, useEffect, useState } from 'react';
 import './Product.scss';
-import CreateProduct from './createProduct/CreateProduct';
 import APP_LOCAL from '../../lib/localStorage';
 import ToastApp from '../../lib/notification/Toast';
 import AppImages from '../../assets';
@@ -152,6 +151,7 @@ const Product = () => {
     }
     const handleCloseModalAddProduct = () => {
         setIsOpenModalAddProduct(false)
+        getProducts()
     }
 
     const TableRow = ({ product, handleEdit, handleDelete, handleClick, handleClickStatus }) => {

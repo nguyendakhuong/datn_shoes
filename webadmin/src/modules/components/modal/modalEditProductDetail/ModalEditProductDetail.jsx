@@ -171,7 +171,7 @@ const ModalEditProductDetail = (productDetail) => {
                                 <InputAdmin
                                     label={"Size"}
                                     name={"size"}
-                                    validate={'required||checkNumber||checkNegative'}
+                                    validate={'required||checkNumber||checkNegative||checkSize'}
                                     type={'text'}
                                     value={data.size}
                                     onChange={handleChange}
@@ -220,7 +220,6 @@ const ModalEditProductDetail = (productDetail) => {
                                 <ButtonWed
                                     buttonAuth={true}
                                     title={"OK"}
-                                    // onClick={handleUpdate}
                                     onClick={() => { userCTX.onClickConfirmModel(data, selectedFile, listError, selectedColor) }}
                                 />
                             </div>

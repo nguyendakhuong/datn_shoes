@@ -42,8 +42,11 @@ const ModalDetails = ({ id, onClose, isOpen }) => {
             image: "",
         });
         setImagePreview(null)
+        const fileInput = document.getElementById("file-upload");
+        if (fileInput) {
+            fileInput.value = "";
+        }
     }
-
     const getProduct = async () => {
         try {
             const response = await fetch(`http://localhost:3001/product/getProductById/${id}`, {
@@ -418,7 +421,7 @@ const ModalDetails = ({ id, onClose, isOpen }) => {
                                                 name={"size"}
                                                 label={"Kích thước"}
                                                 placeholder={"Nhập size sản phẩm ..."}
-                                                validate={'required||checkNumber||checkNegative'}
+                                                validate={'required||checkNumber||checkNegative||checkSize'}
                                                 type={'text'}
                                                 onChange={(e) => onChangeInput(e)}
                                                 value={dataProductDetails.size}
