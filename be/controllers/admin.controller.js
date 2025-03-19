@@ -139,9 +139,14 @@ const updateAdmin = async (req, res) => {
         message: "Không tìm thấy tài khoản!",
       });
     }
-    await account.update({ name: data.name });
-
     const admin = await Admin.findOne({ where: { id } });
+    if (account.employeeCode !== admin.employeeCode) {
+      return res.json({
+        status: 400,
+        message: "Chỉ có tài khoản chính chủ mới được cập nhật thông tin",
+      });
+    }
+    await account.update({ name: data.name });
     await admin.update({
       name: data.name,
       sex: data.sex,

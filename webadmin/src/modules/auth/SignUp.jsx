@@ -299,7 +299,7 @@ const SignUp = () => {
                                     <th>Người tạo</th>
                                     <th>Người cập nhật</th>
                                     <th>Trạng thái</th>
-                                    <th>Khóa</th>
+                                    <th>Cập nhật</th>
                                     { }
                                 </tr>
                             </thead>

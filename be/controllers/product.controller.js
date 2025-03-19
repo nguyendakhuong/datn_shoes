@@ -446,6 +446,7 @@ const updateProductDetail = async (req, res) => {
     }
     const productDetailBySizeAndColor = await ProductDetails.findOne({
       where: {
+        idProduct: productCode,
         idColor: colorCode,
         idSize: sizeCode,
         productDetailCode: { [Op.ne]: code },

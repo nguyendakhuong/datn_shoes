@@ -191,10 +191,10 @@ const ModalPayment = ({ data, total, isOpen, onClose }) => {
                                         <span>Hình thức: {discountAPI.promotionType === 1 ? "Giảm tiền" : "Giảm theo %"}</span>
                                         <span>Mô tải: {discountAPI.conditionsOfApplication}</span>
                                         <span>
-                                            Hạn mức tối đa: {discountAPI.maximumPromotion ? `${discountAPI.maximumPromotion}%` : "0đ"}
+                                            Hạn mức tối đa: {discountAPI.maximumPromotion ? `${formatter.format(discountAPI.maximumPromotion)}` : "0đ"}
                                         </span>
 
-                                        <span>Bạn đã tích kiệm được {formatter.format(discountAPI.promotionLevel)}</span>
+                                        <span>Bạn đã tích kiệm được  {discountAPI.promotionLevel > 100 ? `${formatter.format(discountAPI.promotionLevel)}` : discountAPI.promotionLevel + "%"}</span>
                                     </div>
                                 ) : null}
                                 <div className='flex'>
