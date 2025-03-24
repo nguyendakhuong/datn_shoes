@@ -19,6 +19,7 @@ const ModalPayment = ({ data, total, isOpen, onClose }) => {
     const [selectedAddress, setSelectedAddress] = useState(null);
     const [dataAddress, setDataAddress] = useState([]);
     const [dataUser, setDataUser] = useState(null);
+    const [orderSuccess, setOrderSuccess] = useState(false);
     const navigate = useNavigate()
 
     const handleDiscount = async () => {
@@ -61,44 +62,53 @@ const ModalPayment = ({ data, total, isOpen, onClose }) => {
             return ToastApp.warning("Vui lòng chọn địa chỉ")
         }
         const token = APP_LOCAL.getTokenStorage()
-        try {
-            if (type === 1) {
-                const body = {
-                    userName: dataUser.name,
-                    phoneNumber: dataUser.phoneNumber,
-                    address: selectedAddress,
-                    totalDefault: total,
-                    totalPromotion: discountAmount || 0,
-                    totalPayment: totalAfterDiscount > 0 ? totalAfterDiscount : total,
-                    discount: discountAPI?.name || "",
-                    product: data,
-                };
-                const response = await fetch(`http://localhost:3001/order/createOrder`, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`,
-                    },
-                    body: JSON.stringify(body),
-                });
-                const result = await response.json();
-                if (result.status === 200) {
-                    ToastApp.success(result.message)
-                    const id = data.map(v => v.productDetailCode);
-                    const newCart = userCtx.cart.filter(c => !id.includes(c.id));
-                    dispatch({
-                        type: KEY_CONTEXT_USER.SET_CART,
-                        payload: newCart,
-                    })
-                    navigate('/home')
-                    onClose()
-                } else {
-                    ToastApp.warning(result.message)
-                }
-            }
-        } catch (e) {
-            console.log("Lỗi tạo đơn hàng: ", e)
-        }
+        dispatch({
+            type: KEY_CONTEXT_USER.SHOW_MODAL,
+            payload: {
+                typeModal: 'NOTIFICATION_MODAL',
+                contentModel: "Xác nhận thanh toán hóa đơn !!!",
+                onClickConfirmModel: async () => {
+                    try {
+                        if (type === 1) {
+                            const body = {
+                                userName: dataUser.name,
+                                phoneNumber: dataUser.phoneNumber,
+                                address: selectedAddress,
+                                totalDefault: total,
+                                totalPromotion: discountAmount || 0,
+                                totalPayment: totalAfterDiscount > 0 ? totalAfterDiscount : total,
+                                discount: discountAPI?.name || "",
+                                product: data,
+                            };
+                            const response = await fetch(`http://localhost:3001/order/createOrder`, {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                    Authorization: `Bearer ${token}`,
+                                },
+                                body: JSON.stringify(body),
+                            });
+                            const result = await response.json();
+                            if (result.status === 200) {
+                                ToastApp.success(result.message)
+                                const id = data.map(v => v.productDetailCode);
+                                const newCart = userCtx.cart.filter(c => !id.includes(c.id));
+                                dispatch({
+                                    type: KEY_CONTEXT_USER.SET_CART,
+                                    payload: newCart,
+                                })
+                                onClose()
+                                setOrderSuccess(true);
+                            } else {
+                                ToastApp.warning(result.message)
+                            }
+                        }
+                    } catch (e) {
+                        console.log("Lỗi tạo đơn hàng: ", e)
+                    }
+                },
+            },
+        })
     }
     const getAddress = async () => {
         const token = APP_LOCAL.getTokenStorage()
@@ -137,6 +147,12 @@ const ModalPayment = ({ data, total, isOpen, onClose }) => {
         getAddress()
         getUser()
     }, [])
+
+    useEffect(() => {
+        if (orderSuccess) {
+            navigate("/home");
+        }
+    }, [orderSuccess]);
     const formatter = new Intl.NumberFormat('vi-VN', {
         style: 'currency',
         currency: 'VND',

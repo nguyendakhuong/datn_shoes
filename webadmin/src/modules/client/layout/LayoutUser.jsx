@@ -1,8 +1,17 @@
-import { Outlet } from 'react-router-dom'
+import { Outlet, useLocation } from 'react-router-dom'
+import { useEffect } from 'react';
 import FooterUser from './footer/FooterUser'
 import HeaderUser from './header/HeaderUser'
 import './LayoutUser.scss'
+
 const LayoutUser = () => {
+
+    const location = useLocation();
+
+    useEffect(() => {
+        console.log("Đã chuyển trang:", location.pathname);
+    }, [location]);
+
     return (
         <div className='layout-user-layout'>
             <div className='header-user-layout'>

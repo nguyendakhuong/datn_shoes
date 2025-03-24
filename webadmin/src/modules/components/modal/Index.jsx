@@ -3,6 +3,7 @@ import ModalEditAddress from "./modalEditAddress/ModalEditAddress"
 import EditAdmin from "./modalEditAdmin/EditAdmin"
 import EditProduct from "./modalEditProduct/EditProduct"
 import ModalEditProductDetail from "./modalEditProductDetail/ModalEditProductDetail"
+import ModalNotification from "./modalNotification/ModalNotification"
 import styles from './styles.module.scss'
 const { useContext } = require("react")
 const { default: UserContext } = require("../../../context/use.context")
@@ -31,6 +32,7 @@ const Modal = () => {
                 {typeModal === TYPE_MODEL.EDIT_ADMIN_MODAL && <EditAdmin id={dataModal} />}
                 {typeModal === TYPE_MODEL.EDIT_ADDRESS_MODAL && <ModalEditAddress data={dataModal} />}
                 {typeModal === TYPE_MODEL.EDIT_PRODUCT_DETAIL_MODAL && <ModalEditProductDetail data={dataModal} />}
+                {typeModal === TYPE_MODEL.NOTIFICATION_MODAL && <ModalNotification data={dataModal} />}
             </div>
 
         </div>

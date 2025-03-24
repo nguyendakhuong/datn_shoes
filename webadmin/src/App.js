@@ -48,13 +48,18 @@ function App() {
       try {
         const cartLocal = APP_LOCAL.getCart();
         dispatch({ type: KEY_CONTEXT_USER.SET_CART, payload: cartLocal });
+        const cartAdminLocal = APP_LOCAL.getCartAdmin();
+        dispatch({
+          type: KEY_CONTEXT_USER.SET_CART_ADMIN,
+          payload: cartAdminLocal,
+        });
       } catch (error) {
-      } finally {
+        console.log("Lỗi lấy giỏ hàng: ", error);
       }
     };
     checkLogin();
     getCart();
-  }, []);
+  }, [dispatch]);
 
   return (
     <div>

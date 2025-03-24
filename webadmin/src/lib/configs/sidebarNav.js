@@ -29,6 +29,11 @@ const sidebarNav = [
     section: "discount",
     text: "Quản lí mã giảm giá",
   },
+  {
+    link: "/admin/cartAdmin",
+    section: "cartAdmin",
+    text: "Quầy hàng",
+  },
 ];
 
 const CONFIG_ADMIN = {

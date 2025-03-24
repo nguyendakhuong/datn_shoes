@@ -2,6 +2,7 @@ export const KEY_LOCAL = {
   TOKEN: "TOKEN",
   ACCOUNT_TYPE: "ACCOUNT_TYPE",
   CART: "CART",
+  CART_ADMIN: "CART_ADMIN",
 };
 const getTokenStorage = () => {
   return localStorage.getItem(KEY_LOCAL.TOKEN);
@@ -24,6 +25,14 @@ const getCart = () => {
 const setCart = (cart) => {
   return localStorage.setItem(KEY_LOCAL.CART, cart);
 };
+const getCartAdmin = () => {
+  const data = localStorage.getItem(KEY_LOCAL.CART_ADMIN);
+  return JSON.parse(data).filter((i) => i.id);
+};
+
+const setCartAdmin = (cart) => {
+  return localStorage.setItem(KEY_LOCAL.CART_ADMIN, cart);
+};
 const APP_LOCAL = {
   getTokenStorage,
   setTokenStorage,
@@ -31,6 +40,8 @@ const APP_LOCAL = {
   setAccountTypeStorage,
   getCart,
   setCart,
+  getCartAdmin,
+  setCartAdmin,
 };
 
 export default APP_LOCAL;

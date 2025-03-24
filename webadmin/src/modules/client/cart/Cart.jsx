@@ -8,9 +8,11 @@ import ButtonWed from '../../components/button/Button-admin';
 import ModalPayment from '../../components/modal/modalPayment/ModalPayment';
 import UserContext from '../../../context/use.context';
 import { KEY_CONTEXT_USER } from '../../../context/use.reducer';
+import { useNavigate } from 'react-router-dom';
 
 const Cart = () => {
     const [userCtx, dispatch] = useContext(UserContext)
+    const navigate = useNavigate()
     const [data, setData] = useState([])
     const [quantities, setQuantities] = useState({});
     const [selectedItems, setSelectedItems] = useState([]);

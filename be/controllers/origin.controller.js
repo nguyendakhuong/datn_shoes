@@ -68,7 +68,7 @@ const createOrigin = async (req, res) => {
         message: "Nơi xuất xứ đã tồn tại",
       });
     }
-    await Origin.create({
+    const origin = await Origin.create({
       originCode,
       name,
       status: 1,
@@ -78,6 +78,7 @@ const createOrigin = async (req, res) => {
     res.json({
       status: 200,
       message: "Thêm mới thành công!",
+      data: origin,
     });
   } catch (error) {
     console.log("Lỗi tạo mới origin: ", error);

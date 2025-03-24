@@ -8,7 +8,7 @@ import APP_LOCAL from '../../../lib/localStorage'
 function Sidebar({ sidebarNav }) {
     const [activeIndex, setAnActiveIndex] = useState(0)
     const location = useLocation()
-    const [userCtx, dispatch] = useContext(UserContext)
+    const [{ cartAdmin }, dispatch] = useContext(UserContext)
     const navigate = useNavigate()
     useEffect(() => {
         const curPath = window.location.pathname.split('/')[2]
@@ -25,7 +25,16 @@ function Sidebar({ sidebarNav }) {
                         className={`sidebar__menu__item ${activeIndex === index && 'active'
                             }`}>
                         <div className="sidebar__menu__item__icon">{nav.icon}</div>
-                        <div className="sidebar__menu__item__txt">{nav.text}</div>
+                        <div className="sidebar__menu__item__txt">{nav.text === "Quầy hàng" ? (
+                            <>
+                                <div className='sidebar__menu__item__badge'>
+                                    {nav.text}
+                                    <span className="sidebar__menu__item__badge__cart">{cartAdmin.length ? cartAdmin.length : 0}</span>
+                                </div>
+                            </>
+                        ) : (
+                            nav.text
+                        )}</div>
                     </Link>
                 ))}
                 <div className="sidebar__menu__item">

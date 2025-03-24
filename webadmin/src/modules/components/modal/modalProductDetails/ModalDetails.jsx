@@ -11,7 +11,7 @@ import UserContext from "../../../../context/use.context";
 import { KEY_CONTEXT_USER } from "../../../../context/use.reducer";
 
 const ModalDetails = ({ id, onClose, isOpen }) => {
-    const [{ }, dispatch] = useContext(UserContext);
+    const [userCtx, dispatch] = useContext(UserContext);
     const [data, setData] = useState(null);
     const dialogRef = useRef();
     const [colors, setColors] = useState([]);
@@ -236,6 +236,32 @@ const ModalDetails = ({ id, onClose, isOpen }) => {
             },
         })
     }
+    const handleClickAddProductDetailCart = async (e, code, productCode) => {
+        const token = APP_LOCAL.getTokenStorage()
+        try {
+            const response = await fetch(`http://localhost:3001/cart/productToCartAdmin/${code.productDetailCode}`, {
+                method: "GET",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                },
+            });
+            const data = await response.json();
+            if (data.status === 200) {
+                ToastApp.success("Thêm vào giỏ hàng thành công")
+                const newCart = [...userCtx.cartAdmin]
+                newCart.push({ id: code.productDetailCode })
+                dispatch({
+                    type: KEY_CONTEXT_USER.SET_CART_ADMIN,
+                    payload: newCart,
+                })
+            } else {
+                ToastApp.warning(data.message)
+            }
+        } catch (e) {
+            console.log("Lỗi thêm sản phẩm vào giỏ hàng: ", e)
+        }
+    }
 
     const handleSubmit = async (id) => {
         const token = APP_LOCAL.getTokenStorage();
@@ -338,6 +364,11 @@ const ModalDetails = ({ id, onClose, isOpen }) => {
                                             <div className="btn-update-statusProductDetail">
                                                 <button className="btn-update-product" onClick={(e) => handleClickEditProductDetail(e, productDetail, data.code)}>
                                                     Sửa
+                                                </button>
+                                            </div>
+                                            <div className="btn-update-statusProductDetail">
+                                                <button className="btn-update-product" onClick={(e) => handleClickAddProductDetailCart(e, productDetail, data.code)}>
+                                                    Thêm giỏ hàng
                                                 </button>
                                             </div>
                                         </div>

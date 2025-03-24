@@ -17,6 +17,7 @@ import ProductDetail from "../modules/client/ProductDetail/ProductDetail";
 import TrademarkUser from "../modules/client/trademark/Trademark";
 import OtherTrademark from "../modules/client/otherTrademark/OtherTrademark";
 import OrderUser from "../modules/client/order-user/OrderUser";
+import CartAdmin from "../modules/cartAdmin/CartAdmin";
 
 const AppRoute = (isAuth, accountType) => {
   const route = [
@@ -75,6 +76,7 @@ const AppRoute = (isAuth, accountType) => {
             { path: "order", element: <Order /> },
             { path: "statistical", element: <Statistical /> },
             { path: "discount", element: <DiscountCode /> },
+            { path: "cartAdmin", element: <CartAdmin /> },
           ],
         }
       : {

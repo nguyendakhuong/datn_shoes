@@ -8,5 +8,6 @@ router.get("/deleteDiscount/:id", discount.deleteDiscount);
 router.post("/createDiscount", discount.createDiscount);
 router.put("/updateCreate", discount.updateCreate);
 router.post("/useDiscount", discount.useDiscount);
+router.post("/useDiscountAdmin", discount.useDiscountAdmin);
 
 module.exports = router;

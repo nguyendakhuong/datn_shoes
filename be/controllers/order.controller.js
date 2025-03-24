@@ -100,7 +100,10 @@ const createOrder = async (req, res) => {
         productDetailCode: item.productDetailCode,
       });
       const cart = await Cart.findOne({
-        where: { idProductDetail: item.productDetailCode },
+        where: {
+          idProductDetail: item.productDetailCode,
+          idCustomer: account.customerCode,
+        },
       });
       await cart.destroy();
     }
@@ -115,6 +118,105 @@ const createOrder = async (req, res) => {
     });
   } catch (e) {
     console.log("Lỗi tạo đơn hàng: ", e);
+    return res.json({
+      status: 500,
+      message: "Lỗi server",
+    });
+  }
+};
+
+const orderCartAdmin = async (req, res) => {
+  try {
+    const {
+      discount,
+      totalPayment,
+      product,
+      userName,
+      phoneNumber,
+      totalDefault,
+      totalPromotion,
+    } = req.body;
+    console.log(req.body);
+    if (!userName || !phoneNumber || product.length === 0) {
+      return res.json({
+        status: 400,
+        message: "Thiếu dữ liệu",
+      });
+    }
+    let discountCode = null;
+    if (discount) {
+      discountCode = await Promotion.findOne({
+        where: { name: discount },
+      });
+    }
+    let orderCode = await generateUniqueCode(Order, "orderCode");
+    const order = await Order.create({
+      orderCode,
+      userName: userName,
+      phoneNumber,
+      address: "Cửa hàng",
+      totalDefault, // giá ban đầu
+      totalPromotion, // số tiền giảm
+      totalPayment, // tiền thanh toán
+      discountCode: discountCode?.promotionCode || "", // tên giảm giá
+      paymentMethod: "Trực tiếp",
+      customerCode: "",
+      employeeCode: "",
+      creator: userName,
+      status: 4, // Đã thanh toán
+    });
+    for (const item of product) {
+      const existingProduct = await ProductDetails.findOne({
+        where: { productDetailCode: item.productDetailCode },
+      });
+      if (!existingProduct || existingProduct.status === 2) {
+        await order.destroy();
+        return res.json({
+          status: 400,
+          message: "Sản phẩm không tồn tại hoặc đã dừng hoạt động",
+        });
+      }
+      if (existingProduct.quantity < item.quantity) {
+        await order.destroy();
+        return res.json({
+          status: 400,
+          message: `Số lượng của sản phẩm không đủ`,
+        });
+      }
+      existingProduct.quantity -= item.quantity;
+      await existingProduct.save();
+
+      let orderDetailCode = await generateUniqueCode(
+        OrderDetail,
+        "orderDetailCode"
+      );
+      await OrderDetail.create({
+        orderDetailCode,
+        orderCode,
+        quantity: item.quantity,
+        image: item.image,
+        price: item.price,
+        size: item.size,
+        nameProduct: item.name,
+        color: item.colorName,
+        productDetailCode: item.productDetailCode,
+      });
+      const cart = await Cart.findOne({
+        where: { idProductDetail: item.productDetailCode, idCustomer: 0 },
+      });
+      await cart.destroy();
+    }
+    if (discount) {
+      discountCode.quantity -= 1;
+      await discountCode.save();
+    }
+
+    return res.json({
+      status: 200,
+      message: "Thành công",
+    });
+  } catch (e) {
+    console.log("Lỗi thanh toán đơn hàng tại quầy : ", e);
     return res.json({
       status: 500,
       message: "Lỗi server",
@@ -351,4 +453,5 @@ module.exports = {
   verifyOrder,
   getAllOrderByUser,
   searchOrderByPhoneNumber,
+  orderCartAdmin,
 };

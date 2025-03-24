@@ -68,7 +68,7 @@ const createTrademark = async (req, res) => {
         message: "Thương hiệu đã tồn tại",
       });
     }
-    await Trademark.create({
+    const trademark = await Trademark.create({
       brandCode,
       name,
       status: 1,
@@ -78,6 +78,7 @@ const createTrademark = async (req, res) => {
     res.json({
       status: 200,
       message: "Thêm mới thành công!",
+      data: trademark,
     });
   } catch (error) {
     console.log("Lỗi tạo mới trademark: ", error);

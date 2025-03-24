@@ -206,6 +206,7 @@ const deleteItemCart = async (req, res) => {
         message: "Thiếu token!",
       });
     }
+
     const decoded = jwt.verify(token, signPrivate);
     const account = await Account.findOne({ where: { id: decoded.id } });
     if (!account) {
@@ -217,7 +218,7 @@ const deleteItemCart = async (req, res) => {
     for (const productDetailsCode of id) {
       const cartItem = await Cart.findOne({
         where: {
-          idCustomer: account.customerCode,
+          idCustomer: account.customerCode ? account.customerCode : 0,
           idProductDetail: productDetailsCode,
         },
       });
@@ -237,9 +238,167 @@ const deleteItemCart = async (req, res) => {
     });
   }
 };
+const productToCartAdmin = async (req, res) => {
+  const signPrivate = process.env.SIGN_PRIVATE;
+  try {
+    const { id } = req.params;
+    if (!id) {
+      return res.json({
+        status: 400,
+        message: "Thiếu id sản phẩm",
+      });
+    }
+    const token = req.headers.authorization.split(" ")[1];
+    if (!token) {
+      return res.json({
+        status: 400,
+        message: "Thiếu token!",
+      });
+    }
+    const decoded = jwt.verify(token, signPrivate);
+    const account = await Account.findOne({ where: { id: decoded.id } });
+    if (!account) {
+      return res.json({
+        status: 400,
+        message: "Không tìm thấy tài khoản",
+      });
+    }
+    if (!account.employeeCode) {
+      return res.json({
+        status: 400,
+        message: "Tài khoản của bạn không được mua hàng!",
+      });
+    }
+    const productDetail = await ProductDetails.findOne({
+      where: { productDetailCode: id, status: 1 },
+    });
+    if (!productDetail) {
+      return res.json({
+        status: 400,
+        message: "Sản phẩm không hoạt động",
+      });
+    }
+    const cartItems = await Cart.findAll({
+      where: { idCustomer: 0 },
+    });
+    const idParseInt = parseInt(id, 10);
+    const isProductInCart = cartItems.some(
+      (item) => item.idProductDetail === idParseInt
+    );
+    if (isProductInCart) {
+      return res
+        .status(400)
+        .json({ message: "Sản phẩm đã có trong giỏ hàng!" });
+    }
+    let cartCode;
+
+    cartCode = await generateUniqueCode(Cart, "cartCode");
+    const newCartItem = await Cart.create({
+      cartCode,
+      idCustomer: 0,
+      idProductDetail: idParseInt,
+    });
+    return res.json({
+      status: 200,
+      message: "Thêm vào giỏ hàng thành công",
+    });
+  } catch (e) {
+    console.log("Lỗi thêm vào giỏ hàng: ", e);
+    return res.json({
+      status: 500,
+      message: "Lỗi server",
+    });
+  }
+};
+const getCartByAdmin = async (req, res) => {
+  try {
+    const cartItems = await Cart.findAll({
+      where: { idCustomer: 0 },
+    });
+    const filteredCartItems = cartItems.filter(
+      (item) => item.idProductDetail !== 0
+    );
+    if (filteredCartItems.length === 0) {
+      return res.json({
+        status: 400,
+        message: "Không tìm thấy sản phẩm nào",
+      });
+    }
+    const productDetailIds = filteredCartItems.map(
+      (item) => item.idProductDetail
+    );
+
+    const productDetails = await ProductDetails.findAll({
+      where: { productDetailCode: productDetailIds },
+    });
+
+    const productIds = productDetails.map((item) => item.idProduct);
+
+    const products = await Products.findAll({
+      where: { productCode: productIds },
+    });
+
+    const result = await Promise.all(
+      filteredCartItems.map(async (cartItem) => {
+        const productDetail = productDetails.find(
+          (pd) => pd.productDetailCode === cartItem.idProductDetail
+        );
+        if (!productDetail) return null;
+        const product = products.find(
+          (p) => p.productCode === productDetail.idProduct
+        );
+        const origin = product?.idOrigin
+          ? await Origin.findOne({ where: { originCode: product.idOrigin } })
+          : null;
+
+        const trademark = product?.idTrademark
+          ? await Trademark.findOne({
+              where: { brandCode: product.idTrademark },
+            })
+          : null;
+        const size = productDetail.idSize
+          ? await Size.findOne({
+              where: { SizeCode: productDetail.idSize },
+            })
+          : null;
+        const color = productDetail.idColor
+          ? await Color.findOne({
+              where: { colorCode: productDetail.idColor },
+            })
+          : null;
+        return {
+          idProductDetail: cartItem.idProductDetail,
+          quantity: productDetail.quantity,
+          price: productDetail.price,
+          color: color.colorCode,
+          colorName: color.name,
+          size: size.name,
+          image: productDetail.idImage,
+          productDetailCode: productDetail.productDetailCode,
+          productName: product?.name || null,
+          trademark: trademark?.name || null,
+          origin: origin?.name || null,
+        };
+      })
+    );
+    return res.json({
+      status: 200,
+      message: "Thành công",
+      data: result,
+    });
+  } catch (e) {
+    console.log("Lỗi lấy giỏ hàng admin :", e);
+    return res.json({
+      status: 500,
+      message: "Lỗi server: ",
+    });
+  }
+};
 
 module.exports = {
   productToCart,
   getCartByUser,
   deleteItemCart,
+  productToCartAdmin,
+  getCartByAdmin,
 };

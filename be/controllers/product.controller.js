@@ -43,7 +43,6 @@ const product = async (req, res) => {
     }
 
     let productCode = await generateUniqueCode(Products, "productCode");
-
     await Products.create({
       productCode,
       name,
@@ -619,6 +618,7 @@ const getProductById = async (req, res) => {
     const trademark = await Trademark.findOne({
       where: { brandCode: product.idTrademark },
     });
+    console.log(product.idTrademark);
     const origin = await Origin.findOne({
       where: { originCode: product.idOrigin },
     });
@@ -658,7 +658,6 @@ const getProductById = async (req, res) => {
       acc[color.colorCode] = color.name;
       return acc;
     }, {});
-
     const productDetail = productDetails.map((detail) => {
       return {
         id: detail.id,

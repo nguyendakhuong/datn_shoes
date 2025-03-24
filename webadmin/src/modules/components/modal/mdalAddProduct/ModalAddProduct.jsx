@@ -131,29 +131,29 @@ const ModalAddProduct = ({ isOpen, onClose }) => {
 
                 if (data.status === 200) {
                     if (name === 'trademark') {
-                        const newTrademark = { label: selectedOption.label, value: selectedOption.label };
+                        const newTrademark = { label: data.data.name, value: data.data.brandCode };
                         setTrademark(prevTrademark => [...prevTrademark, newTrademark]);
                         setDataCreateProduct(prev => ({
                             ...prev,
-                            trademark: selectedOption
+                            trademark: newTrademark
                         }));
                         ToastApp.success("Thêm thương hiệu thành công!");
                     }
                     if (name === 'origin') {
-                        const newOrigin = { label: selectedOption.label, value: selectedOption.label };
+                        const newOrigin = { label: data.data.name, value: data.data.originCode };
                         setOrigin(prevTrademark => [...prevTrademark, newOrigin]);
                         setDataCreateProduct(prev => ({
                             ...prev,
-                            origin: selectedOption
+                            origin: newOrigin
                         }));
                         ToastApp.success("Thêm xuất xứ thành công!");
                     }
                     if (name === 'material') {
-                        const newMaterial = { label: selectedOption.label, value: selectedOption.label };
+                        const newMaterial = { label: data.data.name, value: data.data.materialCode };
                         setMaterial(prevTrademark => [...prevTrademark, newMaterial]);
                         setDataCreateProduct(prev => ({
                             ...prev,
-                            material: selectedOption
+                            material: newMaterial
                         }));
                         ToastApp.success("Thêm xuất xứ thành công!");
                     }
@@ -317,12 +317,12 @@ const ModalAddProduct = ({ isOpen, onClose }) => {
                                 ></textarea>
                                 {listError.description && <label className='error-text'>{listError.description}</label>}
                             </div>
-                            <div className='btn_submit'>
-                                <ButtonWed
-                                    title={"Thêm sản phẩm"}
-                                    onClick={handleSubmit} />
-                            </div>
                         </form>
+                        <div className='btn_submit'>
+                            <ButtonWed
+                                title={"Thêm sản phẩm"}
+                                onClick={handleSubmit} />
+                        </div>
                     </div>
                 </div>
             )}

@@ -53,7 +53,7 @@ const DiscountCode = () => {
             payload: {
                 typeModal: 'DELETE_ITEM',
                 dataModal: value.id,
-                contentModel: "Bạn có chắc chắn muốn xóa mã giảm giá " + value.name + " không?",
+                contentModel: "Bạn có chắc chắn muốn xóa mã khuyến mãi " + value.name + " không?",
                 onClickConfirmModel: async () => {
                     try {
                         const response = await fetch(`http://localhost:3001/discount/deleteDiscount/${value?.id}`,
@@ -99,8 +99,8 @@ const DiscountCode = () => {
                 <thead>
                     <tr>
                         <th colSpan="10" className="flex header-discount">
-                            <span>Quản lí mã giảm giá</span>
-                            <button className="discount-button" onClick={handleOpenModal}>+ Thêm mã giảm giá</button>
+                            <span>Quản lí mã khuyến mãi</span>
+                            <button className="discount-button" onClick={handleOpenModal}>+ Thêm mã khuyến mãi</button>
                         </th>
                     </tr>
                 </thead>
@@ -109,8 +109,8 @@ const DiscountCode = () => {
                 <table className="discount-table">
                     <thead>
                         <tr>
-                            <th>Mã giảm giá</th>
-                            <th>Tên giảm giá</th>
+                            <th>Mã khuyến mãi</th>
+                            <th>Tên khuyến mãi</th>
                             <th>Mức khuyến mại</th>
                             <th>Hình thức khuyến mại</th>
                             <th>Mô tả</th>

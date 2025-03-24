@@ -76,14 +76,14 @@ const ModalAddDiscount = ({ isOpen, onClose }) => {
             });
             const result = await response.json();
             if (result.status === 200) {
-                ToastApp.success('Thêm mã giảm giá thành công');
+                ToastApp.success('Thêm mã khuyến mãi thành công');
                 clearForm();
                 onClose();
             } else {
                 ToastApp.warning(data.message);
             }
         } catch (e) {
-            console.log("Lỗi thêm mã giảm giá")
+            console.log("Lỗi thêm mã khuyến mãi")
         }
     }
     return (
@@ -91,7 +91,7 @@ const ModalAddDiscount = ({ isOpen, onClose }) => {
             {isOpen && (
                 <div className="modal-overlay-discount">
                     <div className="modal-content">
-                        <h2>Thêm mã giảm giá</h2>
+                        <h2>Thêm mã khuyến mãi</h2>
                         <form onSubmit={e => e.preventDefault()}>
                             <InputAdmin
                                 label={"Tên phiếu khuyến mại"}
@@ -174,7 +174,7 @@ const ModalAddDiscount = ({ isOpen, onClose }) => {
                             <InputAdmin
                                 label={"Ngày kết thúc"}
                                 name={"endDate"}
-                                validate={'checkDate||checkTimeEnd'}
+                                validate={'checkTimeEnd'}
                                 type={'date'}
                                 value={data.endDate}
                                 onChange={handleChange}

@@ -68,7 +68,7 @@ const createMaterial = async (req, res) => {
         message: "Chất liệu đã tồn tại",
       });
     }
-    await Material.create({
+    const material = await Material.create({
       materialCode,
       name,
       status: 1,
@@ -78,6 +78,7 @@ const createMaterial = async (req, res) => {
     res.json({
       status: 200,
       message: "Thêm mới thành công!",
+      data: material,
     });
   } catch (error) {
     console.log("Lỗi tạo mới material: ", error);

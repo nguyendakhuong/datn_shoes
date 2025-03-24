@@ -53,11 +53,13 @@ const Order = () => {
         setCurrentPage(1)
     }
     const statusLabels = {
-        1: "Chờ xác nhận vận chuyển", // đã tạo đơn hàng và chờ xác nhận để vận chuyển
-        2: "Đang giao", // giao hàng
-        3: "Đã nhận hàng", // xác nhận nhận hàng
-        4: "Hủy hàng", // hủy hàng (phía admin)
-        5: "Khách hủy hàng", // boom hàng
+        1: "Chờ xác nhận",
+        2: "Xác nhận",
+        3: "Giao hàng",
+        4: "Đã thanh toán",
+        5: "Đã nhận hàng",
+        6: "Hủy hàng", // hủy hàng (phía admin)
+        7: "Khách hủy hàng", // boom hàng
     };
     const handleInputSearch = (e) => {
         const { name, value } = e.target
