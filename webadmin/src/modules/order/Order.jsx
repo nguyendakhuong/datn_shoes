@@ -7,13 +7,11 @@ import InputAdmin from '../components/input/Input-admin';
 import APP_LOCAL from '../../lib/localStorage';
 import ToastApp from '../../lib/notification/Toast';
 const Order = () => {
-    const [userCtx, dispatch] = useContext(UserContext)
     const [reloadData, setReloadData] = useState(false);
     const [data, setData] = useState([])
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [searchDataOder, setSearchDataOrder] = useState('');
     const [dataSearch, setDataSearch] = useState([]);
-
     const [currentPage, setCurrentPage] = useState(1);
     const [itemPage, setItemPage] = useState(5);
     const lastIndex = currentPage * itemPage;
@@ -37,29 +35,20 @@ const Order = () => {
             console.log("Lỗi lấy sản phẩm người dùng: ", e)
         }
     }
-    const buttonItem = [
-        {
-            label: "Xác nhận vận chuyển", key: 2
-        },
-        {
-            label: "Hủy đơn hàng", key: 4
-        },
-        {
-            label: "Xác nhận hàng", key: 3
-        },
-    ]
     const handleSelect = (e) => {
         setItemPage(e.target.value)
         setCurrentPage(1)
     }
     const statusLabels = {
+        0: "Chưa thanh toán",
         1: "Chờ xác nhận",
-        2: "Xác nhận",
-        3: "Giao hàng",
-        4: "Đã thanh toán",
+        2: "Đơn đã được xác nhận và chờ vận chuyển",
+        3: "Đơn của bạn đang được vận chuyển",
+        4: "Đơn đã thanh toán",
         5: "Đã nhận hàng",
-        6: "Hủy hàng", // hủy hàng (phía admin)
+        6: "Đơn bị hủy hàng", // hủy hàng (phía admin)
         7: "Khách hủy hàng", // boom hàng
+        8: "Đơn hàng bị lỗi do không hoàn tất thanh toán"
     };
     const handleInputSearch = (e) => {
         const { name, value } = e.target
@@ -67,67 +56,23 @@ const Order = () => {
             setSearchDataOrder(value.trim())
         }
     }
-    const handleConfirmOrder = async () => { }
-    const handleCancelOrder = async () => { }
     const viewOrderDetail = async (order) => {
         setSelectedOrder(order);
     }
-
-    const verifyOrder = async (order) => {
-        const token = APP_LOCAL.getTokenStorage();
-        console.log(typeof (order.status))
-        if (order.status !== "1") {
-            return ToastApp.warning("Đơn hàng khác trạng thái tạo đơn hàng")
-        }
-        try {
-            const response = await fetch(`http://localhost:3001/order/verifyOrder/${order.orderCode}`, {
-                method: "GET",
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-            const data = await response.json();
-            if (data.status === 200) {
-                ToastApp.success("Xác nhận đơn hàng thành công!")
-                setReloadData(true)
-            } else {
-                ToastApp.warning("Warning: " + data.message)
-            }
-        } catch (e) {
-            return ToastApp.error("Error: " + e)
-        }
+    const handleOnclose = () => {
+        setSelectedOrder(null)
+        setReloadData(true)
     }
-    const handleConfigOder = () => { }
-    const handlePrint = () => { }
-    const OrderTableRow = ({ order, handleCancelOrder, viewOrderDetail, statusLabels }) => {
+    const OrderTableRow = ({ order, viewOrderDetail, statusLabels }) => {
         const updatedAtDate = new Date(order.updatedAt);
         const formattedUpdatedAt = `${updatedAtDate.getUTCDate() < 10 ? '0' + updatedAtDate.getUTCDate() :
             updatedAtDate.getUTCDate()}-${updatedAtDate.getUTCMonth() + 1 < 10 ? '0' + (updatedAtDate.getUTCMonth() + 1) :
                 updatedAtDate.getUTCMonth() + 1}-${updatedAtDate.getUTCFullYear()}`;
-
-        const handleItemClick = (key) => {
-            if (key === 2) verifyOrder(order)
-            if (key === 4) handleCancelOrder(order.orderCode)
-            if (key === 3) handleConfigOder(order.orderCode)
-        };
         return (
             <tr key={order.id} onClick={() => viewOrderDetail(order)}>
                 <td>{order.orderCode}</td>
                 <td>{order.userName}</td>
                 <td>{order.phoneNumber}</td>
-                {/* <td>
-                    {order.orderDetails ? order?.orderDetails.map((product, index) => (
-                        <div key={index} className='item-order'>
-                            <div>
-                                <h3>{product.nameProduct}</h3>
-                            </div>
-                            <span>Size : {product.size}</span>
-                            <span> Số lượng: {product.quantity} </span>
-                            <span> Giá : {product.price} </span>
-                        </div>
-                    )) : null}
-
-                </td> */}
                 <td>{formatter.format(order.totalDefault)}</td>
                 <td>{formatter.format(order.totalPromotion)}</td>
                 <td>{formatter.format(order.totalPayment)}</td>
@@ -135,14 +80,6 @@ const Order = () => {
                 <td>{formattedUpdatedAt}</td>
                 <td>{order.address}</td>
                 <td>{statusLabels[order.status]}</td>
-                <td>
-                    <div className='buttonACT' onClick={(e) => { e.stopPropagation(); }}>
-                        <button className='buttonPrint' onClick={(e) => { e.stopPropagation(); handlePrint(order); }}>
-                            Print
-                        </button>
-                        <ButtonDropDown buttonItem={buttonItem} onItemClick={handleItemClick} orderStatus={order.status} />
-                    </div>
-                </td>
             </tr>
         );
     }
@@ -194,7 +131,7 @@ const Order = () => {
     return (
         <div>
             {selectedOrder ? (
-                <OrderDetail order={selectedOrder} onClose={() => setSelectedOrder(null)} />
+                <OrderDetail order={selectedOrder} onClose={handleOnclose} />
             ) : (
                 <div>
                     <div className='header-order'>
@@ -202,7 +139,6 @@ const Order = () => {
                         <div className='search-box-oder'>
                             <div className='input-search-order'>
                                 <InputAdmin
-                                    // label={"Tìm kiếm"}
                                     type="text"
                                     placeholder={"Số điện thoại ..."}
                                     name="search"
@@ -223,7 +159,6 @@ const Order = () => {
                                     <th>Mã đơn hàng</th>
                                     <th>Tên người đặt</th>
                                     <th>Số điện thoại</th>
-                                    {/* <th>Sản phẩm</th> */}
                                     <th>Giá ban đầu </th>
                                     <th>Giá khuyến mại </th>
                                     <th>Giá thanh toán </th>
@@ -231,7 +166,6 @@ const Order = () => {
                                     <th>Thời gian</th>
                                     <th>Địa chỉ</th>
                                     <th>Trạng thái</th>
-                                    <th>Hành động</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -240,8 +174,6 @@ const Order = () => {
                                         <OrderTableRow
                                             key={index}
                                             order={order}
-                                            handleConfirmOrder={handleConfirmOrder}
-                                            handleCancelOrder={handleCancelOrder}
                                             viewOrderDetail={viewOrderDetail}
                                             statusLabels={statusLabels}
                                         />
@@ -252,8 +184,6 @@ const Order = () => {
                                             <OrderTableRow
                                                 key={index}
                                                 order={order}
-                                                handleConfirmOrder={handleConfirmOrder}
-                                                handleCancelOrder={handleCancelOrder}
                                                 viewOrderDetail={viewOrderDetail}
                                                 statusLabels={statusLabels}
                                             />
@@ -347,12 +277,7 @@ const Order = () => {
                                 </ul>
                             )}
                         </nav>
-
-
-
                     </div>
-
-
                 </div>
             )
             }

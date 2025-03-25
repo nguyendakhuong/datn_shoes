@@ -193,7 +193,7 @@ const Cart = () => {
                     <p>{formatter.format(total)}</p>
                 </div>
                 <div className='btn-total'>
-                    <ButtonWed title={"Thanh toán"} onClick={handlePay} />
+                    <ButtonWed title={"Đặt hàng"} onClick={handlePay} />
                 </div>
             </div>
             <ModalPayment data={dataPayment} total={total} isOpen={isModalOpen} onClose={handleCloseModal} />

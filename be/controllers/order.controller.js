@@ -6,6 +6,9 @@ const {
   ProductDetails,
   Promotion,
   Admin,
+  OrderNote,
+  Size,
+  Color,
 } = require("../models");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -124,7 +127,6 @@ const createOrder = async (req, res) => {
     });
   }
 };
-
 const orderCartAdmin = async (req, res) => {
   try {
     const {
@@ -226,7 +228,7 @@ const getAllOrders = async (req, res) => {
   try {
     const orders = await Order.findAll({
       where: {
-        status: { [Op.in]: [1, 2] },
+        status: { [Op.in]: [1, 2, 3] },
       },
     });
     if (orders.length === 0) {
@@ -329,7 +331,7 @@ const verifyOrder = async (req, res) => {
       }
     }
     if (order.status === "1") {
-      order.status = 2;
+      order.status = "2";
       order.updater = admin.name;
       await order.save();
       return res.json({
@@ -342,6 +344,62 @@ const verifyOrder = async (req, res) => {
     return res.json({
       status: 500,
       message: "Lỗi hệ thống : " + e,
+    });
+  }
+};
+const deliveryOrder = async (req, res) => {
+  signPrivate = process.env.SIGN_PRIVATE;
+  try {
+    const { orderCode } = req.body;
+    const token = req.headers.authorization;
+    if (!token) {
+      return res.json({
+        status: 400,
+        message: "Thiếu token thông qua headers",
+      });
+    }
+    const pathToken = token.split(" ")[1];
+    const decoded = jwt.verify(pathToken, signPrivate);
+    const accountAdmin = await Account.findOne({
+      where: { id: decoded.id },
+    });
+    if (!accountAdmin) {
+      return res.json({
+        status: 400,
+        message: "Không tìm thấy tài khoản",
+      });
+    }
+    const admin = await Admin.findOne({
+      where: { employeeCode: accountAdmin.employeeCode },
+    });
+    const order = await Order.findOne({
+      where: { orderCode },
+    });
+    if (!order) {
+      return res.json({
+        status: 400,
+        message: "Không tim thấy đơn hàng !",
+      });
+    }
+    if (order.status === "2") {
+      order.status = "3";
+      order.updater = admin.name;
+      await order.save();
+      return res.json({
+        status: 200,
+        message: "Thành công",
+      });
+    } else {
+      return res.json({
+        status: 400,
+        message: "Chỉ có đơn được xác nhận mới được vận chuyển",
+      });
+    }
+  } catch (e) {
+    console.log("Lỗi hủy hàng bên người dùng : ", e);
+    return res.json({
+      status: 500,
+      message: "Lỗi server",
     });
   }
 };
@@ -444,6 +502,262 @@ const searchOrderByPhoneNumber = async (req, res) => {
     });
   }
 };
+const cancelOrderUser = async (req, res) => {
+  signPrivate = process.env.SIGN_PRIVATE;
+  try {
+    const { orderCode } = req.body;
+    const token = req.headers.authorization;
+    if (!token) {
+      return res.json({
+        status: 400,
+        message: "Thiếu token thông qua headers",
+      });
+    }
+    const pathToken = token.split(" ")[1];
+    const decoded = jwt.verify(pathToken, signPrivate);
+    const accountClient = await Account.findOne({
+      where: { id: decoded.id },
+    });
+    if (!accountClient) {
+      return res.json({
+        status: 400,
+        message: "Không tìm thấy tài khoản",
+      });
+    }
+    const order = await Order.findOne({
+      where: { orderCode, customerCode: accountClient.customerCode },
+    });
+    if (!order) {
+      return res.json({
+        status: 400,
+        message: "Không tim thấy đơn hàng !",
+      });
+    }
+    if (order.status === "1") {
+      order.status = "7";
+      await order.save();
+      return res.json({
+        status: 200,
+        message: "Thành công",
+      });
+    }
+    if (order.status === "2") {
+      order.status = "7";
+      await order.save();
+      const orderDetail = await OrderDetail.findAll({ where: { orderCode } });
+      for (const detail of orderDetail) {
+        const size = await Size.findOne({ where: { name: detail.size } });
+        const color = await Color.findOne({ where: { name: detail.color } });
+        const productDetail = await ProductDetails.findOne({
+          where: {
+            productId: detail.productDetailCode,
+            idSize: size.sizeCode,
+            idColor: color.colorCode,
+          },
+        });
+
+        if (productDetail) {
+          productDetail.quantity += detail.quantity;
+          await productDetail.save();
+        }
+      }
+      return res.json({
+        status: 200,
+        message: "Hủy đơn hàng thành công",
+      });
+    }
+  } catch (e) {
+    console.log("Lỗi hủy hàng bên người dùng : ", e);
+    return res.json({
+      status: 500,
+      message: "Lỗi server",
+    });
+  }
+};
+const cancelOrderAdmin = async (req, res) => {
+  signPrivate = process.env.SIGN_PRIVATE;
+  try {
+    const { orderCode, title, content } = req.body;
+    if (!orderCode || !title || !content) {
+      return res.json({
+        status: 400,
+        message: "Thiếu dữ liệu",
+      });
+    }
+    const token = req.headers.authorization;
+    if (!token) {
+      return res.json({
+        status: 400,
+        message: "Thiếu token thông qua headers",
+      });
+    }
+    const pathToken = token.split(" ")[1];
+    const decoded = jwt.verify(pathToken, signPrivate);
+    const accountAdmin = await Account.findOne({
+      where: { id: decoded.id },
+    });
+    if (!accountAdmin) {
+      return res.json({
+        status: 400,
+        message: "Không tìm thấy tài khoản",
+      });
+    }
+    const admin = await Admin.findOne({
+      where: { employeeCode: accountAdmin.employeeCode },
+    });
+
+    const order = await Order.findOne({
+      where: { orderCode },
+    });
+    if (!order) {
+      return res.json({
+        status: 400,
+        message: "Không tim thấy đơn hàng !",
+      });
+    }
+    if (order.status === "1") {
+      order.status = "6";
+      await order.save();
+      await OrderNote.create({
+        orderCode: orderCode,
+        title: title,
+        content: content,
+        image: "",
+        status: 1,
+        creator: admin.name,
+      });
+      return res.json({
+        status: 200,
+        message: "Thành công",
+      });
+    }
+    if (order.status === "2") {
+      order.status = "6";
+      await order.save();
+      await OrderNote.create({
+        orderCode: orderCode,
+        title: title,
+        content: content,
+        image: "",
+        status: 1,
+        creator: admin.name,
+      });
+      const orderDetail = await OrderDetail.findAll({ where: { orderCode } });
+      for (const detail of orderDetail) {
+        const size = await Size.findOne({ where: { name: detail.size } });
+        const color = await Color.findOne({ where: { name: detail.color } });
+        const productDetail = await ProductDetails.findOne({
+          where: {
+            productId: detail.productDetailCode,
+            idSize: size.sizeCode,
+            idColor: color.colorCode,
+          },
+        });
+
+        if (productDetail) {
+          productDetail.quantity += detail.quantity;
+          await productDetail.save();
+        }
+      }
+      return res.json({
+        status: 200,
+        message: "Hủy đơn hàng thành công",
+      });
+    }
+  } catch (e) {
+    console.log("Lỗi hủy hàng bên người admin : ", e);
+    return res.json({
+      status: 500,
+      message: "Lỗi server",
+    });
+  }
+};
+const confirmOrderAdmin = async (req, res) => {
+  signPrivate = process.env.SIGN_PRIVATE;
+  try {
+    let imagePath;
+    if (req.file) imagePath = req.file.path;
+    const { orderCode, title, content } = req.body;
+    if (!orderCode || !title || !content) {
+      return res.json({
+        status: 400,
+        message: "Thiếu dữ liệu",
+      });
+    }
+    console.log(req.body);
+    console.log(req.file.path);
+
+    const token = req.headers.authorization;
+    if (!token) {
+      return res.json({
+        status: 400,
+        message: "Thiếu token thông qua headers",
+      });
+    }
+    const pathToken = token.split(" ")[1];
+    const decoded = jwt.verify(pathToken, signPrivate);
+    const accountAdmin = await Account.findOne({
+      where: { id: decoded.id },
+    });
+    if (!accountAdmin) {
+      return res.json({
+        status: 400,
+        message: "Không tìm thấy tài khoản",
+      });
+    }
+    const admin = await Admin.findOne({
+      where: { employeeCode: accountAdmin.employeeCode },
+    });
+
+    const order = await Order.findOne({
+      where: { orderCode },
+    });
+    if (!order) {
+      return res.json({
+        status: 400,
+        message: "Không tim thấy đơn hàng !",
+      });
+    }
+    if (order.status === "3") {
+      (order.status = "5"), await order.save();
+      await OrderNote.create({
+        orderCode: orderCode,
+        title: title,
+        content: content,
+        image: imagePath,
+        status: 1,
+        creator: admin.name,
+      });
+      return res.json({
+        status: 200,
+        message: "Xác nhận thành công!",
+      });
+    }
+  } catch (e) {
+    console.log("Lỗi xác nhận đơn hàng: ", e);
+    return res.json({
+      status: 500,
+      message: "Lỗi server",
+    });
+  }
+};
+const getOrderNote = async (req, res) => {
+  try {
+    const { orderCode } = req.params;
+    const orderNote = await OrderNote.findOne({ where: { orderCode } });
+    return res.json({
+      status: 200,
+      message: "Thành công !",
+      data: orderNote,
+    });
+  } catch (e) {
+    console.log("Lỗi lấy ghi chú đơn hàng: ", e);
+    return res.json({
+      status: 500,
+      message: "Lỗi server",
+    });
+  }
+};
 module.exports = {
   createOrder,
   getAllOrders,
@@ -451,4 +765,9 @@ module.exports = {
   getAllOrderByUser,
   searchOrderByPhoneNumber,
   orderCartAdmin,
+  cancelOrderUser,
+  deliveryOrder,
+  cancelOrderAdmin,
+  confirmOrderAdmin,
+  getOrderNote,
 };

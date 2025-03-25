@@ -65,7 +65,6 @@ const HeaderUser = () => {
             document.removeEventListener("mousedown", handleClickOutside);
         };
     }, [showDropdown]);
-    console.log(accountType)
     return (
         <header className="header-user">
             <div className="logo">

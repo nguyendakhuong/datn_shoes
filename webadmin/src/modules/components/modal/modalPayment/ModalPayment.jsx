@@ -177,27 +177,27 @@ const ModalPayment = ({ data, total, isOpen, onClose }) => {
             console.log("Lỗi lấy thông tin người dùng: ", e)
         }
     }
-    const createVnpPayment = async (orderId, totalPayment, bankCode = "") => {
-        dispatch({ type: KEY_CONTEXT_USER.SET_LOADING, payload: true })
+    const createVnpPayment = async (orderCode, totalPayment, bankCode = "") => {
         try {
+            dispatch({ type: KEY_CONTEXT_USER.SET_LOADING, payload: true })
             const response = await fetch(`http://localhost:3001/payment/createPayment`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    orderId: orderId,
+                    orderId: orderCode,
                     amount: totalPayment,
                     bankCode: bankCode,
                 }),
             });
             const result = await response.json();
-            console.log(result)
             if (result.status === 200) {
+                console.log("Vào")
                 console.log(result.data)
-                window.location.href = result.data; // Chuyển hướng tới VNPAY
+                window.location.href = result.data;
             } else {
-                alert(result.message);
+                console.log("Lỗi VNP: ", result.message)
             }
         } catch (error) {
             console.error("Lỗi khi thanh toán:", error);
@@ -214,11 +214,13 @@ const ModalPayment = ({ data, total, isOpen, onClose }) => {
             navigate("/home");
         }
     }, [orderSuccess]);
+
     useEffect(() => {
         if (dataOrder) {
-            createVnpPayment(dataOrder.id, dataOrder.totalPayment)
+            createVnpPayment(dataOrder.orderCode, dataOrder.totalPayment)
         }
     }, [dataOrder])
+
     const formatter = new Intl.NumberFormat('vi-VN', {
         style: 'currency',
         currency: 'VND',
@@ -276,7 +278,7 @@ const ModalPayment = ({ data, total, isOpen, onClose }) => {
                                             Hạn mức tối đa: {discountAPI.maximumPromotion ? `${formatter.format(discountAPI.maximumPromotion)}` : "0đ"}
                                         </span>
 
-                                        <span>Bạn đã tích kiệm được  {discountAPI.promotionLevel > 100 ? `${formatter.format(discountAPI.promotionLevel)}` : discountAPI.promotionLevel + "%"}</span>
+                                        <span>Mức giảm giá: {discountAPI.promotionLevel > 100 ? `${formatter.format(discountAPI.promotionLevel)}` : discountAPI.promotionLevel + "%"}</span>
                                     </div>
                                 ) : null}
                                 <div className='flex'>

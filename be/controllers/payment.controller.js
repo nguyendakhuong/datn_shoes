@@ -84,7 +84,7 @@ const createOrderPayment = async (req, res) => {
       customerCode: infoUser.customerCode,
       employeeCode: "",
       creator: infoUser.name,
-      status: 0, // Đặt trạng thái ban đầu của đơn hàng
+      status: 0, // đặt hàng nhưng chưa thanh toán
     });
     for (const item of product) {
       const existingProduct = await ProductDetails.findOne({
@@ -155,8 +155,8 @@ const createPayment = async (req, res) => {
   let orderId = +req.body.orderId;
   let amount = req.body.amount;
   let bankCode = req.body.bankCode; // truyền bankCode rỗng
+  const order = await Order.findOne({ where: { orderCode: orderId } });
 
-  const order = await Order.findOne({ where: { id: orderId } });
   if (!order) {
     return res.json({
       status: 400,
@@ -183,7 +183,7 @@ const createPayment = async (req, res) => {
   vnp_Params["vnp_Locale"] = "vn";
   vnp_Params["vnp_CurrCode"] = currCode;
   vnp_Params["vnp_TxnRef"] = orderId;
-  vnp_Params["vnp_OrderInfo"] = "Thanh toan cho ma GD:" + orderId;
+  vnp_Params["vnp_OrderInfo"] = "Thanh toán cho mã GD:" + orderId;
   vnp_Params["vnp_OrderType"] = "other";
   vnp_Params["vnp_Amount"] = amount * 100;
   vnp_Params["vnp_ReturnUrl"] = returnUrl;
@@ -204,10 +204,8 @@ const createPayment = async (req, res) => {
 };
 
 const configPayment = async (req, res) => {
-  console.log("vào configPayment ");
   try {
-    console.log(req.query);
-    let vnp_Params = req.query; // truyền theo query (http://localhost:3001/pay/configPayment/?query)
+    let vnp_Params = req.query; // truyền theo query (http://localhost:3001/payment/configPayment/?query)
     let secureHash = vnp_Params["vnp_SecureHash"];
     let secretKey = process.env.VNP_HASHSECERT;
     delete vnp_Params["vnp_SecureHash"];
@@ -220,20 +218,24 @@ const configPayment = async (req, res) => {
     if (secureHash === signed) {
       const orderId = vnp_Params["vnp_TxnRef"];
       let rspCode = vnp_Params["vnp_ResponseCode"];
-      const order = await Order.findOne({ where: { id: orderId } });
-      if (!order) {
+      const order = await Order.findOne({ where: { orderCode: orderId } });
+      if (rspCode === "00") {
+        order.status = 1; // đặt hàng thành công
+        await order.save();
+        return res.json({
+          status: 200,
+          message: "Success",
+          redirectUrl: "http://localhost:3000/Home",
+        });
+      } else {
+        order.status = 8; // đơn hàng bị lỗi
+        await order.save();
         return res.json({
           status: 400,
-          message: "Đơn hàng không tồn tại",
+          message: "Thất bại",
+          redirectUrl: "http://localhost:3000/Home",
         });
       }
-      order.status = 1;
-      await order.save();
-      //Kiem tra du lieu co hop le khong, cap nhat trang thai don hang va gui ket qua cho VNPAY theo dinh dang duoi
-      res.json({
-        status: 200,
-        Message: "success",
-      });
     } else {
       res.json({
         status: 400,

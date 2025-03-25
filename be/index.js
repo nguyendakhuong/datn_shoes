@@ -45,6 +45,10 @@ app.get("/", (req, res) => {
   res.render("ejs/example");
 });
 
+app.get("/thanks", (req, res) => {
+  res.render("configPayment");
+});
+
 app.use("/", accounts);
 app.use("/admin", admin);
 app.use("/user", user);

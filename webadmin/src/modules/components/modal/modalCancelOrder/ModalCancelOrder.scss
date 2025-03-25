@@ -1,0 +1,15 @@
+.modal-overlay-cancelOrder {
+  width: 20rem;
+  // height: 85rem;
+  background-color: white;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  h1 {
+    color: #212121;
+    font-size: 16px;
+    text-align: center;
+    margin: 10px 0;
+  }
+}

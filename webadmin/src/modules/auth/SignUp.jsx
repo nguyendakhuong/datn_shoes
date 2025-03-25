@@ -200,7 +200,6 @@ const SignUp = () => {
                 dataModal: id,
                 titleModel: "Sửa thông tin admin!",
                 onClickConfirmModel: async (data, listError) => {
-
                     const token = APP_LOCAL.getTokenStorage();
                     try {
                         let newErrors = { ...listError };

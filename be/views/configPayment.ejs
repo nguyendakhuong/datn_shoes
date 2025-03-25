@@ -39,19 +39,26 @@
   <body>
     <div class="centered-div">
       <h1>Thank you!</h1>
-      <p>Thank you for using our service.</p>
+      <p>Cảm ơn bạn đã sử dụng dịch vụ.</p>
     </div>
     <script>
       window.addEventListener("DOMContentLoaded", async function () {
-        const currentUrl = window.location.href;
         const queryString = window.location.search;
-        const apiUrl = "/pay/configPayment" + queryString;
-
+        const apiUrl =
+          window.location.origin + "/payment/configPayment" + queryString;
         try {
           const response = await fetch(apiUrl);
           const data = await response.json();
+          if (data.status === 200) {
+            setTimeout(() => {
+              window.location.href = data.redirectUrl;
+            }, 3000);
+          } else {
+            console.error("Thanh toán thất bại:", data.message);
+            window.location.href = data.redirectUrl;
+          }
         } catch (error) {
-          console.error(error);
+          console.error("Lỗi khi gọi API:", error);
         }
       });
     </script>

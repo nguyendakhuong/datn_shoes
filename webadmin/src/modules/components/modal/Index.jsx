@@ -1,3 +1,5 @@
+import ModalCancelOrder from "./modalCancelOrder/ModalCancelOrder"
+import ModalConfirmOrder from "./modalConfirmOrder/ModalConfirmOrder"
 import DeleteItem from "./modalDelete/ModalDelete"
 import ModalEditAddress from "./modalEditAddress/ModalEditAddress"
 import EditAdmin from "./modalEditAdmin/EditAdmin"
@@ -16,6 +18,8 @@ export const TYPE_MODEL = {
     EDIT_ADMIN_MODAL: 'EDIT_ADMIN_MODAL',
     EDIT_ADDRESS_MODAL: 'EDIT_ADDRESS_MODAL',
     EDIT_PRODUCT_DETAIL_MODAL: 'EDIT_PRODUCT_DETAIL_MODAL',
+    CANCEL_ORDER: "CANCEL_ORDER",
+    CONFIRM_ORDER: "CONFIRM_ORDER"
 }
 const Modal = () => {
     const [{ isOpenModal, dataModal, typeModal }, dispatch] = useContext(UserContext)
@@ -33,6 +37,8 @@ const Modal = () => {
                 {typeModal === TYPE_MODEL.EDIT_ADDRESS_MODAL && <ModalEditAddress data={dataModal} />}
                 {typeModal === TYPE_MODEL.EDIT_PRODUCT_DETAIL_MODAL && <ModalEditProductDetail data={dataModal} />}
                 {typeModal === TYPE_MODEL.NOTIFICATION_MODAL && <ModalNotification data={dataModal} />}
+                {typeModal === TYPE_MODEL.CONFIRM_ORDER && <ModalConfirmOrder orderCode={dataModal} />}
+                {typeModal === TYPE_MODEL.CANCEL_ORDER && <ModalCancelOrder orderCode={dataModal} />}
             </div>
 
         </div>
