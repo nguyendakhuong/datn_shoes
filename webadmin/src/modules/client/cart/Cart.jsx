@@ -89,7 +89,7 @@ const Cart = () => {
                     payload: newCart,
                 })
             } else {
-                console.log(data.message)
+                console.log("Lỗi lấy thông tin giỏ hàng: ", data.message)
             }
         } catch (e) {
             console.log("Lỗi lấy thông tin giỏ hàng : ", e)

@@ -20,6 +20,7 @@ const ModalPayment = ({ data, total, isOpen, onClose }) => {
     const [dataAddress, setDataAddress] = useState([]);
     const [dataUser, setDataUser] = useState(null);
     const [orderSuccess, setOrderSuccess] = useState(false);
+    const [dataOrder, setDataOrder] = useState(null);
     const navigate = useNavigate()
 
     const handleDiscount = async () => {
@@ -103,6 +104,39 @@ const ModalPayment = ({ data, total, isOpen, onClose }) => {
                                 ToastApp.warning(result.message)
                             }
                         }
+                        if (type === 2) {
+                            const body = {
+                                address: selectedAddress,
+                                totalDefault: total,
+                                totalPromotion: discountAmount || 0,
+                                totalPayment: totalAfterDiscount > 0 ? totalAfterDiscount : total,
+                                discount: discountAPI?.name || "",
+                                product: data,
+                            };
+                            const response = await fetch(`http://localhost:3001/payment/createOrderPayment`, {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                    Authorization: `Bearer ${token}`,
+                                },
+                                body: JSON.stringify(body),
+                            });
+                            const result = await response.json();
+                            if (result.status === 200) {
+                                ToastApp.success(result.message)
+                                const id = data.map(v => v.productDetailCode);
+                                const newCart = userCtx.cart.filter(c => !id.includes(c.id));
+                                dispatch({
+                                    type: KEY_CONTEXT_USER.SET_CART,
+                                    payload: newCart,
+                                })
+                                onClose()
+                                // setOrderSuccess(true);
+                                setDataOrder(result.data)
+                            } else {
+                                ToastApp.warning(result.message)
+                            }
+                        }
                     } catch (e) {
                         console.log("Lỗi tạo đơn hàng: ", e)
                     }
@@ -143,16 +177,48 @@ const ModalPayment = ({ data, total, isOpen, onClose }) => {
             console.log("Lỗi lấy thông tin người dùng: ", e)
         }
     }
+    const createVnpPayment = async (orderId, totalPayment, bankCode = "") => {
+        dispatch({ type: KEY_CONTEXT_USER.SET_LOADING, payload: true })
+        try {
+            const response = await fetch(`http://localhost:3001/payment/createPayment`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    orderId: orderId,
+                    amount: totalPayment,
+                    bankCode: bankCode,
+                }),
+            });
+            const result = await response.json();
+            console.log(result)
+            if (result.status === 200) {
+                console.log(result.data)
+                window.location.href = result.data; // Chuyển hướng tới VNPAY
+            } else {
+                alert(result.message);
+            }
+        } catch (error) {
+            console.error("Lỗi khi thanh toán:", error);
+        } finally {
+            dispatch({ type: KEY_CONTEXT_USER.SET_LOADING, payload: false })
+        }
+    };
     useEffect(() => {
         getAddress()
         getUser()
     }, [])
-
     useEffect(() => {
         if (orderSuccess) {
             navigate("/home");
         }
     }, [orderSuccess]);
+    useEffect(() => {
+        if (dataOrder) {
+            createVnpPayment(dataOrder.id, dataOrder.totalPayment)
+        }
+    }, [dataOrder])
     const formatter = new Intl.NumberFormat('vi-VN', {
         style: 'currency',
         currency: 'VND',
@@ -238,7 +304,7 @@ const ModalPayment = ({ data, total, isOpen, onClose }) => {
                                         checked={type === 2}
                                         onChange={handleChangeRadio}
                                     />
-                                    <span></span> Payment
+                                    <span></span> VNP
                                 </label>
                             </div>
                             <div className='select-address'>

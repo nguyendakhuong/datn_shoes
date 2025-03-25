@@ -5,7 +5,7 @@ import UserContext from '../../../context/use.context'
 const Loading = () => {
     const [userCtx, dispatch] = useContext(UserContext);
     return (
-        <div style={{ display: userCtx.isLoading ? 'block' : 'none' }} >
+        <div style={{ display: userCtx.isLoading ? 'block' : 'none' }} className="load">
             <div className="loading"> </div>
         </div>
     )

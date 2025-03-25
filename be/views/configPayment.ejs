@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      body {
+        margin: 0;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #f7f7f7; /* Màu nền của body */
+        font-family: Arial, sans-serif;
+      }
+
+      .centered-div {
+        width: 400px;
+        padding: 40px;
+        text-align: center;
+        background-color: #ffffff; /* Màu nền của div */
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        font-size: 24px;
+        color: #333333; /* Màu chữ */
+      }
+
+      .centered-div h1 {
+        margin-bottom: 20px;
+        color: #222222; /* Màu chữ của tiêu đề */
+      }
+
+      .centered-div p {
+        margin-bottom: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="centered-div">
+      <h1>Thank you!</h1>
+      <p>Thank you for using our service.</p>
+    </div>
+    <script>
+      window.addEventListener("DOMContentLoaded", async function () {
+        const currentUrl = window.location.href;
+        const queryString = window.location.search;
+        const apiUrl = "/pay/configPayment" + queryString;
+
+        try {
+          const response = await fetch(apiUrl);
+          const data = await response.json();
+        } catch (error) {
+          console.error(error);
+        }
+      });
+    </script>
+  </body>
+</html>

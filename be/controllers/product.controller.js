@@ -198,7 +198,6 @@ const createProductDetail = async (req, res) => {
   const signPrivate = process.env.SIGN_PRIVATE;
   try {
     const { id } = req.params;
-    console.log(id);
     const token = req.headers.authorization.split(" ")[1];
     const { color, colorCode, price, quantity, size } = req.body;
     let imagePath;
@@ -618,7 +617,6 @@ const getProductById = async (req, res) => {
     const trademark = await Trademark.findOne({
       where: { brandCode: product.idTrademark },
     });
-    console.log(product.idTrademark);
     const origin = await Origin.findOne({
       where: { originCode: product.idOrigin },
     });

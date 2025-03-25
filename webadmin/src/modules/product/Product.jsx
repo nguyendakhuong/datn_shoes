@@ -51,7 +51,6 @@ const Product = () => {
                 dataModal: id,
                 titleModel: "Sửa thông tin sản phẩm!",
                 onClickConfirmModel: async (data, listError) => {
-                    console.log(data)
                     const token = APP_LOCAL.getTokenStorage();
                     let newErrors = { ...listError };
                     for (let key in newErrors) {

@@ -10,6 +10,20 @@
   border-radius: 50%;
   animation: 1s loading infinite;
 }
+.load {
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  background-color: white;
+  top: 0;
+  left: 0;
+  text-align: center;
+  z-index: 1000000000;
+  line-height: 100vh;
+}
+.img {
+  width: 10rem;
+}
 
 @keyframes loading {
   to {

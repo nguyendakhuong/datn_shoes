@@ -169,7 +169,7 @@ const ModalDetails = ({ id, onClose, isOpen }) => {
                 return ToastApp.success("Cập nhật thành công")
 
             } else {
-                console.log(data.message)
+                console.log("Lỗi cập nhật trạng thái sản phẩm chi tiết :", data.message)
             }
         } catch (e) {
             console.log("Lỗi cập nhật trạng thái sản phẩm chi tiết : ", e)

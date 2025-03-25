@@ -110,7 +110,7 @@ const CartAdmin = () => {
                     payload: newCart,
                 })
             } else {
-                console.log(data.message)
+                console.log("Lỗi lấy thông tin giỏ hàng", data.message)
             }
         } catch (e) {
             console.log("Lỗi lấy thông tin giỏ hàng : ", e)
@@ -141,8 +141,6 @@ const CartAdmin = () => {
                 productDetailCode: item.productDetailCode,
                 size: item.size,
             }));
-
-
         dispatch({
             type: KEY_CONTEXT_USER.SHOW_MODAL,
             payload: {
@@ -217,7 +215,6 @@ const CartAdmin = () => {
             });
             const result = await response.json();
             if (result.status === 200) {
-                console.log(result)
                 ToastApp.success("Sử dụng phiếu khuyến mại thành công")
                 setDiscountAPI(result.discount)
                 setTotalAfterDiscount(result.data)

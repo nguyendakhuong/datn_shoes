@@ -136,7 +136,6 @@ const orderCartAdmin = async (req, res) => {
       totalDefault,
       totalPromotion,
     } = req.body;
-    console.log(req.body);
     if (!userName || !phoneNumber || product.length === 0) {
       return res.json({
         status: 400,
@@ -223,7 +222,6 @@ const orderCartAdmin = async (req, res) => {
     });
   }
 };
-
 const getAllOrders = async (req, res) => {
   try {
     const orders = await Order.findAll({
@@ -269,7 +267,6 @@ const getAllOrders = async (req, res) => {
     });
   }
 };
-
 const verifyOrder = async (req, res) => {
   signPrivate = process.env.SIGN_PRIVATE;
   try {

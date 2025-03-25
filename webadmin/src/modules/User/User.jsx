@@ -14,9 +14,7 @@ const User = () => {
                     Authorization: `Bearer`,
                 },
             });
-            console.log(res)
             const data = await res.json();
-            console.log(data)
             if (data.status === 200) {
                 setData(data.data)
             } else {
@@ -51,7 +49,6 @@ const User = () => {
         getAccounts()
         setReloadData(false)
     }, [reloadData])
-    console.log(data)
     return (
         <div className="container">
             {

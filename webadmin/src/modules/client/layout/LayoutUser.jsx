@@ -5,13 +5,6 @@ import HeaderUser from './header/HeaderUser'
 import './LayoutUser.scss'
 
 const LayoutUser = () => {
-
-    const location = useLocation();
-
-    useEffect(() => {
-        console.log("Đã chuyển trang:", location.pathname);
-    }, [location]);
-
     return (
         <div className='layout-user-layout'>
             <div className='header-user-layout'>

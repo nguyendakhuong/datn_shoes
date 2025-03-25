@@ -113,11 +113,6 @@ const ModalEditProductDetail = (productDetail) => {
             }
         }
     }
-    // const handleUpdate = async () => {
-    //     console.log(selectedColor)
-    //     console.log(data)
-    //     console.log(selectedFile)
-    // }
     const onClickClone = () => {
         dispatch({
             type: KEY_CONTEXT_USER.HIDE_MODAL,

@@ -3,7 +3,6 @@ import './OrderDetail.scss'
 
 const OrderDetail = ({ order, onClose }) => {
     const [data] = useState(order.orderDetails);
-    console.log(order)
     const statusLabels = {
         1: "Chờ xác nhận vận chuyển",
         2: "Đang giao",
