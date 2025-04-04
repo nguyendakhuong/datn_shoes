@@ -673,6 +673,7 @@ const cancelOrderAdmin = async (req, res) => {
   }
 };
 const confirmOrderAdmin = async (req, res) => {
+  console.log("confirmOrderAdmin");
   signPrivate = process.env.SIGN_PRIVATE;
   try {
     let imagePath;
@@ -716,7 +717,9 @@ const confirmOrderAdmin = async (req, res) => {
       });
     }
     if (order.status === "3") {
-      (order.status = "5"), await order.save();
+      // trạng thái vận chuyển
+
+      (order.status = "5"), await order.save(); // trạng thái nhận hàng
       await OrderNote.create({
         orderCode: orderCode,
         title: title,

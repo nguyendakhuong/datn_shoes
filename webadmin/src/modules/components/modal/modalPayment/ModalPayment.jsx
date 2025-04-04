@@ -39,7 +39,6 @@ const ModalPayment = ({ data, total, isOpen, onClose }) => {
             });
             const result = await response.json();
             if (result.status === 200) {
-                console.log(result)
                 ToastApp.success("Sử dụng phiếu giảm giá thành công")
                 setDiscountAPI(result.discount)
                 setTotalAfterDiscount(result.data)
@@ -200,7 +199,7 @@ const ModalPayment = ({ data, total, isOpen, onClose }) => {
                 console.log("Lỗi VNP: ", result.message)
             }
         } catch (error) {
-            console.error("Lỗi khi thanh toán:", error);
+            console.log("Lỗi khi thanh toán:", error);
         } finally {
             dispatch({ type: KEY_CONTEXT_USER.SET_LOADING, payload: false })
         }

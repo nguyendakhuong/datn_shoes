@@ -85,13 +85,13 @@ const OrderDetail = ({ order, onClose }) => {
                         });
                         const result = await response.json();
                         if (result.status === 200) {
-                            ToastApp.success("Xác nhận đơn hàng thành công !")
+                            ToastApp.success("Xác nhận vận chuyển đơn hàng thành công !")
                             onClose()
                         } else {
                             ToastApp.warning(result.message)
                         }
                     } catch (e) {
-                        console.log("Lỗi tạo đơn hàng: ", e)
+                        console.log("Lỗi vận chuyển đơn hàng: ", e)
                     }
                 },
             },
@@ -121,15 +121,14 @@ const OrderDetail = ({ order, onClose }) => {
                             },
                             body: formData
                         });
-                        console.log(response)
                         const result = await response.json();
                         if (result.status === 200) {
-                            ToastApp.success("Hủy đơn hàng thành công!");
+                            ToastApp.success("Xác nhận đã giao đơn hàng thành công!");
                             dispatch({ type: KEY_CONTEXT_USER.HIDE_MODAL });
                             onClose()
                         }
                     } catch (e) {
-                        console.log("Lỗi hủy đơn hàng: ", e)
+                        console.log("Lỗi nhận đơn hàng: ", e)
                     }
                 }
             }

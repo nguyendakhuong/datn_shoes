@@ -12,7 +12,6 @@ import { useNavigate } from "react-router-dom";
 
 
 const Main = () => {
-    // const [t, i18n] = useTranslatio;
     const navigate = useNavigate()
     const [data, setData] = useState([])
     const images = [

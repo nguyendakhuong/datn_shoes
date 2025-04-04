@@ -18,9 +18,9 @@ const apiAuth = async (req, res, next) => {
         id: data?.id,
       },
     });
-    if (!user) {
-      throw new Error("unknown user");
-    }
+    // if (!user) {
+    //   throw new Error("unknown user");
+    // }
     // Gắn thông tin người dùng và token vào yêu cầu
     req.user = user;
     req.data = data;

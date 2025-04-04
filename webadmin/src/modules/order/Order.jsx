@@ -43,7 +43,7 @@ const Order = () => {
         0: "Chưa thanh toán",
         1: "Chờ xác nhận",
         2: "Đơn đã được xác nhận và chờ vận chuyển",
-        3: "Đơn của bạn đang được vận chuyển",
+        3: "Đơn hàng đang được vận chuyển",
         4: "Đơn đã thanh toán",
         5: "Đã nhận hàng",
         6: "Đơn bị hủy hàng", // hủy hàng (phía admin)
@@ -61,7 +61,7 @@ const Order = () => {
     }
     const handleOnclose = () => {
         setSelectedOrder(null)
-        setReloadData(true)
+        getAllOrder()
     }
     const OrderTableRow = ({ order, viewOrderDetail, statusLabels }) => {
         const updatedAtDate = new Date(order.updatedAt);

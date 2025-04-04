@@ -22,7 +22,6 @@ const TrademarkUser = () => {
                 body: JSON.stringify({ trademark })
             });
             const data = await response.json();
-            console.log(data)
             if (data.status === 200) {
                 setDataTrademark(data.data)
             }

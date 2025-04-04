@@ -112,7 +112,9 @@ const OrderUser = () => {
             : Array.isArray(selectedTab)
                 ? data.filter((order) => selectedTab.includes(order.status))
                 : data.filter((order) => order.status === selectedTab);
-
+    const sortedOrders = filteredOrders.slice().sort((a, b) => {
+        return new Date(b.updatedAt) - new Date(a.updatedAt)
+    })
     const formatter = new Intl.NumberFormat('vi-VN', {
         style: 'currency',
         currency: 'VND',
@@ -132,8 +134,8 @@ const OrderUser = () => {
             </div>
 
             <div className="order-list">
-                {filteredOrders.length > 0 ? (
-                    filteredOrders.map((order) => (
+                {sortedOrders.length > 0 ? (
+                    sortedOrders.map((order) => (
                         <div key={order.id} className="order-item" onClick={() => handleClickItemOrderUser(order)}>
                             <h3>Mã đơn: {order.orderCode}</h3>
                             <p><strong>Địa chỉ nhận hàng:</strong> {order.address}</p>
