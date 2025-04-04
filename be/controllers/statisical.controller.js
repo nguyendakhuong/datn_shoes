@@ -167,7 +167,6 @@ const productSales = async (req, res) => {
 const productSalesByDate = async (req, res) => {
   try {
     const { startDate, endDate } = req.body; // Nhận ngày từ request
-    console.log(startDate);
     if (!startDate || !endDate) {
       return res.json({
         status: 400,

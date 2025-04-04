@@ -684,9 +684,6 @@ const confirmOrderAdmin = async (req, res) => {
         message: "Thiếu dữ liệu",
       });
     }
-    console.log(req.body);
-    console.log(req.file.path);
-
     const token = req.headers.authorization;
     if (!token) {
       return res.json({

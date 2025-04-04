@@ -46,6 +46,13 @@ const HeaderUser = () => {
     const handleClickTrademark = (name) => {
         navigate(`/trademarkUser/${name}`);
     }
+    const changeLang = (lang) => {
+        dispatch({
+            type: KEY_CONTEXT_USER.SET_LANGUAGE,
+            payload: lang
+        })
+        APP_LOCAL.setLanguageStorage(lang)
+    }
     useEffect(() => {
         getTrademarks()
     }, [])
@@ -82,16 +89,16 @@ const HeaderUser = () => {
                 </ul>
             </nav>
             <div className="header-icons">
-                <div className="header-right">
+                {/* <div className="header-right">
                     <div className="icon-container">
                         <div className="icon imgVN-icon">
-                            <img src={AppImages.imgVN} alt="Mail Icon" className="mail-icon-img" />
+                            <img src={AppImages.imgVN} alt="VN Icon" className="mail-icon-img" onClick={() => changeLang("vi")} />
                         </div>
                         <div className="icon imgUK-icon">
-                            <img src={AppImages.imgUK} alt="Notification Icon" className="notification-icon-img" />
+                            <img src={AppImages.imgUK} alt="EN Icon" className="notification-icon-img" onClick={() => changeLang("en")} />
                         </div>
                     </div>
-                </div>
+                </div> */}
                 {token ? (
                     <div className="user-menu" ref={dropdownRef}>
                         <FaUser className="icon" onClick={toggleDropdown} />

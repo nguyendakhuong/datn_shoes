@@ -3,7 +3,7 @@ import './FooterUser.scss'
 const FooterUser = () => {
     return (
         <div className='footer-user'>
-            <span>FooterUser</span>
+            <span>Trường FPT PolyTecnic</span>
         </div>
     )
 }

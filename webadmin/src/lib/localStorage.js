@@ -3,6 +3,7 @@ export const KEY_LOCAL = {
   ACCOUNT_TYPE: "ACCOUNT_TYPE",
   CART: "CART",
   CART_ADMIN: "CART_ADMIN",
+  LANGUAGE_APP: "LANGUAGE_APP",
 };
 const getTokenStorage = () => {
   return localStorage.getItem(KEY_LOCAL.TOKEN);
@@ -33,6 +34,14 @@ const getCartAdmin = () => {
 const setCartAdmin = (cart) => {
   return localStorage.setItem(KEY_LOCAL.CART_ADMIN, cart);
 };
+
+const getLanguageStorage = () => {
+  return localStorage.getItem(KEY_LOCAL.LANGUAGE_APP);
+};
+
+const setLanguageStorage = (language) => {
+  return localStorage.setItem(KEY_LOCAL.LANGUAGE_APP, language);
+};
 const APP_LOCAL = {
   getTokenStorage,
   setTokenStorage,
@@ -42,6 +51,8 @@ const APP_LOCAL = {
   setCart,
   getCartAdmin,
   setCartAdmin,
+  getLanguageStorage,
+  setLanguageStorage,
 };
 
 export default APP_LOCAL;

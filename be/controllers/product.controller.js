@@ -236,6 +236,20 @@ const createProductDetail = async (req, res) => {
     const checkProductDetail = await ProductDetails.findOne({
       where: { idColor: colorCode, idSize: sizeCode, idProduct: id },
     });
+    if (checkProductDetail && price === checkProductDetail.price) {
+      checkProductDetail.quantity =
+        parseInt(checkProductDetail.quantity) + parseInt(quantity);
+      checkProductDetail.idImage = imagePath;
+      await checkProductDetail.save();
+      return res.json({
+        status: 200,
+        message:
+          "Thêm số lượng vào sản phẩm mã " +
+          checkProductDetail.productDetailCode +
+          " thành công !",
+      });
+    }
+
     if (checkProductDetail) {
       return res.json({
         status: 400,
