@@ -1,5 +1,4 @@
 const { Trademark, Account, Products, ProductDetails } = require("../models");
-const { Op, where } = require("sequelize");
 const jwt = require("jsonwebtoken");
 require("dotenv").config;
 
