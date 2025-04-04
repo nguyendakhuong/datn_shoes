@@ -14,8 +14,9 @@ router.post("/searchOrderByPhoneNumber", order.searchOrderByPhoneNumber);
 router.post("/cancelOrderUser", order.cancelOrderUser);
 router.post("/deliveryOrder", order.deliveryOrder);
 router.post("/cancelOrderAdmin", order.cancelOrderAdmin);
+
 router.post(
-  "/confirmOrderAdmin",
+  "/confirmOrderByAdmin",
   uploadCloud.single("image"),
   order.confirmOrderAdmin
 );

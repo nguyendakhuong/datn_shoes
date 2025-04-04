@@ -26,7 +26,6 @@ const Statistical = () => {
         { icon: <FaMoneyBillAlt size={24} />, value: formatter.format(data?.monthlyRevenue), label: "Doanh thu theo tháng" },
         { icon: <FaMoneyBillAlt size={24} />, value: formatter.format(data?.totalRevenue), label: "Tổng doanh thu" }
     ];
-    console.log(productData)
     const getStatistical = async () => {
         try {
             const res = await fetch(`http://localhost:3001/statistical/getInfoStatistical`, {
@@ -158,7 +157,7 @@ const Statistical = () => {
                     <BarChart width={900} height={300} data={productDataTime.length > 0 ? productDataTime : productData}>
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis dataKey="name" />
-                        <YAxis />
+                        {/* <YAxis /> */}
                         <Tooltip />
                         <Legend />
                         <Bar dataKey="sales" fill="#82ca9d" />

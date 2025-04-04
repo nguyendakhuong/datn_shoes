@@ -192,8 +192,6 @@ const ModalPayment = ({ data, total, isOpen, onClose }) => {
             });
             const result = await response.json();
             if (result.status === 200) {
-                console.log("Vào")
-                console.log(result.data)
                 window.location.href = result.data;
             } else {
                 console.log("Lỗi VNP: ", result.message)

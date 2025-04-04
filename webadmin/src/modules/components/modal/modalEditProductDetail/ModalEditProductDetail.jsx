@@ -109,7 +109,8 @@ const ModalEditProductDetail = (productDetail) => {
                     ToastApp.error(data.message || "Lỗi khi thêm màu!");
                 }
             } catch (error) {
-                ToastApp.error(error.message)
+                // ToastApp.error(error.message)
+                console.log(error)
             }
         }
     }

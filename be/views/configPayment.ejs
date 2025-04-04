@@ -54,11 +54,11 @@
               window.location.href = data.redirectUrl;
             }, 3000);
           } else {
-            console.error("Thanh toán thất bại:", data.message);
+            console.log("Thanh toán thất bại:", data.message);
             window.location.href = data.redirectUrl;
           }
         } catch (error) {
-          console.error("Lỗi khi gọi API:", error);
+          console.log("Lỗi khi gọi API:", error);
         }
       });
     </script>

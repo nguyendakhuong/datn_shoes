@@ -60,7 +60,7 @@ const ModalEditDiscount = ({ data, isOpen, onClose }) => {
 
 
         if (Object.keys(errors).length > 0) {
-            console.log(errors)
+            // console.log(errors)
             ToastApp.warning("Vui lòng điền đúng thông tin!");
             return;
         }

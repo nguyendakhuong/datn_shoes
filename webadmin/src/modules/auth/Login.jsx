@@ -81,7 +81,7 @@ const Login = () => {
                 console.log("Error login : ", e);
             })
         } catch (e) {
-            ToastApp.error(e.message);
+            // ToastApp.error(e.message);
         }
     };
 

@@ -114,7 +114,7 @@ const OrderDetail = ({ order, onClose }) => {
                     formData.append("orderCode", orderCode);
                     formData.append("image", fileImage);
                     try {
-                        const response = await fetch(`http://localhost:3001/order/confirmOrderAdmin`, {
+                        const response = await fetch(`http://localhost:3001/order/confirmOrderByAdmin`, {
                             method: "POST",
                             headers: {
                                 "Authorization": `Bearer ${token}`,

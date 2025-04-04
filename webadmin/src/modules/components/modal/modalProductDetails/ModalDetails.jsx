@@ -63,7 +63,7 @@ const ModalDetails = ({ id, onClose, isOpen }) => {
                 ToastApp.warning(data.message);
             }
         } catch (e) {
-            ToastApp.error("Error: " + e);
+            // ToastApp.error("Error: " + e);
             console.log(e)
         }
     };
@@ -123,7 +123,8 @@ const ModalDetails = ({ id, onClose, isOpen }) => {
                     ToastApp.error(data.message || "Lỗi khi thêm màu!");
                 }
             } catch (error) {
-                ToastApp.error(error.message)
+                // ToastApp.error(error.message)
+                console.log(error)
             }
         }
     }

@@ -74,7 +74,8 @@ const SignUpUser = () => {
                 console.log("Error đăng kí : ", e);
             });
         } catch (e) {
-            ToastApp.error(e.message);
+            // ToastApp.error(e.message);
+            console.log(e)
         }
     };
 

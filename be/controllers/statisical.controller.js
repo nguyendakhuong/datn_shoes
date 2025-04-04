@@ -144,14 +144,25 @@ const productSales = async (req, res) => {
     products.forEach((p) => {
       productMap[p.productCode] = p.name;
     });
-    const bestSellingProducts = productSalesData.map((item) => {
+    const tempProducts = productSalesData.map((item) => {
       const productId = productDetailMap[item.productDetailCode];
       const productName = productMap[productId];
       return {
         name: productName || "Không xác định",
-        sales: item.sales,
+        sales: Number(item.sales),
       };
     });
+    const groupedProducts = tempProducts.reduce((acc, item) => {
+      if (acc[item.name]) {
+        acc[item.name].sales += item.sales;
+      } else {
+        acc[item.name] = { name: item.name, sales: item.sales };
+      }
+      return acc;
+    }, {});
+    const bestSellingProducts = Object.values(groupedProducts).sort(
+      (a, b) => b.sales - a.sales
+    );
     return res.json({
       status: 200,
       data: bestSellingProducts,

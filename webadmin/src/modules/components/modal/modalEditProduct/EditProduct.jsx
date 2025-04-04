@@ -178,7 +178,8 @@ const EditProduct = ({ id }) => {
                     ToastApp.error(data.message);
                 }
             } catch (error) {
-                ToastApp.error(error.message)
+                // ToastApp.error(error.message)
+                console.log(error)
             }
         }
     }
