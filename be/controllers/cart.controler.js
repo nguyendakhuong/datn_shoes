@@ -278,6 +278,17 @@ const productToCartAdmin = async (req, res) => {
         message: "Sản phẩm không hoạt động",
       });
     }
+    const product = await Products.findOne({
+      where: {
+        productCode: productDetail.idProduct,
+      },
+    });
+    if (product.status !== 1) {
+      return res.json({
+        status: 400,
+        message: "Sản phẩm không hoạt động !",
+      });
+    }
     const cartItems = await Cart.findAll({
       where: { idCustomer: 0 },
     });

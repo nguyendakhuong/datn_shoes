@@ -192,7 +192,7 @@ const OrderUser = () => {
                                 </div>
                             ))}
                         </div>
-                        {selectedOrder.status === 1 || selectedOrder.status === 2 ? (<button onClick={() => handleCancelOrder(selectedOrder.orderCode)}>Hủy hàng</button>) : null}
+                        {selectedOrder.status === "1" || selectedOrder.status === "2 " ? (<button onClick={() => handleCancelOrder(selectedOrder.orderCode)}>Hủy hàng</button>) : null}
 
                     </div>
                 </div>

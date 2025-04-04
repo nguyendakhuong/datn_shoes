@@ -124,8 +124,9 @@ const OrderDetail = ({ order, onClose }) => {
                         const result = await response.json();
                         if (result.status === 200) {
                             ToastApp.success("Xác nhận đã giao đơn hàng thành công!");
-                            dispatch({ type: KEY_CONTEXT_USER.HIDE_MODAL });
                             onClose()
+                            dispatch({ type: KEY_CONTEXT_USER.HIDE_MODAL });
+
                         }
                     } catch (e) {
                         console.log("Lỗi nhận đơn hàng: ", e)
