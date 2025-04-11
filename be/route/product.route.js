@@ -25,5 +25,6 @@ router.get("/getAllProduct", Product.getAllProduct);
 router.get("/getProductById/:id", Product.getProductById);
 router.get("/getProductByIdForUser/:id", Product.getProductByIdForUser);
 router.post("/getProductByTrademark", Product.getProductByTrademark);
+router.get("/productActive", Product.productActive);
 
 module.exports = router;

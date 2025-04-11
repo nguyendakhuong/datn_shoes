@@ -70,7 +70,7 @@ const createOrder = async (req, res) => {
       totalPromotion, // số tiền giảm
       totalPayment, // tiền thanh toán
       discountCode: discountCode?.promotionCode || "", // tên giảm giá
-      paymentMethod: "COD",
+      paymentMethod: "Thanh toán khi nhận hàng",
       customerCode: account.customerCode,
       employeeCode: "",
       creator: userName,
@@ -160,7 +160,7 @@ const orderCartAdmin = async (req, res) => {
       totalPromotion, // số tiền giảm
       totalPayment, // tiền thanh toán
       discountCode: discountCode?.promotionCode || "", // tên giảm giá
-      paymentMethod: "Trực tiếp",
+      paymentMethod: "Thanh toán offline tại quầy",
       customerCode: "",
       employeeCode: "",
       creator: userName,
@@ -673,7 +673,6 @@ const cancelOrderAdmin = async (req, res) => {
   }
 };
 const confirmOrderAdmin = async (req, res) => {
-  console.log("confirmOrderAdmin");
   signPrivate = process.env.SIGN_PRIVATE;
   try {
     let imagePath;

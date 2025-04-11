@@ -6,6 +6,7 @@ import EditAdmin from "./modalEditAdmin/EditAdmin"
 import EditProduct from "./modalEditProduct/EditProduct"
 import ModalEditProductDetail from "./modalEditProductDetail/ModalEditProductDetail"
 import ModalNotification from "./modalNotification/ModalNotification"
+import ModalProductActive from "./modalProductActive/ModalProductActive"
 import styles from './styles.module.scss'
 const { useContext } = require("react")
 const { default: UserContext } = require("../../../context/use.context")
@@ -19,7 +20,9 @@ export const TYPE_MODEL = {
     EDIT_ADDRESS_MODAL: 'EDIT_ADDRESS_MODAL',
     EDIT_PRODUCT_DETAIL_MODAL: 'EDIT_PRODUCT_DETAIL_MODAL',
     CANCEL_ORDER: "CANCEL_ORDER",
-    CONFIRM_ORDER: "CONFIRM_ORDER"
+    CONFIRM_ORDER: "CONFIRM_ORDER",
+    PRODUCTS_AT_COUNTER: "PRODUCTS_AT_COUNTER"
+
 }
 const Modal = () => {
     const [{ isOpenModal, dataModal, typeModal }, dispatch] = useContext(UserContext)
@@ -39,6 +42,7 @@ const Modal = () => {
                 {typeModal === TYPE_MODEL.NOTIFICATION_MODAL && <ModalNotification data={dataModal} />}
                 {typeModal === TYPE_MODEL.CONFIRM_ORDER && <ModalConfirmOrder orderCode={dataModal} />}
                 {typeModal === TYPE_MODEL.CANCEL_ORDER && <ModalCancelOrder orderCode={dataModal} />}
+                {typeModal === TYPE_MODEL.PRODUCTS_AT_COUNTER && <ModalProductActive data={dataModal} />}
             </div>
 
         </div>

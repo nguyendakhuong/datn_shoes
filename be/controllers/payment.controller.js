@@ -80,7 +80,7 @@ const createOrderPayment = async (req, res) => {
       totalPromotion, // số tiền giảm
       totalPayment, // tiền thanh toán
       discountCode: discountCode?.promotionCode || "", // tên giảm giá
-      paymentMethod: "VNP",
+      paymentMethod: "Thanh toán online",
       customerCode: infoUser.customerCode,
       employeeCode: "",
       creator: infoUser.name,
@@ -163,7 +163,7 @@ const createPayment = async (req, res) => {
       message: "Đơn hàng không tồn tại",
     });
   }
-  if (order.paymentMethod != "VNP") {
+  if (order.paymentMethod != "Thanh toán online") {
     return res.json({
       status: 400,
       message: "Đơn hàng không trong trạng thái thanh toán online",

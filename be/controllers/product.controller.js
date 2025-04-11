@@ -922,6 +922,54 @@ const getAllProduct = async (req, res) => {
   }
 };
 
+const productActive = async (req, res) => {
+  try {
+    const products = await Products.findAll({
+      where: { status: 1 },
+      attributes: ["name", "productCode"],
+    });
+    if (products.length === 0) {
+      return res.json({
+        status: 400,
+        message: "Không có sản phẩm nào hoạt động !",
+      });
+    }
+    const productIds = products.map((v) => v.productCode);
+    const productDetail = await ProductDetails.findAll({
+      where: {
+        status: 1,
+        idProduct: {
+          [Op.in]: productIds,
+        },
+      },
+    });
+    if (productDetail.length === 0) {
+      return res.json({
+        status: 400,
+        message: "Không có sản phẩm chi tiết nào hoạt động !",
+      });
+    }
+    const mergedData = productDetail.map((detail) => {
+      const product = products.find((p) => p.productCode === detail.idProduct);
+      return {
+        ...detail.toJSON(),
+        productName: product ? product.name : null,
+      };
+    });
+    return res.json({
+      status: 200,
+      message: "Thành công !",
+      data: mergedData,
+    });
+  } catch (e) {
+    console.log("lỗi lấy sản phẩm hoạt động: ", e);
+    return res.json({
+      status: 500,
+      message: "Lỗi server",
+    });
+  }
+};
+
 module.exports = {
   product,
   getProducts,
@@ -937,4 +985,5 @@ module.exports = {
   updateProductDetail,
   statusProductDetail,
   getProductByIdForUser,
+  productActive,
 };

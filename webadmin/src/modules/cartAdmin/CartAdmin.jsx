@@ -13,10 +13,8 @@ import { Validate } from '../../lib/validate/Validate'
 
 const CartAdmin = () => {
     const [{ cartAdmin }, dispatch] = useContext(UserContext)
-    const navigate = useNavigate()
     const [data, setData] = useState([])
     const [quantities, setQuantities] = useState({});
-    const [selectedItems, setSelectedItems] = useState([]);
     const [total, setTotal] = useState("");
     const [phoneNumber, setPhoneNumber] = useState("");
     const [name, setName] = useState("");
@@ -116,6 +114,7 @@ const CartAdmin = () => {
             console.log("Lỗi lấy thông tin giỏ hàng : ", e)
         }
     }
+
     const clearForm = () => {
         setName("")
         setPhoneNumber("")
@@ -228,19 +227,59 @@ const CartAdmin = () => {
         }
     }
 
+    const handleAddItemProduct = () => {
+        dispatch({
+            type: KEY_CONTEXT_USER.SHOW_MODAL,
+            payload: {
+                typeModal: "PRODUCTS_AT_COUNTER",
+                onClickConfirmModel: async (data) => {
+                    const token = APP_LOCAL.getTokenStorage()
+                    try {
+                        console.log("vào")
+                        const response = await fetch(`http://localhost:3001/cart/productsToCartAdmin`, {
+                            method: "POST",
+                            headers: {
+                                Authorization: `Bearer ${token}`,
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify({ code: data })
+                        });
+                        console.log("vào")
+                        const result = await response.json();
+                        console.log(result)
+                        if (result.status === 200) {
+                            ToastApp.success("Thêm vào giỏ hàng thành công")
+                            const newCart = [...cartAdmin]
+                            data.forEach((code) => {
+                                newCart.push({ id: code });
+                            });
+                            dispatch({
+                                type: KEY_CONTEXT_USER.SET_CART_ADMIN,
+                                payload: newCart,
+                            })
+                            dispatch({ type: KEY_CONTEXT_USER.HIDE_MODAL, payload: true })
+                            getCartByAdmin()
+                        } else {
+                            ToastApp.warning(result.message)
+                        }
+                    } catch (e) {
+                        console.log("Lỗi thêm sản phẩm vào giỏ hàng: ", e)
+                    }
+                }
+            }
+        })
+    }
+
     useEffect(() => {
         getCartByAdmin()
     }, [])
     useEffect(() => {
         const totalAmount = data.reduce((sum, item) => {
-
             const quantity = quantities[item.productDetailCode] ?? 1;
             return sum + item.price * quantity;
-
-
         }, 0);
         setTotal(totalAmount);
-    }, [data, quantities, selectedItems]);
+    }, [data, quantities]);
 
     const formatter = new Intl.NumberFormat('vi-VN', {
         style: 'currency',
@@ -249,7 +288,10 @@ const CartAdmin = () => {
     return (
         <div className='cartAdmin-container'>
             <div className='cart'>
-                <h1>Đơn hàng tại quầy</h1>
+                <div className='cartAdmin-header'>
+                    <h1>Đơn hàng tại quầy</h1>
+                    <button onClick={handleAddItemProduct}>Thêm sản phẩm</button>
+                </div>
                 {data && data.length > 0 ? (
                     data.map((cart, i) => (
                         <div key={i} className='cart-item'>

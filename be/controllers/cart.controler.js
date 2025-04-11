@@ -304,7 +304,7 @@ const productToCartAdmin = async (req, res) => {
     let cartCode;
 
     cartCode = await generateUniqueCode(Cart, "cartCode");
-    const newCartItem = await Cart.create({
+    await Cart.create({
       cartCode,
       idCustomer: 0,
       idProductDetail: idParseInt,
@@ -405,6 +405,74 @@ const getCartByAdmin = async (req, res) => {
     });
   }
 };
+const productsToCartAdmin = async (req, res) => {
+  const signPrivate = process.env.SIGN_PRIVATE;
+  try {
+    const { code } = req.body;
+    if (!code) {
+      return res.json({
+        status: 400,
+        message: "Vui lòng chọn 1 sản phẩm",
+      });
+    }
+    const token = req.headers.authorization.split(" ")[1];
+    if (!token) {
+      return res.json({
+        status: 400,
+        message: "Thiếu token!",
+      });
+    }
+    const decoded = jwt.verify(token, signPrivate);
+    const account = await Account.findOne({ where: { id: decoded.id } });
+    if (!account) {
+      return res.json({
+        status: 400,
+        message: "Không tìm thấy tài khoản",
+      });
+    }
+    if (!account.employeeCode) {
+      return res.json({
+        status: 400,
+        message: "Tài khoản của bạn không được mua hàng!",
+      });
+    }
+    const id = code.map((v) => v);
+
+    const cartItems = await Cart.findAll({
+      where: { idCustomer: 0 },
+    });
+    const existingIds = cartItems.map((item) => item.idProductDetail);
+    const newProducts = code.filter(
+      (productId) => !existingIds.includes(parseInt(productId, 10))
+    );
+    if (newProducts.length === 0) {
+      return res.json({
+        status: 400,
+        message: "Tất cả sản phẩm đã có trong giỏ hàng!",
+      });
+    }
+
+    for (const id of newProducts) {
+      console.log(id);
+      const cartCode = await generateUniqueCode(Cart, "cartCode");
+      await Cart.create({
+        cartCode,
+        idCustomer: 0,
+        idProductDetail: parseInt(id, 10),
+      });
+    }
+    return res.json({
+      status: 200,
+      message: "Thêm vào giỏ hàng thành công",
+    });
+  } catch (e) {
+    console.log("Lỗi thêm sản phẩm vào quầy hàng: ", e);
+    return res.json({
+      status: 500,
+      message: "Lỗi server ",
+    });
+  }
+};
 
 module.exports = {
   productToCart,
@@ -412,4 +480,5 @@ module.exports = {
   deleteItemCart,
   productToCartAdmin,
   getCartByAdmin,
+  productsToCartAdmin,
 };

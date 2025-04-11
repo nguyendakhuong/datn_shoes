@@ -68,6 +68,87 @@ const Order = () => {
         const formattedUpdatedAt = `${updatedAtDate.getUTCDate() < 10 ? '0' + updatedAtDate.getUTCDate() :
             updatedAtDate.getUTCDate()}-${updatedAtDate.getUTCMonth() + 1 < 10 ? '0' + (updatedAtDate.getUTCMonth() + 1) :
                 updatedAtDate.getUTCMonth() + 1}-${updatedAtDate.getUTCFullYear()}`;
+        const handlePrint = (order) => {
+            const printContent = printOrder(order);
+            const printFrame = document.createElement('iframe');
+            printFrame.style.position = 'absolute';
+            printFrame.style.width = '0';
+            printFrame.style.height = '0';
+            printFrame.style.border = 'none';
+            document.body.appendChild(printFrame);
+            const doc = printFrame.contentWindow.document;
+            doc.open();
+            doc.write(printContent);
+            doc.close();
+            printFrame.contentWindow.focus();
+            printFrame.contentWindow.print();
+            document.body.removeChild(printFrame);
+        }
+        const printOrder = (order) => {
+            return `
+                        <html>
+                            <head>
+                                <style>
+                                body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
+                                .order-container { border: 1px solid #ddd; padding: 20px; max-width: 800px; margin: auto; }
+                                .order-header { text-align: center; margin-bottom: 20px; }
+                                .order-header h1 { margin: 0; }
+                                .order-details { margin-bottom: 20px; }
+                                .order-details p { margin: 5px 0; }
+                                .order-products { margin-bottom: 20px; }
+                                .order-products h2 { border-bottom: 1px solid #ddd; padding-bottom: 10px; }
+                                .product-table { width: 100%; border-collapse: collapse; }
+                                .product-table th, .product-table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                                .product-table th { background-color: #f2f2f2; }
+                            </style>
+                            </head>
+                            <body>
+                                <div class="order-container">
+                                    <div class="order-header">
+                                        <h1>Hóa đơn</h1>
+                                    </div>
+                                    <div class="order-details">
+                                        <p><strong>Tên cửa hàng:</strong> Shoe Store</p>
+                                        <p><strong>Mã đơn hàng:</strong> ${order.orderCode}</p>
+                                        <p><strong>Tên khách hàng:</strong> ${order.userName}</p>
+                                        <p><strong>Số điện thoại:</strong> ${order.phoneNumber}</p>
+                                        <p><strong>Địa chỉ giao hàng:</strong> ${order.address}</p>
+                                        <p><strong>Hình thức thanh toán:</strong> ${order.paymentMethod}</p>
+                                        <p><strong>Ngày giao:</strong> ${formattedUpdatedAt}</p>
+                                        <p><strong>Số tiền ban đầu:</strong> ${formatter.format(order.totalDefault)}</p>
+                                        <p><strong>Số tiền khuyến mại:</strong> ${formatter.format(order.totalPromotion)}</p>
+                                        <p><strong>Số tiền thanh toán:</strong> ${formatter.format(order.totalPayment)}</p>
+                                    </div>
+                                    <div class="order-products">
+                                    <h2>Products</h2>
+                                    <table class="product-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Tên sản phẩm</th>
+                                                <th>Màu</th>
+                                                <th>Size</th>
+                                                <th>Số lượng</th>
+                                                <th>Giá tiền</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            ${order.orderDetails ? order.orderDetails.map(product => `
+                                                <tr>
+                                                    <td>${product.nameProduct}</td>
+                                                    <td>${product.size}</td>
+                                                    <td>${product.size}</td>
+                                                    <td>${product.quantity}</td>
+                                                    <td>${formatter.format(product.price)}</td>
+                                                </tr>
+                                            `).join('') : '<tr><td colspan="3">No products</td></tr>'}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                </div>
+                            </body>
+                        </html>
+                    `;
+        };
         return (
             <tr key={order.id} onClick={() => viewOrderDetail(order)}>
                 <td>{order.orderCode}</td>
@@ -80,6 +161,21 @@ const Order = () => {
                 <td>{formattedUpdatedAt}</td>
                 <td>{order.address}</td>
                 <td>{statusLabels[order.status]}</td>
+                <td>
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            handlePrint(order);
+                        }}
+                        disabled={order.status !== "4" && order.status !== "5"}
+                        style={{
+                            cursor: (order.status !== "4" && order.status !== "5") ? 'not-allowed' : 'pointer',
+                            opacity: (order.status !== "4" && order.status !== "5") ? 0.5 : 1,
+                        }}
+                    >
+                        Xuất hóa đơn
+                    </button>
+                </td>
             </tr>
         );
     }
@@ -166,6 +262,7 @@ const Order = () => {
                                     <th>Thời gian</th>
                                     <th>Địa chỉ</th>
                                     <th>Trạng thái</th>
+                                    <th>Hóa đơn</th>
                                 </tr>
                             </thead>
                             <tbody>
