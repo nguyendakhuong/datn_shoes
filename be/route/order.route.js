@@ -9,6 +9,18 @@ router.get("/getAllOrders", order.getAllOrders);
 router.get("/verifyOrder/:orderCode", order.verifyOrder);
 router.get("/getAllOrderByUser", order.getAllOrderByUser);
 router.get("/getOrderNote/:orderCode", order.getOrderNote);
+router.get("/createOrderAdmin", order.createOrderAdmin);
+router.get("/getOrderAdmin", order.getOrderAdmin);
+router.get("/deleteOrderAdminByCode/:orderCode", order.deleteOrderAdminByCode);
+router.get("/deleteOrderDetail/:orderDetailCode", order.deleteOrderDetail);
+router.get("/getOrderAdminByCode/:orderCode", order.getOrderAdminByCode);
+
+router.post("/addProductToOrderAdmin/:orderCode", order.addProductToOrderAdmin);
+router.post("/payOrderAdmin/:orderCode", order.payOrderAdmin);
+router.post(
+  "/updateQuantityOrderDetail/:orderDetailCode",
+  order.updateQuantityOrderDetail
+);
 
 router.post("/searchOrderByPhoneNumber", order.searchOrderByPhoneNumber);
 router.post("/cancelOrderUser", order.cancelOrderUser);
@@ -20,4 +32,5 @@ router.post(
   uploadCloud.single("image"),
   order.confirmOrderAdmin
 );
+
 module.exports = router;

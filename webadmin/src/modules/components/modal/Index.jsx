@@ -3,6 +3,7 @@ import ModalConfirmOrder from "./modalConfirmOrder/ModalConfirmOrder"
 import DeleteItem from "./modalDelete/ModalDelete"
 import ModalEditAddress from "./modalEditAddress/ModalEditAddress"
 import EditAdmin from "./modalEditAdmin/EditAdmin"
+import ModalEditOrderProduct from "./modalEditOrderProduct/ModalEditOrderProduct"
 import EditProduct from "./modalEditProduct/EditProduct"
 import ModalEditProductDetail from "./modalEditProductDetail/ModalEditProductDetail"
 import ModalNotification from "./modalNotification/ModalNotification"
@@ -21,7 +22,8 @@ export const TYPE_MODEL = {
     EDIT_PRODUCT_DETAIL_MODAL: 'EDIT_PRODUCT_DETAIL_MODAL',
     CANCEL_ORDER: "CANCEL_ORDER",
     CONFIRM_ORDER: "CONFIRM_ORDER",
-    PRODUCTS_AT_COUNTER: "PRODUCTS_AT_COUNTER"
+    PRODUCTS_AT_COUNTER: "PRODUCTS_AT_COUNTER",
+    EDIT_ORDER_PRODUCT: "EDIT_ORDER_PRODUCT"
 
 }
 const Modal = () => {
@@ -43,6 +45,7 @@ const Modal = () => {
                 {typeModal === TYPE_MODEL.CONFIRM_ORDER && <ModalConfirmOrder orderCode={dataModal} />}
                 {typeModal === TYPE_MODEL.CANCEL_ORDER && <ModalCancelOrder orderCode={dataModal} />}
                 {typeModal === TYPE_MODEL.PRODUCTS_AT_COUNTER && <ModalProductActive data={dataModal} />}
+                {typeModal === TYPE_MODEL.EDIT_ORDER_PRODUCT && <ModalEditOrderProduct data={dataModal} />}
             </div>
 
         </div>

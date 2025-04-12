@@ -14,14 +14,16 @@ import { Validate } from '../../lib/validate/Validate'
 const CartAdmin = () => {
     const [{ cartAdmin }, dispatch] = useContext(UserContext)
     const [data, setData] = useState([])
-    const [quantities, setQuantities] = useState({});
+    const [dataProductActive, setDataProductActive] = useState([])
+    const [dataOrderDetail, setDataOrderDetail] = useState([])
     const [total, setTotal] = useState("");
     const [phoneNumber, setPhoneNumber] = useState("");
     const [name, setName] = useState("");
     const [discount, setDiscount] = useState("");
-    const [discountAPI, setDiscountAPI] = useState()
+    const [discountAPI, setDiscountAPI] = useState(null)
     const [totalAfterDiscount, setTotalAfterDiscount] = useState(0)
     const [discountAmount, setDiscountAmount] = useState(0)
+    const [selectedOrderCode, setSelectedOrderCode] = useState("");
     const [listError, setListError] = useState({
         name: "",
         phoneNumber: "",
@@ -47,10 +49,25 @@ const CartAdmin = () => {
         const newListError = { ...listError, [name]: error };
         setListError(newListError);
     }
-
-    const getCartByAdmin = async () => {
+    const getProductActive = async () => {
         try {
-            const response = await fetch(`http://localhost:3001/cart/getCartByAdmin`, {
+            const response = await fetch(`http://localhost:3001/product/productActive`, {
+                headers: {
+                    Authorization: `Bearer`,
+                    "Content-Type": "application/json"
+                },
+            });
+            const data = await response.json();
+            if (data.status === 200) {
+                setDataProductActive(data.data)
+            }
+        } catch (e) {
+            console.log("Lỗi lấy thông tin giỏ hàng : ", e)
+        }
+    }
+    const getOrderByAdmin = async () => {
+        try {
+            const response = await fetch(`http://localhost:3001/order/getOrderAdmin`, {
                 headers: {
                     Authorization: `Bearer`,
                     "Content-Type": "application/json"
@@ -59,65 +76,34 @@ const CartAdmin = () => {
             const data = await response.json();
             if (data.status === 200) {
                 setData(data.data)
-                setQuantities(prevQuantities => {
-                    const newQuantities = { ...prevQuantities };
-                    data.data.forEach(item => {
-                        newQuantities[item.productDetailCode] = newQuantities[item.productDetailCode] || 1;
-                    });
-                    return newQuantities;
-                });
             } else {
                 setData([])
             }
         } catch (e) {
-            console.log("Lỗi lấy thông tin giỏ hàng : ", e)
+            console.log("Lỗi lấy thông tin hóa đơn : ", e)
         }
     }
-    const increase = (productDetailCode, maxQuantity) => {
-        setQuantities(prev => ({
-            ...prev,
-            [productDetailCode]: Math.min((prev[productDetailCode] || 1) + 1, maxQuantity),
-        }));
-    };
-
-    const decrease = (productDetailCode) => {
-        setQuantities(prev => ({
-            ...prev,
-            [productDetailCode]: prev[productDetailCode] > 1 ? prev[productDetailCode] - 1 : 1,
-        }));
-    };
-    const handleDeleteItem = async (id) => {
-        const idArray = Array.isArray(id) ? id : [id]
-        const token = APP_LOCAL.getTokenStorage()
+    const getOrderAdminByCode = async () => {
         try {
-            const response = await fetch(`http://localhost:3001/cart/deleteItemCart`, {
-                method: "POST",
+            const response = await fetch(`http://localhost:3001/order/getOrderAdminByCode/${selectedOrderCode}`, {
                 headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json"
+                    Authorization: `Bearer`,
                 },
-                body: JSON.stringify(idArray)
             });
             const data = await response.json();
             if (data.status === 200) {
-                ToastApp.success("Xóa thành công")
-                getCartByAdmin()
-                const newCart = cartAdmin.filter(c => c.id !== id)
-                dispatch({
-                    type: KEY_CONTEXT_USER.SET_CART_ADMIN,
-                    payload: newCart,
-                })
+                setDataOrderDetail(data.data)
             } else {
-                console.log("Lỗi lấy thông tin giỏ hàng", data.message)
+                setData([])
             }
         } catch (e) {
-            console.log("Lỗi lấy thông tin giỏ hàng : ", e)
+            console.log("Lỗi lấy thông tin hóa đơn : ", e)
         }
     }
-
     const clearForm = () => {
         setName("")
         setPhoneNumber("")
+        setSelectedOrderCode("")
     }
     const handlePay = () => {
         if (!name || !phoneNumber) {
@@ -130,16 +116,6 @@ const CartAdmin = () => {
                 return;
             }
         }
-        const selectedProducts = data
-            .map(item => ({
-                image: item.image,
-                name: item.productName,
-                colorName: item.colorName,
-                quantity: quantities[item.productDetailCode] ?? 1,
-                price: item.price,
-                productDetailCode: item.productDetailCode,
-                size: item.size,
-            }));
         dispatch({
             type: KEY_CONTEXT_USER.SHOW_MODAL,
             payload: {
@@ -147,45 +123,36 @@ const CartAdmin = () => {
                 contentModel: "Xác nhận thanh toán đơn hàng !!!",
                 onClickConfirmModel: async () => {
                     try {
-                        const body = {
-                            userName: name,
-                            phoneNumber: phoneNumber,
-                            totalDefault: total,
-                            totalPromotion: discountAmount || 0,
-                            totalPayment: totalAfterDiscount > 0 ? totalAfterDiscount : total,
-                            discount: discountAPI?.name || "",
-                            product: selectedProducts,
-                        };
-                        const response = await fetch(`http://localhost:3001/order/orderCartAdmin`, {
+                        const response = await fetch(`http://localhost:3001/order/payOrderAdmin/${selectedOrderCode}`, {
                             method: "POST",
                             headers: {
-                                "Content-Type": "application/json",
                                 Authorization: `Bearer `,
+                                "Content-Type": "application/json"
                             },
-                            body: JSON.stringify(body),
+                            body: JSON.stringify({
+                                name,
+                                phoneNumber,
+                                discountCode: discountAPI?.name || "",
+                                totalDefault: total,
+                                totalPromotion: discountAmount || 0,
+                                totalPayment: totalAfterDiscount > 0 ? totalAfterDiscount : total,
+                            })
                         });
                         const result = await response.json();
                         if (result.status === 200) {
-                            ToastApp.success(result.message)
-                            const id = data.map(v => v.productDetailCode);
-                            const newCart = cartAdmin.filter(c => !id.includes(c.id));
-                            dispatch({
-                                type: KEY_CONTEXT_USER.SET_CART_ADMIN,
-                                payload: newCart,
-                            })
-                            getCartByAdmin()
-                            clearForm()
+                            ToastApp.success("Thành công !")
+                            dispatch({ type: KEY_CONTEXT_USER.HIDE_MODAL, payload: true })
+                            window.location.reload();
                         } else {
                             ToastApp.warning(result.message)
                         }
                     } catch (e) {
-                        console.log("Lỗi tạo đơn hàng: ", e)
+                        console.log("Lỗi xóa hóa đơn: ", e)
                     }
                 },
             },
         })
     }
-
     const handleDiscount = async () => {
         if (!discount) {
             return ToastApp.warning("Vui lòng nhập mã giảm giá!")
@@ -226,44 +193,161 @@ const CartAdmin = () => {
             console.log("Lỗi sử dụng mã giảm giá: ", e)
         }
     }
-
-    const handleAddItemProduct = () => {
+    const handleAddOrder = () => {
         dispatch({
             type: KEY_CONTEXT_USER.SHOW_MODAL,
             payload: {
-                typeModal: "PRODUCTS_AT_COUNTER",
-                onClickConfirmModel: async (data) => {
+                typeModal: "NOTIFICATION_MODAL",
+                contentModel: "Bạn xác nhận tạo hóa đơn !",
+                onClickConfirmModel: async () => {
                     const token = APP_LOCAL.getTokenStorage()
                     try {
-                        console.log("vào")
-                        const response = await fetch(`http://localhost:3001/cart/productsToCartAdmin`, {
-                            method: "POST",
+                        const response = await fetch(`http://localhost:3001/order/createOrderAdmin`, {
+                            method: "GET",
                             headers: {
                                 Authorization: `Bearer ${token}`,
                                 "Content-Type": "application/json"
                             },
-                            body: JSON.stringify({ code: data })
                         });
-                        console.log("vào")
                         const result = await response.json();
-                        console.log(result)
                         if (result.status === 200) {
-                            ToastApp.success("Thêm vào giỏ hàng thành công")
-                            const newCart = [...cartAdmin]
-                            data.forEach((code) => {
-                                newCart.push({ id: code });
-                            });
-                            dispatch({
-                                type: KEY_CONTEXT_USER.SET_CART_ADMIN,
-                                payload: newCart,
-                            })
+                            ToastApp.success("Tạo hóa đơn thành công !")
                             dispatch({ type: KEY_CONTEXT_USER.HIDE_MODAL, payload: true })
-                            getCartByAdmin()
+                            getOrderByAdmin()
                         } else {
                             ToastApp.warning(result.message)
                         }
                     } catch (e) {
-                        console.log("Lỗi thêm sản phẩm vào giỏ hàng: ", e)
+                        console.log("Lỗi tạo hóa đơn: ", e)
+                    }
+                }
+            }
+        })
+    }
+    const handleAddProductToOrder = (product) => {
+        dispatch({
+            type: KEY_CONTEXT_USER.SHOW_MODAL,
+            payload: {
+                typeModal: "NOTIFICATION_MODAL",
+                contentModel: "Bạn xác nhận chọn sản phẩm " + product.productDetailCode + " vào hóa đơn mã " + selectedOrderCode,
+                onClickConfirmModel: async () => {
+                    try {
+                        const response = await fetch(`http://localhost:3001/order/addProductToOrderAdmin/${selectedOrderCode}`, {
+                            method: "POST",
+                            headers: {
+                                Authorization: `Bearer `,
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify(product)
+                        });
+                        const result = await response.json();
+                        if (result.status === 200) {
+                            ToastApp.success("Thêm sản phẩm thành công !")
+                            dispatch({ type: KEY_CONTEXT_USER.HIDE_MODAL, payload: true })
+                            getOrderAdminByCode()
+                        } else {
+                            ToastApp.warning(result.message)
+                        }
+                    } catch (e) {
+                        console.log("Lỗi tạo hóa đơn: ", e)
+                    }
+                }
+            }
+        })
+    }
+    const handleDeleteOrderAdmin = (orderCode) => {
+        dispatch({
+            type: KEY_CONTEXT_USER.SHOW_MODAL,
+            payload: {
+                typeModal: "NOTIFICATION_MODAL",
+                contentModel: "Bạn xác nhận xóa hóa đơn " + orderCode + " này không !",
+                onClickConfirmModel: async () => {
+                    const token = APP_LOCAL.getTokenStorage()
+                    try {
+                        const response = await fetch(`http://localhost:3001/order/deleteOrderAdminByCode/${orderCode}`, {
+                            headers: {
+                                Authorization: `Bearer ${token}`,
+                                "Content-Type": "application/json"
+                            },
+                        });
+                        const result = await response.json();
+                        if (result.status === 200) {
+                            ToastApp.success("Xóa hóa đơn thành công !")
+                            dispatch({ type: KEY_CONTEXT_USER.HIDE_MODAL, payload: true })
+                            getOrderByAdmin()
+                        } else {
+                            ToastApp.warning(result.message)
+                        }
+                    } catch (e) {
+                        console.log("Lỗi xóa hóa đơn: ", e)
+                    }
+                }
+            }
+        })
+    }
+    const handleDeleteOrderDetail = (orderDetailCode) => {
+        dispatch({
+            type: KEY_CONTEXT_USER.SHOW_MODAL,
+            payload: {
+                typeModal: "NOTIFICATION_MODAL",
+                contentModel: "Bạn xác nhận xóa sản phẩm này không !",
+                onClickConfirmModel: async () => {
+                    const token = APP_LOCAL.getTokenStorage()
+                    try {
+                        const response = await fetch(`http://localhost:3001/order/deleteOrderDetail/${orderDetailCode}`, {
+                            headers: {
+                                Authorization: `Bearer ${token}`,
+                                "Content-Type": "application/json"
+                            },
+                        });
+                        const result = await response.json();
+                        if (result.status === 200) {
+                            ToastApp.success("Xóa hóa đơn thành công !")
+                            dispatch({ type: KEY_CONTEXT_USER.HIDE_MODAL, payload: true })
+                            getOrderAdminByCode()
+                        } else {
+                            ToastApp.warning(result.message)
+                        }
+                    } catch (e) {
+                        console.log("Lỗi xóa hóa đơn: ", e)
+                    }
+                }
+            }
+        })
+    }
+    const handleUpdateQuantityProduct = (orderDetailCode) => {
+        dispatch({
+            type: KEY_CONTEXT_USER.SHOW_MODAL,
+            payload: {
+                typeModal: "EDIT_ORDER_PRODUCT",
+                titleModel: "Cập nhật số lượng !",
+                onClickConfirmModel: async (quantity, listError) => {
+                    const parsedQuantity = Number(quantity);
+                    if (listError.quantity) {
+                        return ToastApp.warning("Vui lòng sửa các lỗi trước khi tiếp tục");
+                    }
+                    if (parsedQuantity <= 0) {
+                        return ToastApp.warning("Số lượng phải lớn hơn 0")
+                    }
+                    try {
+                        const response = await fetch(`http://localhost:3001/order/updateQuantityOrderDetail/${orderDetailCode}`, {
+                            method: "POST",
+                            headers: {
+                                Authorization: `Bearer `,
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify({ quantity: parsedQuantity })
+                        });
+                        const result = await response.json();
+                        if (result.status === 200) {
+                            ToastApp.success("Thành công !")
+                            dispatch({ type: KEY_CONTEXT_USER.HIDE_MODAL, payload: true })
+                            getOrderAdminByCode()
+                        } else {
+                            ToastApp.warning(result.message)
+                        }
+                    } catch (e) {
+                        console.log("Lỗi xóa hóa đơn: ", e)
                     }
                 }
             }
@@ -271,72 +355,172 @@ const CartAdmin = () => {
     }
 
     useEffect(() => {
-        getCartByAdmin()
+        getOrderByAdmin()
+        getProductActive()
     }, [])
+
     useEffect(() => {
-        const totalAmount = data.reduce((sum, item) => {
-            const quantity = quantities[item.productDetailCode] ?? 1;
-            return sum + item.price * quantity;
+        if (selectedOrderCode) getOrderAdminByCode()
+    }, [selectedOrderCode])
+
+    useEffect(() => {
+        const totalAmount = dataOrderDetail.reduce((sum, item) => {
+            return sum + item.price * item.quantity;
         }, 0);
         setTotal(totalAmount);
-    }, [data, quantities]);
+    }, [dataOrderDetail]);
 
     const formatter = new Intl.NumberFormat('vi-VN', {
         style: 'currency',
         currency: 'VND',
     });
+
     return (
         <div className='cartAdmin-container'>
             <div className='cart'>
                 <div className='cartAdmin-header'>
-                    <h1>Đơn hàng tại quầy</h1>
-                    <button onClick={handleAddItemProduct}>Thêm sản phẩm</button>
+                    <h1>Hóa đơn tại quầy</h1>
+                    <button onClick={handleAddOrder}>Thêm hóa đơn</button>
                 </div>
-                {data && data.length > 0 ? (
-                    data.map((cart, i) => (
-                        <div key={i} className='cart-item'>
-                            <div className='cart-image' >
-                                <img src={cart.image} alt={cart.productName} />
-                            </div>
-                            <div className='cart-info'>
-                                <h3>{cart.productName}</h3>
-                                <span>Sản xuất: {cart.origin}</span>
-                                <span>Thương hiệu: {cart.trademark}</span>
-                            </div>
-                            <div className='cartItem-color'>
-                                <span>Màu: {cart.colorName}</span>
-                                <div
-                                    className="card-color"
-                                    style={{ backgroundColor: cart.color }}
-                                ></div>
-                            </div>
+                <div className="table-wrapper">
+                    <h3>Danh sách đơn hàng</h3>
+                    <div className="table-scroll">
+                        <table className="cartAdmin-table">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Mã hóa đơn</th>
+                                    <th>Tên nhân viên</th>
+                                    <th>Hình thức thanh toán</th>
+                                    <th>Trạng thái</th>
+                                    <th>Ngày tạo</th>
+                                    <th>Xóa</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {data.length > 0 ? (
+                                    data.map((order, index) => (
+                                        <tr key={index} onClick={() => setSelectedOrderCode(order.orderCode)} className='orderAdmin'>
+                                            <td>
+                                                <input
+                                                    type="radio"
+                                                    name="orderRadio"
+                                                    value={order.orderCode}
+                                                    checked={selectedOrderCode === order.orderCode}
+                                                    onChange={() => setSelectedOrderCode(order.orderCode)}
+                                                />
+                                            </td>
+                                            <td>{order.orderCode}</td>
+                                            <td>{order.creator}</td>
+                                            <td>{order.paymentMethod}</td>
+                                            <td>{order.status === "0" && "Chưa thanh toán"}</td>
+                                            <td>{new Date(order.updatedAt).toLocaleDateString("vi-VN")}</td>
+                                            <td>
+                                                <img className='image' src={AppImages.deleteIcon} alt='' onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleDeleteOrderAdmin(order.orderCode);
+                                                }} />
+                                            </td>
+                                        </tr>
 
-                            <span className='cart-size'>Size:<p>{cart.size}</p> </span>
-                            <div className='btn-quantity'>
-                                <button
-                                    onClick={() => decrease(cart.productDetailCode)}
-                                    disabled={quantities[cart.productDetailCode] === 1}
-                                    className={`btn-decrease ${quantities[cart.productDetailCode] === 1 ? "opacity-50 cursor-not-allowed" : ""}`}
-                                >-</button>
-                                <span className="text-quantity">{quantities[cart.productDetailCode] ?? 1}</span>
-                                <button
-                                    onClick={() => increase(cart.productDetailCode, cart.quantity)}
-                                    disabled={quantities[cart.productDetailCode] >= cart.quantity}
-                                    className={`btn-increase ${quantities[cart.productDetailCode] >= cart.quantity ? "opacity-50 cursor-not-allowed" : ""}`}
-                                >+</button>
-                            </div>
-                            <span className='cart-price'>Giá:<p>{formatter.format(cart.price)}</p> </span>
-                            <div className='icon-delete'>
-                                <img alt='xóa' src={AppImages.deleteIcon} onClick={() => handleDeleteItem(cart.productDetailCode)} />
-                            </div>
-                        </div>
-                    ))
-                ) : (<div>
-                    Bạn chưa có sản phẩm
-                </div>)}
+                                    ))
+                                )
+                                    : (
+                                        <tr>
+                                            <td colSpan={7} style={{ textAlign: 'center' }}>Chưa có hóa đơn nào !</td>
+                                        </tr>
+                                    )
+
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div>
+                    <h3>Giỏ hàng hóa đơn {selectedOrderCode}</h3>
+                    <table className="discount-table">
+                        <thead>
+                            <tr>
+                                <th>Mã sản phẩm</th>
+                                <th>Tên sản phẩm</th>
+                                <th>Màu</th>
+                                <th>Kích thước</th>
+                                <th>Số lượng</th>
+                                <th>Giá</th>
+                                <th>Thành tiền</th>
+                                <th>Xóa</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {dataOrderDetail.length > 0 ? (
+                                dataOrderDetail.map((product, index) => (
+                                    <tr key={index} className='orderAdmin' onClick={() => handleUpdateQuantityProduct(product.orderDetailCode)}>
+                                        <td>{product.productDetailCode}</td>
+                                        <td>{product.nameProduct}</td>
+                                        <td>{product.color}</td>
+                                        <td>{product.size}</td>
+                                        <td>{product.quantity}</td>
+                                        <td>{formatter.format(product.price)}</td>
+                                        <td>{formatter.format(product.price * product.quantity)}</td>
+                                        <td>
+                                            <img className='image' src={AppImages.deleteIcon} alt='' onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleDeleteOrderDetail(product.orderDetailCode);
+                                            }} />
+                                        </td>
+                                    </tr>
+
+                                ))
+                            )
+                                : null}
+                        </tbody>
+                    </table>
+                </div>
+                <div>
+                    <h3>Danh sách sản phẩm hoạt động</h3>
+                    <table className="discount-table">
+                        <thead>
+                            <tr  >
+                                <th>Mã sản phẩm</th>
+                                <th>Tên sản phẩm</th>
+                                <th>Màu</th>
+                                <th>Kích thước</th>
+                                <th>Giá</th>
+                                <th>Số lượng</th>
+                                <th>Trạng thái</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {dataProductActive.length > 0 ? (
+                                dataProductActive.map((product, index) => (
+                                    <tr key={index} onClick={() => handleAddProductToOrder(product)} className='orderAdmin' >
+                                        <td>{product.productDetailCode}</td>
+                                        <td>{product.productName}</td>
+                                        <td>{product.colorName}</td>
+                                        <td>{product.sizeName}</td>
+                                        <td>{formatter.format(product.price)}</td>
+                                        <td>{product.quantity}</td>
+                                        <td>{product.status === 1 ? "Hoạt động" : "Lỗi"}</td>
+
+                                    </tr>
+
+                                ))
+                            )
+                                : <tr>
+                                    <td colSpan={7} style={{ textAlign: 'center' }}>Không có sản phẩm nào hoạt động !</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
             </div>
             <div className='form-total'>
                 <div className='input-info'>
+                    <InputAdmin
+                        label={"Mã hóa đơn"}
+                        readOnly={true}
+                        value={selectedOrderCode}
+                    />
                     <InputAdmin
                         label={"Họ và tên"}
                         name={"name"}

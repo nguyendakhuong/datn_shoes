@@ -928,13 +928,16 @@ const productActive = async (req, res) => {
       where: { status: 1 },
       attributes: ["name", "productCode"],
     });
+
     if (products.length === 0) {
       return res.json({
         status: 400,
         message: "Không có sản phẩm nào hoạt động !",
       });
     }
+
     const productIds = products.map((v) => v.productCode);
+
     const productDetail = await ProductDetails.findAll({
       where: {
         status: 1,
@@ -943,19 +946,34 @@ const productActive = async (req, res) => {
         },
       },
     });
+
     if (productDetail.length === 0) {
       return res.json({
         status: 400,
         message: "Không có sản phẩm chi tiết nào hoạt động !",
       });
     }
+
+    // 👉 Lấy tất cả màu và size liên quan
+    const [colors, sizes] = await Promise.all([
+      Color.findAll({ attributes: ["colorCode", "name"] }),
+      Size.findAll({ attributes: ["sizeCode", "name"] }),
+    ]);
+
+    // 👉 Merge dữ liệu
     const mergedData = productDetail.map((detail) => {
       const product = products.find((p) => p.productCode === detail.idProduct);
+      const color = colors.find((c) => c.colorCode === detail.idColor);
+      const size = sizes.find((s) => s.sizeCode === detail.idSize);
+
       return {
         ...detail.toJSON(),
         productName: product ? product.name : null,
+        colorName: color ? color.name : null,
+        sizeName: size ? size.name : null,
       };
     });
+
     return res.json({
       status: 200,
       message: "Thành công !",
