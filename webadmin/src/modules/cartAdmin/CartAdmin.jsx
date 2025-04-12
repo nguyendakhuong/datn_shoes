@@ -24,6 +24,7 @@ const CartAdmin = () => {
     const [totalAfterDiscount, setTotalAfterDiscount] = useState(0)
     const [discountAmount, setDiscountAmount] = useState(0)
     const [selectedOrderCode, setSelectedOrderCode] = useState("");
+    const [searchTerm, setSearchTerm] = useState("");
     const [listError, setListError] = useState({
         name: "",
         phoneNumber: "",
@@ -100,11 +101,7 @@ const CartAdmin = () => {
             console.log("Lỗi lấy thông tin hóa đơn : ", e)
         }
     }
-    const clearForm = () => {
-        setName("")
-        setPhoneNumber("")
-        setSelectedOrderCode("")
-    }
+
     const handlePay = () => {
         if (!name || !phoneNumber) {
             return ToastApp.warning("Vui lòng thêm thông tin cá nhân")
@@ -225,6 +222,9 @@ const CartAdmin = () => {
         })
     }
     const handleAddProductToOrder = (product) => {
+        if (!selectedOrderCode) {
+            return ToastApp.warning("Vui lòng chọn một hóa đơn !")
+        }
         dispatch({
             type: KEY_CONTEXT_USER.SHOW_MODAL,
             payload: {
@@ -374,6 +374,9 @@ const CartAdmin = () => {
         style: 'currency',
         currency: 'VND',
     });
+    const filteredProducts = dataProductActive.filter(product =>
+        String(product.productDetailCode).toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
     return (
         <div className='cartAdmin-container'>
@@ -476,11 +479,21 @@ const CartAdmin = () => {
                         </tbody>
                     </table>
                 </div>
-                <div>
-                    <h3>Danh sách sản phẩm hoạt động</h3>
-                    <table className="discount-table">
+
+                <div className="table-wrapper">
+                    <div className='cartAdmin-header'>
+                        <h3>Danh sách sản phẩm hoạt động</h3>
+                        <input
+                            type="text"
+                            placeholder="Tìm theo mã sản phẩm..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            style={{ marginBottom: 10, padding: 5, width: '30%' }}
+                        />
+                    </div>
+                    <table className="product-table">
                         <thead>
-                            <tr  >
+                            <tr>
                                 <th>Mã sản phẩm</th>
                                 <th>Tên sản phẩm</th>
                                 <th>Màu</th>
@@ -490,28 +503,37 @@ const CartAdmin = () => {
                                 <th>Trạng thái</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            {dataProductActive.length > 0 ? (
-                                dataProductActive.map((product, index) => (
-                                    <tr key={index} onClick={() => handleAddProductToOrder(product)} className='orderAdmin' >
-                                        <td>{product.productDetailCode}</td>
-                                        <td>{product.productName}</td>
-                                        <td>{product.colorName}</td>
-                                        <td>{product.sizeName}</td>
-                                        <td>{formatter.format(product.price)}</td>
-                                        <td>{product.quantity}</td>
-                                        <td>{product.status === 1 ? "Hoạt động" : "Lỗi"}</td>
-
-                                    </tr>
-
-                                ))
-                            )
-                                : <tr>
-                                    <td colSpan={7} style={{ textAlign: 'center' }}>Không có sản phẩm nào hoạt động !</td>
-                                </tr>
-                            }
-                        </tbody>
                     </table>
+
+                    <div className="product-table-scroll">
+                        <table className="product-table">
+                            <tbody>
+                                {filteredProducts.length > 0 ? (
+                                    filteredProducts.map((product, index) => (
+                                        <tr
+                                            key={index}
+                                            onClick={() => handleAddProductToOrder(product)}
+                                            className="product-row"
+                                        >
+                                            <td>{product.productDetailCode}</td>
+                                            <td>{product.productName}</td>
+                                            <td>{product.colorName}</td>
+                                            <td>{product.sizeName}</td>
+                                            <td>{formatter.format(product.price)}</td>
+                                            <td>{product.quantity}</td>
+                                            <td>{product.status === 1 ? "Hoạt động" : "Lỗi"}</td>
+                                        </tr>
+                                    ))
+                                ) : (
+                                    <tr>
+                                        <td colSpan={7} style={{ textAlign: "center" }}>
+                                            Không có sản phẩm nào hoạt động !
+                                        </td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
             <div className='form-total'>

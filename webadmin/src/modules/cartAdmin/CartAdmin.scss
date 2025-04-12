@@ -52,6 +52,52 @@
       top: 0;
       z-index: 1;
     }
+    .table-wrapper {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    .product-table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+
+    .product-table thead {
+      display: table;
+      width: 100%;
+      table-layout: fixed;
+      width: calc(100% - 15px);
+    }
+
+    .product-table tbody {
+      display: block;
+      max-height: 20rem;
+      overflow-y: auto;
+      width: 100%;
+    }
+
+    .product-table tbody tr {
+      display: table;
+      width: 100%;
+      table-layout: fixed;
+    }
+
+    .product-table th,
+    .product-table td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    .product-table tbody tr:hover {
+      background-color: #f0f8ff;
+      cursor: pointer;
+      transition: background-color 0.2s ease-in-out;
+    }
+
+    .product-table tbody tr:hover td {
+      color: #333;
+    }
   }
   .form-total {
     flex: 1;
