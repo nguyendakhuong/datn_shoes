@@ -220,8 +220,9 @@ const createProductDetail = async (req, res) => {
       return res.json({ status: 404, message: "Không tìm thấy sản phẩm" });
     }
     const checkSize = await Size.findOne({ where: { name: size } });
+    let sizeCode;
     if (!checkSize) {
-      let sizeCode;
+      
       sizeCode = await generateUniqueCode(Size, "sizeCode");
       await Size.create({
         sizeCode,
@@ -297,6 +298,7 @@ const createProductDetail = async (req, res) => {
     });
   }
 };
+
 const getProduct = async (req, res) => {
   try {
     const { id } = req.params;
