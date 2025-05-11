@@ -225,11 +225,7 @@ const orderCartAdmin = async (req, res) => {
 };
 const getAllOrders = async (req, res) => {
   try {
-    const orders = await Order.findAll({
-      where: {
-        status: { [Op.in]: [1, 2, 3] },
-      },
-    });
+    const orders = await Order.findAll();
     if (orders.length === 0) {
       return res.json({
         status: 400,

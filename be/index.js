@@ -20,6 +20,7 @@ const cart = require("./route/cart.route");
 const order = require("./route/order.route");
 const payment = require("./route/payment.route");
 const statistical = require("./route/statistical.route");
+const riview = require("./route/riview.route");
 
 const bodyParser = require("body-parser");
 
@@ -64,6 +65,7 @@ app.use("/cart", cart);
 app.use("/order", order);
 app.use("/payment", payment);
 app.use("/statistical", statistical);
+app.use("/riview", riview);
 
 db.sequelize.sync().then(() => {
   app.listen(PORT, () => {

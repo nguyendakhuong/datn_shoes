@@ -8,6 +8,7 @@ import EditProduct from "./modalEditProduct/EditProduct"
 import ModalEditProductDetail from "./modalEditProductDetail/ModalEditProductDetail"
 import ModalNotification from "./modalNotification/ModalNotification"
 import ModalProductActive from "./modalProductActive/ModalProductActive"
+import ModalReviewProduct from "./modalReviewProduct/ModalReviewProduct"
 import styles from './styles.module.scss'
 const { useContext } = require("react")
 const { default: UserContext } = require("../../../context/use.context")
@@ -23,7 +24,8 @@ export const TYPE_MODEL = {
     CANCEL_ORDER: "CANCEL_ORDER",
     CONFIRM_ORDER: "CONFIRM_ORDER",
     PRODUCTS_AT_COUNTER: "PRODUCTS_AT_COUNTER",
-    EDIT_ORDER_PRODUCT: "EDIT_ORDER_PRODUCT"
+    EDIT_ORDER_PRODUCT: "EDIT_ORDER_PRODUCT",
+    REVIEW_PRODUCT : "REVIEW_PRODUCT"
 
 }
 const Modal = () => {
@@ -46,6 +48,7 @@ const Modal = () => {
                 {typeModal === TYPE_MODEL.CANCEL_ORDER && <ModalCancelOrder orderCode={dataModal} />}
                 {typeModal === TYPE_MODEL.PRODUCTS_AT_COUNTER && <ModalProductActive data={dataModal} />}
                 {typeModal === TYPE_MODEL.EDIT_ORDER_PRODUCT && <ModalEditOrderProduct data={dataModal} />}
+                {typeModal === TYPE_MODEL.REVIEW_PRODUCT && <ModalReviewProduct data={dataModal} />}
             </div>
 
         </div>

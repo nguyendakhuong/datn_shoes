@@ -292,6 +292,7 @@ const Order = () => {
                   <option value="">Tất cả</option>
                   <option value="Thanh toán khi nhận hàng">COD</option>
                   <option value="Thanh toán online">Thanh toán online</option>
+                  <option value="Thanh toán offline tại quầy">Thanh toán tại quầy</option>
                 </select>
               </div>
               <div className="input-search-order">

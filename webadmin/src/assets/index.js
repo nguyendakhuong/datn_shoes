@@ -16,6 +16,14 @@ import imgUK from "./image/imgUK.png";
 import logo from "./image/logo_shoe_store.png";
 import login from "./image/bg-login.png";
 
+import sart1 from "./icons/srat1.png"
+import sart2 from "./icons/star2.png"
+
+import riview1 from "./icons/riview1.png"
+import riview3 from "./icons/riview3.png"
+import riview4 from "./icons/riview4.png"
+import riview5 from "./icons/riview5.png"
+
 const AppImages = {
   deleteModal,
   deleteItem,
@@ -32,6 +40,12 @@ const AppImages = {
   banner3,
   imgVN,
   imgUK,
+  sart1,
+  sart2,
+  riview1,
+  riview3,
+  riview4,
+  riview5
 };
 
 export default AppImages;
