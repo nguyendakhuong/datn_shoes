@@ -144,13 +144,13 @@ const ModalAddDiscount = ({ isOpen, onClose }) => {
                                 </label>
                             </div>
                             <InputAdmin
-                                label={"Mức khuyến mại tối đa"}
+                                label={data.promotionType === 1 ? "Số tiền tối thiếu" : "Mức khuyến mãi tối đa"}
                                 name={"maximumPromotion"}
                                 validate={'checkNumber||checkNegative'}
                                 type={'text'}
                                 value={data.maximumPromotion}
                                 onChange={handleChange}
-                                readOnly={data.promotionType === 1 ? true : false}
+                                // readOnly={data.promotionType === 1 ? true : false}
                             />
                             {listError.maximumPromotion && <label className='error-text'>{listError.maximumPromotion}</label>}
                             <InputAdmin

@@ -207,18 +207,20 @@ const useDiscount = async (req, res) => {
         message: "Bạn đã sử dụng mã giảm giá này rồi",
       });
     }
-    const formatter = new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    });
 
     if (getDiscount.promotionType === 1) {
+      if(total < getDiscount.maximumPromotion) {
+        return res.json({
+          status : 401,
+          message : "Mã không áp dụng cho đơn hàng này!",
+          data : getDiscount
+        })
+      } 
       const newTotal = total - getDiscount.promotionLevel;
-      const finalTotal = newTotal >= 0 ? newTotal : 0;
       return res.json({
         status: 200,
         message: " Thành công",
-        data: finalTotal,
+        data: newTotal,
         discount: getDiscount,
         totalPromotion: getDiscount.promotionLevel,
       });
@@ -306,16 +308,24 @@ const useDiscountAdmin = async (req, res) => {
       });
     }
     if (getDiscount.promotionType === 1) {
+      if(total < getDiscount.maximumPromotion) {
+        return res.json({
+          status : 401,
+          message : "Mã không áp dụng cho đơn hàng này!",
+          data : getDiscount
+        })
+      } 
       const newTotal = total - getDiscount.promotionLevel;
-      const finalTotal = newTotal >= 0 ? newTotal : 0;
       return res.json({
         status: 200,
         message: " Thành công",
-        data: finalTotal,
+        data: newTotal,
         discount: getDiscount,
         totalPromotion: getDiscount.promotionLevel,
       });
     }
+
+
     if (getDiscount.promotionType === 2) {
       const maxPromotion = Number(getDiscount.maximumPromotion);
       const discountAmount = (total * getDiscount.promotionLevel) / 100;

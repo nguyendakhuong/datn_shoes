@@ -10,7 +10,7 @@ const TABS = [
     { label: "Đơn đang giao", status: "3" },
     { label: "Đơn đã nhận", status: "5" },
     { label: "Đơn bị hủy", status: "6" },
-    { label: "Đơn khách hủy", status: ["7", "8"] },
+    { label: "Đơn bạn đã huỷ", status: ["7", "8"] },
 ];
 
 const OrderUser = () => {
