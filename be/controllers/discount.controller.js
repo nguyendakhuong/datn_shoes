@@ -216,7 +216,7 @@ const useDiscount = async (req, res) => {
           data : getDiscount
         })
       } 
-      const newTotal = total - getDiscount.promotionLevel;
+      const newTotal = total - getDiscount.promotionLevel > 0 ? total - getDiscount.promotionLevel : 0;
       return res.json({
         status: 200,
         message: " Thành công",
@@ -315,7 +315,7 @@ const useDiscountAdmin = async (req, res) => {
           data : getDiscount
         })
       } 
-      const newTotal = total - getDiscount.promotionLevel;
+      const newTotal = total - getDiscount.promotionLevel > 0 ? total - getDiscount.promotionLevel : 0;
       return res.json({
         status: 200,
         message: " Thành công",

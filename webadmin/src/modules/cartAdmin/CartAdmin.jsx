@@ -21,7 +21,7 @@ const CartAdmin = () => {
   const [name, setName] = useState("");
   const [discount, setDiscount] = useState("");
   const [discountAPI, setDiscountAPI] = useState(null);
-  const [totalAfterDiscount, setTotalAfterDiscount] = useState(0);
+  const [totalAfterDiscount, setTotalAfterDiscount] = useState(null);
   const [discountAmount, setDiscountAmount] = useState(0);
   const [selectedOrderCode, setSelectedOrderCode] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
@@ -683,7 +683,7 @@ const CartAdmin = () => {
             <span>Số tiền ban đầu: {formatter.format(total)}</span>
             <span>
               Số tiền sau khuyến mãi:{" "}
-              {totalAfterDiscount > 0
+              {totalAfterDiscount >= 0
                 ? formatter.format(totalAfterDiscount)
                 : formatter.format(total)}
             </span>
@@ -692,7 +692,7 @@ const CartAdmin = () => {
         <div className="flex-total">
           <span>Số tiền bạn cần thành toán: </span>
           <p>
-            {totalAfterDiscount > 0
+            {totalAfterDiscount >= 0
               ? formatter.format(totalAfterDiscount)
               : formatter.format(total)}
           </p>

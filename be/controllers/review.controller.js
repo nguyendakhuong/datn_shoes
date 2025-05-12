@@ -1,11 +1,12 @@
 const {
   Token,
-  Riview,
+  Riviews,
   Account,
   Products,
   Order,
   OrderDetail,
   ProductDetails,
+  Client,
 } = require("../models");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -15,8 +16,8 @@ require("dotenv").config;
 const createRiview = async (req, res) => {
   const signPrivate = process.env.SIGN_PRIVATE;
   try {
-    const { sart, content, productCode } = req.body;
-    if (!sart || !content || !productCode) {
+    const { star, content, productDetailCode, orderCode } = req.body;
+    if (!star || !content || !productDetailCode || !orderCode) {
       return res.json({
         status: 400,
         message: "Nhập đủ dữ liệu trước khi đánh giá",
@@ -38,12 +39,13 @@ const createRiview = async (req, res) => {
       });
     }
 
-    await Riview.create({
+    await Riviews.create({
       customerCode: account.customerCode,
-      productCode,
-      sart,
+      productDetailCode,
+      sart: star,
       content,
       status: 1,
+      orderCode,
     });
     return res.json({
       status: 200,
@@ -59,26 +61,56 @@ const createRiview = async (req, res) => {
 };
 const getListRiviewByProduct = async (req, res) => {
   try {
-    const { productCode } = req.body;
-    const listRiviewByProduct = await Riview.findAll({
-      where: { productCode },
+    const { id } = req.params;
+    const productDetails = await ProductDetails.findAll({
+      where: { idProduct: id },
+      attributes: ["productDetailCode"],
     });
 
-    if (listRiviewByProduct.length === 0) {
+    const productDetailIds = productDetails.map((pd) => pd.productDetailCode);
+    const listRiview = await Riviews.findAll({
+      where: {
+        productDetailCode: productDetailIds,
+      },
+    });
+
+    if (listRiview.length === 0) {
       return res.json({
         status: 400,
-        message: "Sản phẩm không có bài đánh giá nào !",
+        message: "Không có bài đánh giá nào cho sản phẩm này",
       });
     }
+    const customerCode = [...new Set(listRiview.map((r) => r.customerCode))];
+    const clients = await Client.findAll({
+      where: { customerCode },
+      attributes: ["customerCode", "name"],
+    });
+    const clientMap = {};
+    clients.forEach((client) => {
+      clientMap[client.customerCode] = client.name;
+    });
+
+    const enrichedRiviews = listRiview.map((r) => ({
+      ...r.toJSON(),
+      customerName: clientMap[r.customerCode] || null,
+    }));
+
+    return res.json({
+      status: 200,
+      message: "Thành công",
+      data: enrichedRiviews,
+    });
   } catch (e) {
-    console.log("Lỗi lấy danh sách đánh giá sản phẩm : ", e);
+    console.error("Lỗi lấy danh sách đánh giá sản phẩm: ", e);
     return res.json({
       status: 500,
       message: "Lỗi server",
     });
   }
 };
+
 const checkRiview = async (req, res) => {
+  console.log("Vào");
   try {
     const token = req.headers.authorization.split(" ")[1];
     const decoded = jwt.verify(token, signPrivate);
@@ -90,11 +122,9 @@ const checkRiview = async (req, res) => {
         message: "Tài khoản không tồn tại",
       });
     }
-
     const orders = await Order.findAll({
-      where: { customElements: account.customElements },
+      where: { customerCode: account.customerCode, status: "5" },
     });
-
     if (orders.length === 0) {
       return res.json({
         status: 400,
@@ -102,37 +132,31 @@ const checkRiview = async (req, res) => {
       });
     }
 
-    const orderCodes = orders.map((order) => order.orderCode);
+    const orderCodeList = orders.map((order) => order.orderCode);
 
     const orderDetails = await OrderDetail.findAll({
-      where: { orderCode: orderCodes },
+      where: { orderCode: orderCodeList },
     });
 
-    if (orderDetails.length === 0) {
-      return res.json({
-        status: 400,
-        message: "Người dùng không có bài đánh giá sản phẩm nào!",
-      });
-    }
-
-    const productDetailCodes = orderDetails.map((od) => od.productDetailCode);
-
-    const productDetails = await ProductDetails.findAll({
-      where: { productDetailCode: productDetailCodes },
+    const productDetailCodeList = orderDetails.map(
+      (detail) => detail.productDetailCode
+    );
+    console.log(orderCodeList);
+    console.log(productDetailCodeList);
+    const listRiview = await Riviews.findAll({
+      where: { customerCode: account.customerCode },
     });
 
-    const idProducts = productDetails.map((pd) => pd.idProduct);
-
-    const products = await Products.findAll({
-      where: { id: idProducts },
-    });
-
-    const productCodes = products.map((p) => p.productCode);
-
+    const matchedRiviews = listRiview.filter(
+      (review) =>
+        orderCodeList.includes(review.orderCode) &&
+        productDetailCodeList.includes(review.productDetailCode)
+    );
+    console.log(matchedRiviews);
     return res.json({
       status: 200,
       message: "Thành công",
-      data: productCodes,
+      data: listRiview,
     });
   } catch (e) {
     console.log("Lỗi kiểm tra xem đã đánh giá chưa: ", e);

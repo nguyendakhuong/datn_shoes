@@ -115,6 +115,7 @@ const DiscountCode = () => {
                             <th>Hình thức khuyến mại</th>
                             <th>Mô tả</th>
                             <th>Hạn mức tối đa</th>
+                            <th>Số tiền tối thiểu</th>
                             <th>Số lượng</th>
                             <th>Ngày bắt đầu</th>
                             <th>Ngày kết thúc</th>
@@ -131,7 +132,8 @@ const DiscountCode = () => {
                                     <td>{value.promotionLevel > 100 ? formatter.format(value.promotionLevel) : `${value.promotionLevel}%`}</td>
                                     <td>{value.promotionType === 1 ? "Giảm tiền trực tiếp" : "Giảm theo %"}</td>
                                     <td>{value.conditionsOfApplication}</td>
-                                    <td>{formatter.format(value.maximumPromotion)}</td>
+                                    <td>{value.promotionType === 2 ? formatter.format(value.maximumPromotion) : null}</td>
+                                    <td>{value.promotionType === 1 ? formatter.format(value.maximumPromotion) : null}</td>
                                     <td>{value.quantity}</td>
                                     <td>{value.startDate ? moment(value.startDate).format('DD/MM/YYYY') : "null"}</td>
                                     <td>{value.endDate ? moment(value.endDate).format('DD/MM/YYYY') : "null"}</td>

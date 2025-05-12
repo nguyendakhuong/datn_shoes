@@ -19,6 +19,7 @@ const OrderUser = () => {
   const [data, setData] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [orderNote, setOrderNote] = useState(null);
+  const [purchaseOrders, setPurchaseOrders] = useState([]);
   const statusLabels = {
     0: "Chưa thanh toán",
     1: "Chờ xác nhận",
@@ -44,6 +45,22 @@ const OrderUser = () => {
       const data = await response.json();
       if (data.status === 200) {
         setData(data.data);
+      }
+    } catch (e) {
+      console.log("Lỗi lấy thông tin đơn hàng của người dùng: ", e);
+    }
+  };
+  const getPurchaseOrder = async () => {
+    const token = APP_LOCAL.getTokenStorage();
+    try {
+      const response = await fetch(`http://localhost:3001/riview/checkRiview`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = await response.json();
+      if (data.status === 200) {
+        setPurchaseOrders(data.data);
       }
     } catch (e) {
       console.log("Lỗi lấy thông tin đơn hàng của người dùng: ", e);
@@ -112,19 +129,54 @@ const OrderUser = () => {
       },
     });
   };
-  const handleReviewProduct = (e, order) => {
+  const handleReviewProduct = (e, order, productDetailCode) => {
     e.stopPropagation();
     dispatch({
       type: KEY_CONTEXT_USER.SHOW_MODAL,
       payload: {
         typeModal: "REVIEW_PRODUCT",
-        contentModel: "Xác nhận hủy đơn hàng !!!",
+        onClickConfirmModel: async (sart, text) => {
+          const token = APP_LOCAL.getTokenStorage();
+          try {
+            const response = await fetch(
+              `http://localhost:3001/riview/createRiview`,
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                  sart,
+                  content: text,
+                  orderCode: order.orderCode,
+                  productDetailCode,
+                }),
+              }
+            );
+            const result = await response.json();
+
+            if (result.status === 200) {
+              ToastApp.success("Đánh giá đơn hàng thành công");
+              getAllOrder();
+              handleCloseModal();
+            } else {
+              ToastApp.warning(result.message);
+            }
+          } catch (e) {
+            console.log("Lỗi tạo đơn hàng: ", e);
+          }
+        },
       },
     });
   };
   useEffect(() => {
     getAllOrder();
+    getPurchaseOrder();
   }, []);
+
+  console.log(purchaseOrders);
+
   const filteredOrders =
     selectedTab === "all"
       ? data
@@ -178,11 +230,6 @@ const OrderUser = () => {
                 <strong>Tổng tiền:</strong>{" "}
                 {formatter.format(order.totalPayment)}
               </p>
-              {order.status === "5" ? (
-                <button onClick={(e) => handleReviewProduct(e, order)}>
-                  Đánh giá sản phẩm
-                </button>
-              ) : null}
             </div>
           ))
         ) : (
@@ -246,15 +293,38 @@ const OrderUser = () => {
               {selectedOrder.orderDetails.map((detail, index) => (
                 <div key={index} className="product-item">
                   <img src={detail.image} alt={detail.nameProduct} />
-                  <div>
-                    <strong>Mã đơn sản phẩm: {detail.orderCode}</strong>
-                    <p>
-                      <strong>{detail.nameProduct}</strong>
-                    </p>
-                    <p>Size: {detail.size}</p>
-                    <p>Số lượng: {detail.quantity}</p>
-                    <p>Giá: {formatter.format(detail.price)}</p>
-                    <p>Màu: {detail.color}</p>
+                  <div className="item_order">
+                    <div className="info_order">
+                      <strong>Mã đơn sản phẩm: {detail.orderCode}</strong>
+                      <p>
+                        <strong>{detail.nameProduct}</strong>
+                      </p>
+                      <p>Size: {detail.size}</p>
+                      <p>Số lượng: {detail.quantity}</p>
+                      <p>Giá: {formatter.format(detail.price)}</p>
+                      <p>Màu: {detail.color}</p>
+                    </div>
+                    <div>
+                      {selectedOrder.status === "5" &&
+                      !purchaseOrders.some(
+                        (review) =>
+                          review.productDetailCode === detail.productDetailCode
+                      ) ? (
+                        <div>
+                          <button
+                            onClick={(e) =>
+                              handleReviewProduct(
+                                e,
+                                selectedOrder,
+                                detail.productDetailCode
+                              )
+                            }
+                          >
+                            Đánh giá sản phẩm
+                          </button>
+                        </div>
+                      ) : null}
+                    </div>
                   </div>
                 </div>
               ))}
@@ -264,11 +334,6 @@ const OrderUser = () => {
                 onClick={() => handleCancelOrder(selectedOrder.orderCode)}
               >
                 Hủy hàng
-              </button>
-            ) : null}
-            {selectedOrder.status === "5" ? (
-              <button onClick={(e) => handleReviewProduct(e, selectedOrder)}>
-                Đánh giá sản phẩm
               </button>
             ) : null}
           </div>

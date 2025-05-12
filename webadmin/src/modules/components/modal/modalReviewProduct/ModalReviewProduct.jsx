@@ -66,10 +66,10 @@ const ModalReviewProduct = () => {
               buttonAuth={false}
               title={"Ok"}
               onClick={() => {
-                userCTX.onClickConfirmModel({
-                  star: selectedStar,
-                  text: reviewText,
-                });
+                userCTX.onClickConfirmModel(
+                   selectedStar,
+                   reviewText,
+                );
               }}
             />
             </div>

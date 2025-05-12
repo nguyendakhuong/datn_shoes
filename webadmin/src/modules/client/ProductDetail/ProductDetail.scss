@@ -4,9 +4,11 @@
 
 .productDetail-content {
   display: flex;
+  
 }
 
 .product-left {
+  flex: 1;
   margin-right: 5rem;
   display: flex;
   flex-direction: column;
@@ -14,7 +16,7 @@
 
 .product-image {
   width: 100%;
-  max-width: 400px;
+  max-width: 40rem;
   border-radius: 10px;
   border: 1px solid #ddd;
 }
@@ -25,8 +27,8 @@
   color: #555;
 }
 
-.product-right {
-  width: 30rem;
+.productDetail-right {
+  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -41,12 +43,34 @@
   }
 }
 .description {
+  flex: 1;
   margin-left: 10px;
-  width: 70rem;
   span {
     font-size: 16px;
     font-weight: 700;
     margin: 20px 0;
+  }
+}
+.riview {
+  flex: 1;
+  h1 {
+    margin-bottom: 10px;
+  }
+  strong{
+    font-size: 14px;
+  }
+  .item_rate {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .item_riview{
+    img{
+      width: 20px;
+    }
+    p{
+      font-size: 16px;
+    }
   }
 }
 

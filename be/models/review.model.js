@@ -1,6 +1,6 @@
 module.exports = (sequelize, DataTypes) => {
   const Riview = sequelize.define(
-    "Riview",
+    "Riviews",
     {
       id: {
         type: DataTypes.INTEGER,
@@ -8,11 +8,15 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
         autoIncrement: true,
       },
+      orderCode: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
       customerCode: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
-      productCode: {
+      productDetailCode: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
@@ -31,13 +35,12 @@ module.exports = (sequelize, DataTypes) => {
       },
     },
     {
-      tableName: "Products",
+      tableName: "Riviews",
       charset: "utf8mb4",
       collate: "utf8mb4_general_ci",
       paranoid: true,
       timestamps: true,
     }
   );
-
   return Riview;
 };

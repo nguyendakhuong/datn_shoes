@@ -13,7 +13,7 @@ const ModalPayment = ({ data, total, isOpen, onClose }) => {
   const [userCtx, dispatch] = useContext(UserContext);
   const [discount, setDiscount] = useState("");
   const [discountAPI, setDiscountAPI] = useState();
-  const [totalAfterDiscount, setTotalAfterDiscount] = useState(0);
+  const [totalAfterDiscount, setTotalAfterDiscount] = useState(null);
   const [discountAmount, setDiscountAmount] = useState(0);
   const [type, setType] = useState(1);
   const [selectedAddress, setSelectedAddress] = useState(null);
@@ -325,7 +325,7 @@ const ModalPayment = ({ data, total, isOpen, onClose }) => {
                   <span>Số tiền ban đầu: {formatter.format(total)}</span>
                   <span>
                     Số tiền sau giảm giá:{" "}
-                    {totalAfterDiscount > 0
+                    {totalAfterDiscount >= 0
                       ? formatter.format(totalAfterDiscount)
                       : formatter.format(total)}
                   </span>
@@ -373,7 +373,7 @@ const ModalPayment = ({ data, total, isOpen, onClose }) => {
               <div className="flex-total">
                 <span>Số tiền bạn cần thành toán: </span>
                 <p>
-                  {totalAfterDiscount > 0
+                  {totalAfterDiscount >= 0
                     ? formatter.format(totalAfterDiscount)
                     : formatter.format(total)}
                 </p>
