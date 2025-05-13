@@ -16,8 +16,8 @@ require("dotenv").config;
 const createRiview = async (req, res) => {
   const signPrivate = process.env.SIGN_PRIVATE;
   try {
-    const { star, content, productDetailCode, orderCode } = req.body;
-    if (!star || !content || !productDetailCode || !orderCode) {
+    const { sart, content, productDetailCode, orderCode } = req.body;
+    if (!sart || !content || !productDetailCode || !orderCode) {
       return res.json({
         status: 400,
         message: "Nhập đủ dữ liệu trước khi đánh giá",
@@ -42,7 +42,7 @@ const createRiview = async (req, res) => {
     await Riviews.create({
       customerCode: account.customerCode,
       productDetailCode,
-      sart: star,
+      sart,
       content,
       status: 1,
       orderCode,

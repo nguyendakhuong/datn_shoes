@@ -160,6 +160,9 @@ const OrderUser = () => {
               ToastApp.success("Đánh giá đơn hàng thành công");
               getAllOrder();
               handleCloseModal();
+              dispatch({
+                type: KEY_CONTEXT_USER.HIDE_MODAL,
+              })
             } else {
               ToastApp.warning(result.message);
             }
