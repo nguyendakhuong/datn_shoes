@@ -88,7 +88,7 @@ const createAddress = async (req, res) => {
         message: "Không tìm thấy tài khoản!",
       });
     }
-    const checkAddress = await Address.findAll({ where: { status: 1 } });
+    const checkAddress = await Address.findAll({ where: { status: 1, idCustom: account.customerCode } });
     if (checkAddress.length >= 3) {
       return res.json({
         status: 400,
