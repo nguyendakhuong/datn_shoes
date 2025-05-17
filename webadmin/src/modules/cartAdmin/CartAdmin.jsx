@@ -430,7 +430,6 @@ const CartAdmin = () => {
       .toLowerCase()
       .includes(searchTerm.toLowerCase())
   );
-  console.log("aaaaaaaaaaaaaaaaaaaaaaaa", totalAfterDiscount);
   return (
     <div className="cartAdmin-container">
       <div className="cart">
@@ -663,7 +662,8 @@ const CartAdmin = () => {
                 Hình thức:{" "}
                 {discountAPI.promotionType === 1 ? "Giảm tiền" : "Giảm theo %"}
               </span>
-              <span>Mô tải: {discountAPI.conditionsOfApplication}</span>
+              <span>Mô tả: {discountAPI.describe}</span>
+              <span>Số tiền tối thiểu: {formatter.format(discountAPI.conditionsOfApplication)}</span>
               <span>
                 Hạn mức tối đa:{" "}
                 {discountAPI.maximumPromotion

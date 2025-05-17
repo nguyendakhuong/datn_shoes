@@ -14,7 +14,7 @@ import AppImages from '../../assets';
 
 const Login = () => {
     const navigate = useNavigate();
-    const [{ }, dispatch] = useContext(UserContext);
+    const [dispatch] = useContext(UserContext);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [isButtonDisabled, setIsButtonDisabled] = useState(true);

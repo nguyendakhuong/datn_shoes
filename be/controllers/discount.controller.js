@@ -69,9 +69,10 @@ const createDiscount = async (req, res) => {
       name: data.name,
       promotionLevel: data.promotionLevel, //mức khuyển mại
       promotionType: data.promotionType, // Hình thức khuyến mãi
-      conditionsOfApplication: data.conditionsOfApplication, // Điều kiện áp dụng (1 là giảm tiền || 2 là giảm theo %)
-      maximumPromotion: data.maximumPromotion, // mức khuyến mãi tối đa
+      conditionsOfApplication: data.conditionsOfApplication, // Số tiền tối thiệu
+      maximumPromotion: data.maximumPromotion || 0, // mức khuyến mãi tối đa
       quantity: data.quantity,
+      describe: data.describe,
       startDate: data.startDate,
       endDate: data.endDate,
       status: 1,
@@ -102,9 +103,10 @@ const updateCreate = async (req, res) => {
     discount.promotionLevel = data.promotionLevel;
     discount.promotionType = data.promotionType;
     discount.conditionsOfApplication = data.conditionsOfApplication;
-    discount.maximumPromotion = data.maximumPromotion;
+    discount.maximumPromotion = data.maximumPromotion || 0;
     discount.quantity = data.quantity;
     discount.startDate = data.startDate;
+    discount.describe = data.describe;
     discount.endDate = data.endDate;
     await discount.save();
     return res.json({
@@ -209,14 +211,17 @@ const useDiscount = async (req, res) => {
     }
 
     if (getDiscount.promotionType === 1) {
-      if(total < getDiscount.maximumPromotion) {
+      if (total < getDiscount.conditionsOfApplication) {
         return res.json({
-          status : 401,
-          message : "Mã không áp dụng cho đơn hàng này!",
-          data : getDiscount
-        })
-      } 
-      const newTotal = total - getDiscount.promotionLevel > 0 ? total - getDiscount.promotionLevel : 0;
+          status: 401,
+          message: "Mã không áp dụng cho đơn hàng này!",
+          data: getDiscount,
+        });
+      }
+      const newTotal =
+        total - getDiscount.promotionLevel > 0
+          ? total - getDiscount.promotionLevel
+          : 0;
       return res.json({
         status: 200,
         message: " Thành công",
@@ -226,6 +231,13 @@ const useDiscount = async (req, res) => {
       });
     }
     if (getDiscount.promotionType === 2) {
+      if (total < getDiscount.conditionsOfApplication) {
+        return res.json({
+          status: 401,
+          message: "Mã không áp dụng cho đơn hàng này!",
+          data: getDiscount,
+        });
+      }
       const maxPromotion = Number(getDiscount.maximumPromotion);
       const discountAmount = (total * getDiscount.promotionLevel) / 100;
       if (discountAmount > maxPromotion) {
@@ -308,14 +320,17 @@ const useDiscountAdmin = async (req, res) => {
       });
     }
     if (getDiscount.promotionType === 1) {
-      if(total < getDiscount.maximumPromotion) {
+      if (total < getDiscount.conditionsOfApplication) {
         return res.json({
-          status : 401,
-          message : "Mã không áp dụng cho đơn hàng này!",
-          data : getDiscount
-        })
-      } 
-      const newTotal = total - getDiscount.promotionLevel > 0 ? total - getDiscount.promotionLevel : 0;
+          status: 401,
+          message: "Mã không áp dụng cho đơn hàng này!",
+          data: getDiscount,
+        });
+      }
+      const newTotal =
+        total - getDiscount.promotionLevel > 0
+          ? total - getDiscount.promotionLevel
+          : 0;
       return res.json({
         status: 200,
         message: " Thành công",
@@ -325,8 +340,14 @@ const useDiscountAdmin = async (req, res) => {
       });
     }
 
-
     if (getDiscount.promotionType === 2) {
+      if (total < getDiscount.conditionsOfApplication) {
+        return res.json({
+          status: 401,
+          message: "Mã không áp dụng cho đơn hàng này!",
+          data: getDiscount,
+        });
+      }
       const maxPromotion = Number(getDiscount.maximumPromotion);
       const discountAmount = (total * getDiscount.promotionLevel) / 100;
       if (discountAmount > maxPromotion) {

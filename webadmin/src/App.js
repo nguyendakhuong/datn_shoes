@@ -60,7 +60,7 @@ function App() {
     checkLogin();
     getCart();
   }, [dispatch]);
-
+  console.log(accountType);
   return (
     <div>
       <RouterProvider router={AppRoute(isAuth, accountType)} />

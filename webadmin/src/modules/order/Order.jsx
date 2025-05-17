@@ -267,8 +267,14 @@ const Order = () => {
     currency: "VND",
   });
   const filteredOrders = records.filter((order) => {
+    const onlineMethods = ["Thanh toán khi nhận hàng", "Thanh toán online"];
+    const offlineMethods = ["Thanh toán offline tại quầy"];
     const matchesPaymentMethod =
-      !selectedPaymentMethod || order.paymentMethod === selectedPaymentMethod;
+      !selectedPaymentMethod ||
+      (selectedPaymentMethod === "online" &&
+        onlineMethods.includes(order.paymentMethod)) ||
+      (selectedPaymentMethod === "offline" &&
+        offlineMethods.includes(order.paymentMethod));
     const matchesPhone =
       !searchDataOder ||
       (order.phoneNumber &&
@@ -290,9 +296,8 @@ const Order = () => {
                   onChange={(e) => setSelectedPaymentMethod(e.target.value)}
                 >
                   <option value="">Tất cả</option>
-                  <option value="Thanh toán khi nhận hàng">COD</option>
-                  <option value="Thanh toán online">Thanh toán online</option>
-                  <option value="Thanh toán offline tại quầy">Thanh toán tại quầy</option>
+                  <option value="online">Thanh toán online</option>
+                  <option value="offline">Thanh toán offline</option>
                 </select>
               </div>
               <div className="input-search-order">

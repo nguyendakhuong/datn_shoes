@@ -16,6 +16,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
+      describe: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
       promotionLevel: {
         // Mức khuyến mãi
         type: DataTypes.STRING,
@@ -27,13 +31,13 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       conditionsOfApplication: {
-        // Điều kiện áp dụng
-        type: DataTypes.STRING,
+        // Điều kiện áp dụng / Số tiền tối thiểu
+        type: DataTypes.INTEGER,
         allowNull: false,
       },
       maximumPromotion: {
         // mức khuyến mãi tối đa
-        type: DataTypes.STRING,
+        type: DataTypes.INTEGER,
         allowNull: false,
       },
       quantity: {

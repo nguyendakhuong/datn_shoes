@@ -7,6 +7,7 @@ import './ModalAddDiscount.scss'
 import React, { useState } from 'react';
 
 const ModalAddDiscount = ({ isOpen, onClose }) => {
+    
     const [data, setData] = useState({
         name: "",
         promotionLevel: "", // mức khuyến mại
@@ -14,6 +15,7 @@ const ModalAddDiscount = ({ isOpen, onClose }) => {
         conditionsOfApplication: "", // điều kiện áp dụng
         maximumPromotion: "", // hạn mức tối đa
         quantity: "",
+        describe:"",
         startDate: "",
         endDate: ""
     })
@@ -21,8 +23,9 @@ const ModalAddDiscount = ({ isOpen, onClose }) => {
         name: "",
         promotionLevel: "", // mức khuyến mại
         promotionType: "", // hình thức khuyến mại
-        conditionsOfApplication: "", // mô tả
-        quantity: ""
+        conditionsOfApplication: "", // Số tiền tôi thiểu
+        quantity: "",
+        describe: ""
     });
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -113,13 +116,13 @@ const ModalAddDiscount = ({ isOpen, onClose }) => {
                             {listError.promotionLevel && <label className='error-text'>{listError.promotionLevel}</label>}
                             <InputAdmin
                                 label={"Mô tả"}
-                                name={"conditionsOfApplication"}
+                                name={"describe"}
                                 validate={'required'}
                                 type={'text'}
-                                value={data.conditionsOfApplication}
+                                value={data.describe}
                                 onChange={handleChange}
                             />
-                            {listError.conditionsOfApplication && <label className='error-text'>{listError.conditionsOfApplication}</label>}
+                            {listError.describe && <label className='error-text'>{listError.describe}</label>}
                             <div className="type-input">
                                 <label>
                                     <text>Hình thức khuyến mại: </text>
@@ -144,15 +147,24 @@ const ModalAddDiscount = ({ isOpen, onClose }) => {
                                 </label>
                             </div>
                             <InputAdmin
-                                label={data.promotionType === 1 ? "Số tiền tối thiếu" : "Mức khuyến mãi tối đa"}
+                                label={"Mức khuyến mãi tối đa"}
                                 name={"maximumPromotion"}
                                 validate={'checkNumber||checkNegative'}
                                 type={'text'}
                                 value={data.maximumPromotion}
                                 onChange={handleChange}
-                                // readOnly={data.promotionType === 1 ? true : false}
+                                readOnly={data.promotionType === 1 ? true : false}
                             />
                             {listError.maximumPromotion && <label className='error-text'>{listError.maximumPromotion}</label>}
+                            <InputAdmin
+                                label={"Số tiền tối thiểu"}
+                                name={"conditionsOfApplication"}
+                                validate={'checkNumber||checkNegative'}
+                                type={'text'}
+                                value={data.conditionsOfApplication}
+                                onChange={handleChange}
+                            />
+                            {listError.conditionsOfApplication && <label className='error-text'>{listError.conditionsOfApplication}</label>}
                             <InputAdmin
                                 label={"Số lượng"}
                                 name={"quantity"}
@@ -182,8 +194,8 @@ const ModalAddDiscount = ({ isOpen, onClose }) => {
                             {listError.endDate && <label className='error-text'>{listError.endDate}</label>}
 
                             <div className="modal-buttons">
-                                <button onClick={handleSubmit} type="submit">Thêm</button>
                                 <button className="exit-button" onClick={() => { onClose(); clearForm(); }}>Hủy</button>
+                                <button onClick={handleSubmit} type="submit">Thêm</button>
                             </div>
                         </form>
                     </div>

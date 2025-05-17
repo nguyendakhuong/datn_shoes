@@ -110,6 +110,7 @@ const getListRiviewByProduct = async (req, res) => {
 };
 
 const checkRiview = async (req, res) => {
+  const signPrivate = process.env.SIGN_PRIVATE;
   try {
     const token = req.headers.authorization.split(" ")[1];
     const decoded = jwt.verify(token, signPrivate);

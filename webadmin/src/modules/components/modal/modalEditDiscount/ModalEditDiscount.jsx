@@ -15,6 +15,7 @@ const ModalEditDiscount = ({ data, isOpen, onClose }) => {
         conditionsOfApplication: "", // điều kiện áp dụng
         maximumPromotion: "", // hạn mức tối đa
         quantity: "",
+        describe:"",
         startDate: "",
         endDate: ""
     })
@@ -24,7 +25,8 @@ const ModalEditDiscount = ({ data, isOpen, onClose }) => {
         promotionLevel: "", // mức khuyến mại
         promotionType: "", // hình thức khuyến mại
         conditionsOfApplication: "", // điều kiện áp dụng
-        quantity: ""
+        quantity: "",
+        describe:"",
     });
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -88,12 +90,13 @@ const ModalEditDiscount = ({ data, isOpen, onClose }) => {
 
     useEffect(() => {
         if (data) {
-            const { startDate, endDate, ...restData } = data;
+            const { startDate, endDate,promotionType, ...restData } = data;
             setFormData({
                 ...restData,
                 startDate: startDate ? moment(startDate).format("YYYY-MM-DD") : "",
                 endDate: endDate ? moment(endDate).format("YYYY-MM-DD") : "",
             });
+            setType(promotionType)
         }
     }, [data]);
 
@@ -124,13 +127,14 @@ const ModalEditDiscount = ({ data, isOpen, onClose }) => {
                             {listError.promotionLevel && <label className='error-text'>{listError.promotionLevel}</label>}
                             <InputAdmin
                                 label={"Mô tả"}
-                                name={"conditionsOfApplication"}
+                                name={"describe"}
                                 validate={'required'}
                                 type={'text'}
-                                value={formData.conditionsOfApplication}
+                                value={data.describe}
                                 onChange={handleChange}
                             />
-                            {listError.conditionsOfApplication && <label className='error-text'>{listError.conditionsOfApplication}</label>}
+                            {listError.describe && <label className='error-text'>{listError.describe}</label>}
+    
                             <div className="type-input">
                                 <label>
                                     <span>Hình thức khuyến mại: </span>
@@ -155,15 +159,24 @@ const ModalEditDiscount = ({ data, isOpen, onClose }) => {
                                 </label>
                             </div>
                             <InputAdmin
-                                label={data.promotionType === 1 ? "Số tiền tối thiếu" : "Mức khuyến mãi tối đa"}
+                                label={ "Mức khuyến mãi tối đa"}
                                 name={"maximumPromotion"}
-                                validate={'checkNegative||checkNumber'}
+                                validate={'required||checkNegative||checkNumber'}
                                 type={'text'}
                                 value={formData.maximumPromotion}
                                 onChange={handleChange}
-                                // readOnly={type === 1 ? true : false}
+                                readOnly={type === 1 ? true : false}
                             />
                             {listError.maximumPromotion && <label className='error-text'>{listError.maximumPromotion}</label>}
+                            <InputAdmin
+                                label={"Số tiền tối thiểu"}
+                                name={"conditionsOfApplication"}
+                                validate={'required||checkNegative||checkNumber'}
+                                type={'text'}
+                                value={formData.conditionsOfApplication}
+                                onChange={handleChange}
+                            />
+                            {listError.conditionsOfApplication && <label className='error-text'>{listError.conditionsOfApplication}</label>}
                             <InputAdmin
                                 label={"Số lượng"}
                                 name={"quantity"}
@@ -193,8 +206,8 @@ const ModalEditDiscount = ({ data, isOpen, onClose }) => {
                             {listError.endDate && <label className='error-text'>{listError.endDate}</label>}
 
                             <div className="modal-buttons">
-                                <button onClick={handleSubmit} type="submit">Cập nhật</button>
                                 <button className="exit-button" onClick={onClose}>Hủy</button>
+                                <button onClick={handleSubmit} type="submit">Cập nhật</button>
                             </div>
                         </form>
                     </div>

@@ -17,7 +17,7 @@ const sidebarNav = [
   {
     link: "/admin/order",
     section: "order",
-    text: "Quản lí đơn hàng",
+    text: "Quản lí hoá đơn",
   },
   {
     link: "/admin/statistical",
