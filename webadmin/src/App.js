@@ -13,7 +13,7 @@ import { KEY_CONTEXT_USER } from "./context/use.reducer";
 function App() {
   const [{ isOpenModal, accountType }, dispatch] = useContext(UserContext);
   const [isAuth, setIsAuth] = useState(APP_LOCAL.getTokenStorage);
-
+  const user = localStorage.getItem("currentUser");
   useEffect(() => {
     const checkLogin = async () => {
       const token = APP_LOCAL.getTokenStorage();
@@ -45,22 +45,22 @@ function App() {
       }
     };
     const getCart = async () => {
+      console.log("Vào");
       try {
-        const cartLocal = APP_LOCAL.getCart();
-        dispatch({ type: KEY_CONTEXT_USER.SET_CART, payload: cartLocal });
-        const cartAdminLocal = APP_LOCAL.getCartAdmin();
-        dispatch({
-          type: KEY_CONTEXT_USER.SET_CART_ADMIN,
-          payload: cartAdminLocal,
-        });
+        console.log(user);
+        if (user) {
+          const cartLocal = APP_LOCAL.getCart();
+          console.log(cartLocal);
+          dispatch({ type: KEY_CONTEXT_USER.SET_CART, payload: cartLocal });
+        }
       } catch (error) {
         console.log("Lỗi lấy giỏ hàng: ", error);
       }
     };
     checkLogin();
     getCart();
-  }, [dispatch]);
-  console.log(accountType);
+  }, [dispatch, user]);
+
   return (
     <div>
       <RouterProvider router={AppRoute(isAuth, accountType)} />

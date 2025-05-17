@@ -2,7 +2,6 @@ export const KEY_LOCAL = {
   TOKEN: "TOKEN",
   ACCOUNT_TYPE: "ACCOUNT_TYPE",
   CART: "CART",
-  CART_ADMIN: "CART_ADMIN",
   LANGUAGE_APP: "LANGUAGE_APP",
 };
 const getTokenStorage = () => {
@@ -19,20 +18,34 @@ const setAccountTypeStorage = (type) => {
   return localStorage.setItem(KEY_LOCAL.ACCOUNT_TYPE, type);
 };
 const getCart = () => {
-  const data = localStorage.getItem(KEY_LOCAL.CART);
-  return JSON.parse(data).filter((i) => i.id);
+  const user = localStorage.getItem("currentUser");
+  if (!user) return [];
+  const userParse = JSON.parse(user);
+  const key = `CART_${userParse.username}`;
+  const data = localStorage.getItem(key);
+
+  try {
+    const parsed = JSON.parse(data);
+    console.log("Parsed cart:", parsed);
+
+    if (Array.isArray(parsed)) {
+      return parsed.filter((i) => i?.id);
+    } else {
+      console.warn("Cart is not an array, returning empty:", parsed);
+      return [];
+    }
+  } catch (err) {
+    console.error("Error parsing cart from localStorage:", err);
+    return [];
+  }
 };
 
 const setCart = (cart) => {
-  return localStorage.setItem(KEY_LOCAL.CART, cart);
-};
-const getCartAdmin = () => {
-  const data = localStorage.getItem(KEY_LOCAL.CART_ADMIN);
-  return JSON.parse(data).filter((i) => i.id);
-};
-
-const setCartAdmin = (cart) => {
-  return localStorage.setItem(KEY_LOCAL.CART_ADMIN, cart);
+ const user = localStorage.getItem("currentUser");
+  if (!user) return [];
+  const userParse = JSON.parse(user);
+  const key = `CART_${userParse.username}`;
+  localStorage.setItem(key, (cart));
 };
 
 const getLanguageStorage = () => {
@@ -49,8 +62,6 @@ const APP_LOCAL = {
   setAccountTypeStorage,
   getCart,
   setCart,
-  getCartAdmin,
-  setCartAdmin,
   getLanguageStorage,
   setLanguageStorage,
 };

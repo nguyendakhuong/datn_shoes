@@ -115,6 +115,7 @@ const HeaderUser = () => {
                                     APP_LOCAL.setTokenStorage('')
                                     setShowDropdown(false)
                                     navigate('/login')
+                                    localStorage.removeItem("currentUser");
                                 }}>
                                     Đăng xuất
                                 </button>
