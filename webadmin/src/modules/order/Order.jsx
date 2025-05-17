@@ -93,99 +93,134 @@ const Order = () => {
       printFrame.contentWindow.print();
       document.body.removeChild(printFrame);
     };
+
     const printOrder = (order) => {
-      return `
-                        <html>
-                            <head>
-                                <style>
-                                body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
-                                .order-container { border: 1px solid #ddd; padding: 20px; max-width: 800px; margin: auto; }
-                                .order-header { text-align: center; margin-bottom: 20px; }
-                                .order-header h1 { margin: 0; }
-                                .order-details { margin-bottom: 20px; }
-                                .order-details p { margin: 5px 0; }
-                                .order-products { margin-bottom: 20px; }
-                                .order-products h2 { border-bottom: 1px solid #ddd; padding-bottom: 10px; }
-                                .product-table { width: 100%; border-collapse: collapse; }
-                                .product-table th, .product-table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-                                .product-table th { background-color: #f2f2f2; }
-                            </style>
-                            </head>
-                            <body>
-                                <div class="order-container">
-                                    <div class="order-header">
-                                        <h1>Hóa đơn</h1>
-                                    </div>
-                                    <div class="order-details">
-                                        <p><strong>Tên cửa hàng:</strong> Shoe Store</p>
-                                        <p><strong>Mã đơn hàng:</strong> ${
-                                          order.orderCode
-                                        }</p>
-                                        <p><strong>Tên khách hàng:</strong> ${
-                                          order.userName
-                                        }</p>
-                                        <p><strong>Số điện thoại:</strong> ${
-                                          order.phoneNumber
-                                        }</p>
-                                        <p><strong>Địa chỉ giao hàng:</strong> ${
-                                          order.address
-                                        }</p>
-                                        <p><strong>Hình thức thanh toán:</strong> ${
-                                          order.paymentMethod
-                                        }</p>
-                                        <p><strong>Ngày giao:</strong> ${formattedUpdatedAt}</p>
-                                        <p><strong>Số tiền ban đầu:</strong> ${formatter.format(
-                                          order.totalDefault
-                                        )}</p>
-                                        <p><strong>Số tiền khuyến mại:</strong> ${formatter.format(
-                                          order.totalPromotion
-                                        )}</p>
-                                        <p><strong>Số tiền thanh toán:</strong> ${formatter.format(
-                                          order.totalPayment
-                                        )}</p>
-                                    </div>
-                                    <div class="order-products">
-                                    <h2>Products</h2>
-                                    <table class="product-table">
-                                        <thead>
-                                            <tr>
-                                                <th>Tên sản phẩm</th>
-                                                <th>Màu</th>
-                                                <th>Size</th>
-                                                <th>Số lượng</th>
-                                                <th>Giá tiền</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            ${
-                                              order.orderDetails
-                                                ? order.orderDetails
-                                                    .map(
-                                                      (product) => `
-                                                <tr>
-                                                    <td>${
-                                                      product.nameProduct
-                                                    }</td>
-                                                    <td>${product.color}</td>
-                                                    <td>${product.size}</td>
-                                                    <td>${product.quantity}</td>
-                                                    <td>${formatter.format(
-                                                      product.price
-                                                    )}</td>
-                                                </tr>
-                                            `
-                                                    )
-                                                    .join("")
-                                                : '<tr><td colspan="3">No products</td></tr>'
-                                            }
-                                        </tbody>
-                                    </table>
-                                </div>
-                                </div>
-                            </body>
-                        </html>
-                    `;
-    };
+  const formattedUpdatedAt = new Date(order.updatedAt).toLocaleDateString("vi-VN");
+  return `
+    <html>
+      <head>
+        <style>
+          body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 40px;
+            background-color: #f9f9f9;
+            color: #333;
+          }
+          .order-container {
+            background: #fff;
+            border: 1px solid #ccc;
+            padding: 30px;
+            max-width: 900px;
+            margin: auto;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            position: relative;
+          }
+          .order-header {
+            text-align: center;
+            margin-bottom: 30px;
+          }
+          .order-header h1 {
+            margin: 0;
+            font-size: 28px;
+            color: #444;
+          }
+          .order-details {
+            margin-bottom: 30px;
+            font-size: 16px;
+          }
+          .order-details p {
+            margin: 6px 0;
+          }
+          .order-products h2 {
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: #333;
+          }
+          .product-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 40px;
+          }
+          .product-table th, .product-table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+            font-size: 15px;
+          }
+          .product-table th {
+            background-color: #f0f0f0;
+          }
+          .total-payment {
+            font-size: 20px;
+            font-weight: bold;
+            color: #d32f2f;
+            text-align: right;
+            margin-top: 20px;
+            border-top: 2px solid #ccc;
+            padding-top: 15px;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="order-container">
+          <div class="order-header">
+            <h1>HÓA ĐƠN</h1>
+          </div>
+          <div class="order-details">
+            <p><strong>Tên cửa hàng:</strong> Shoe Store</p>
+            <p><strong>Mã đơn hàng:</strong> ${order.orderCode}</p>
+            <p><strong>Tên khách hàng:</strong> ${order.userName}</p>
+            <p><strong>Số điện thoại:</strong> ${order.phoneNumber}</p>
+            <p><strong>Địa chỉ giao hàng:</strong> ${order.address}</p>
+            <p><strong>Hình thức thanh toán:</strong> ${order.paymentMethod}</p>
+            <p><strong>Ngày giao:</strong> ${formattedUpdatedAt}</p>
+            <p><strong>Số tiền ban đầu:</strong> ${formatter.format(order.totalDefault)}</p>
+            <p><strong>Số tiền khuyến mại:</strong> ${formatter.format(order.totalPromotion)}</p>
+          </div>
+          <div class="order-products">
+            <h2>Danh sách sản phẩm</h2>
+            <table class="product-table">
+              <thead>
+                <tr>
+                  <th>Tên sản phẩm</th>
+                  <th>Màu</th>
+                  <th>Size</th>
+                  <th>Số lượng</th>
+                  <th>Giá tiền</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${
+                  order.orderDetails && order.orderDetails.length
+                    ? order.orderDetails
+                        .map(
+                          (product) => `
+                    <tr>
+                      <td>${product.nameProduct}</td>
+                      <td>${product.color}</td>
+                      <td>${product.size}</td>
+                      <td>${product.quantity}</td>
+                      <td>${formatter.format(product.price)}</td>
+                    </tr>`
+                        )
+                        .join("")
+                    : `<tr><td colspan="5">Không có sản phẩm nào.</td></tr>`
+                }
+              </tbody>
+            </table>
+          </div>
+          <div class="total-payment">
+            Số tiền cần thanh toán: ${formatter.format(order.totalPayment)}
+          </div>
+        </div>
+      </body>
+    </html>
+  `;
+};
+
+
     return (
       <tr key={order.id} onClick={() => viewOrderDetail(order)}>
         <td>{order.orderCode}</td>

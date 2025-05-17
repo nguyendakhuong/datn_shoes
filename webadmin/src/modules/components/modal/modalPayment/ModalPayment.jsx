@@ -299,13 +299,10 @@ const ModalPayment = ({ data, total, isOpen, onClose }) => {
                 {discountAPI ? (
                   <div className="flex">
                     <span>Mã giảm giá : {discountAPI.name}</span>
+                    <span>Mô tải: {discountAPI.describe}</span>
                     <span>
-                      Hình thức:{" "}
-                      {discountAPI.promotionType === 1
-                        ? "Giảm tiền"
-                        : "Giảm theo %"}
+                      Số tiền tối thiểu : {" "} {discountAPI.conditionsOfApplication ? `${formatter.format(discountAPI.conditionsOfApplication)}`: "0đ"}
                     </span>
-                    <span>Mô tải: {discountAPI.conditionsOfApplication}</span>
                     <span>
                       Hạn mức tối đa:{" "}
                       {discountAPI.maximumPromotion
