@@ -18,6 +18,7 @@ const ProductDetail = () => {
   const [filteredSizes, setFilteredSizes] = useState([]);
   const [selectedSize, setSelectedSize] = useState("");
   const navigate = useNavigate();
+
   const getProductById = async () => {
     try {
       const response = await fetch(
@@ -74,7 +75,7 @@ const ProductDetail = () => {
       console.log("Lỗi lấy đánh giá sản phẩm : ", e);
     }
   };
-  console.log(riviewProduct);
+
   useEffect(() => {
     getProductById();
     getProductByTrademark();

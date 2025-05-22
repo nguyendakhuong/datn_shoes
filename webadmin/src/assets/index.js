@@ -24,6 +24,7 @@ import riview3 from "./icons/riview3.png"
 import riview4 from "./icons/riview4.png"
 import riview5 from "./icons/riview5.png"
 
+import logo1 from "./image/imageLogo.png"
 const AppImages = {
   deleteModal,
   deleteItem,
@@ -45,7 +46,8 @@ const AppImages = {
   riview1,
   riview3,
   riview4,
-  riview5
+  riview5,
+  logo1
 };
 
 export default AppImages;

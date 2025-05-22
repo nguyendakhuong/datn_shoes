@@ -55,7 +55,7 @@ const AppRoute = (isAuth, accountType) => {
           element: <TrademarkUser />,
         },
         {
-          path: "/otherTrademark",
+          path: "/otherTrademark/:trademark",
           element: <OtherTrademark />,
         },
         {

@@ -6,6 +6,7 @@ import APP_LOCAL from '../../../../lib/localStorage';
 import { useContext, useEffect, useRef, useState } from 'react';
 import UserContext from '../../../../context/use.context';
 import { KEY_CONTEXT_USER } from '../../../../context/use.reducer';
+import SearchInput from '../../../components/searchInput/SearchInput';
 
 const HeaderUser = () => {
     const [{ accountType, cart }, dispatch] = useContext(UserContext);
@@ -79,13 +80,14 @@ const HeaderUser = () => {
             </div>
             <nav className="nav-menu">
                 <ul>
-                    <li onClick={handleHome}>GIỚI THIỆU</li>
-                    {data.length > 0 ? data.map((v, i) => (
+                    <li onClick={handleHome}>Trang chủ</li>
+                    {/* {data.length > 0 ? data.map((v, i) => (
                         <div key={i}>
                             <li onClick={() => handleClickTrademark(v.name)}>{v.name}</li>
                         </div>
-                    )) : null}
-                    <li onClick={() => navigate('/otherTrademark')}>HÃNG KHÁC</li>
+                    )) : null} */}
+                    <li onClick={() => navigate('/otherTrademark/all')}>Sản phẩm</li>
+                    <SearchInput />
                 </ul>
             </nav>
             <div className="header-icons">
