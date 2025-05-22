@@ -222,7 +222,6 @@ const createProductDetail = async (req, res) => {
     const checkSize = await Size.findOne({ where: { name: size } });
     let sizeCode;
     if (!checkSize) {
-      
       sizeCode = await generateUniqueCode(Size, "sizeCode");
       await Size.create({
         sizeCode,
@@ -990,6 +989,55 @@ const productActive = async (req, res) => {
   }
 };
 
+const searchProduct = async (req, res) => {
+  try {
+    const query = req.query.q;
+    if (!query) {
+      return res.status(400).json({ message: "Thiếu từ khóa tìm kiếm", status: 400 });
+    }
+
+    const productResults = await Products.findAll({
+      where: {
+        name: { [Op.like]: `%${query}%` }
+      },
+      include: [
+        {
+          model: Trademark,
+          as: 'trademark',
+          attributes: ['name'],
+          required: false
+        }
+      ],
+      attributes: ['productCode', 'name', 'idTrademark']
+    });
+
+    if (productResults.length > 0) {
+      // Nếu tìm thấy sản phẩm, trả về luôn
+      return res.json(productResults);
+    }
+
+    // 2. Nếu không tìm thấy sản phẩm nào, tìm thương hiệu có name giống query
+    const trademarkResults = await Trademark.findAll({
+      where: {
+        name: { [Op.like]: `%${query}%` }
+      },
+      attributes: ['id', 'name']
+    });
+
+    if (trademarkResults.length > 0) {
+      // Nếu có thương hiệu tìm thấy, trả về
+      return res.json(trademarkResults);
+    }
+
+    // Nếu không tìm thấy gì cả
+    return res.status(404).json({ message: "Không tìm thấy sản phẩm hoặc thương hiệu", status: 404 });
+
+  } catch (e) {
+    console.error("Lỗi tìm kiếm sản phẩm hoặc thương hiệu: ", e);
+    return res.status(500).json({ message: "Lỗi server", status: 500 });
+  }
+};
+
 module.exports = {
   product,
   getProducts,
@@ -1006,4 +1054,5 @@ module.exports = {
   statusProductDetail,
   getProductByIdForUser,
   productActive,
+  searchProduct,
 };

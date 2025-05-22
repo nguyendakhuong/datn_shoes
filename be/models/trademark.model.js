@@ -1,6 +1,6 @@
 module.exports = (sequelize, DataTypes) => {
   const Trademark = sequelize.define(
-    "Trademark", // Thương hiệu
+    "Trademark",
     {
       id: {
         type: DataTypes.INTEGER,
@@ -37,6 +37,14 @@ module.exports = (sequelize, DataTypes) => {
       timestamps: true,
     }
   );
+
+  // Tạo quan hệ trong associate
+  Trademark.associate = (models) => {
+    Trademark.hasMany(models.Products, {
+      foreignKey: "idTrademark",
+      as: "products",
+    });
+  };
 
   return Trademark;
 };
