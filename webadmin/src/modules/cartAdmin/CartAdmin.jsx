@@ -690,9 +690,9 @@ const CartAdmin = () => {
           </div>
         </div>
         <div className="flex-total">
-          <span>Số tiền bạn cần thành toán: </span>
+          <span>Số tiền bạn cần thanh toán: </span>
           <p>
-            {totalAfterDiscount >= 0
+            {totalAfterDiscount
               ? formatter.format(totalAfterDiscount)
               : formatter.format(total)}
           </p>
