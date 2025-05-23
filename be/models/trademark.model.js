@@ -38,13 +38,5 @@ module.exports = (sequelize, DataTypes) => {
     }
   );
 
-  // Tạo quan hệ trong associate
-  Trademark.associate = (models) => {
-    Trademark.hasMany(models.Products, {
-      foreignKey: "idTrademark",
-      as: "products",
-    });
-  };
-
   return Trademark;
 };

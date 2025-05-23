@@ -54,14 +54,5 @@ module.exports = (sequelize, DataTypes) => {
     }
   );
 
-  // Khai báo quan hệ trong hàm associate
-  Products.associate = (models) => {
-    Products.belongsTo(models.Trademark, {
-      foreignKey: "idTrademark", // đây là tên cột FK trong bảng Products
-      targetKey: 'brandCode',
-      as: "trademark", // alias
-    });
-  };
-
   return Products;
 };
