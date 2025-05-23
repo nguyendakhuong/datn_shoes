@@ -184,19 +184,21 @@ const useDiscount = async (req, res) => {
       });
     }
 
-    const currentDate = moment();
-    const startDate = moment(getDiscount.startDate);
-    const endDate = moment(getDiscount.endDate);
+    const currentDate = moment(); // Thời điểm hiện tại
+    const startDate = moment(getDiscount.startDate).startOf("day"); // 00:00 của ngày bắt đầu
+    const endDate = moment(getDiscount.endDate).endOf("day"); // 23:59:59 của ngày kết thúc
+
     if (
-      startDate.isAfter(currentDate) ||
-      endDate.isBefore(currentDate) ||
-      startDate.isAfter(endDate)
+      currentDate.isBefore(startDate) || // Chưa đến ngày bắt đầu
+      currentDate.isAfter(endDate) || // Đã qua ngày kết thúc
+      startDate.isAfter(endDate) // Ngày bắt đầu > ngày kết thúc => sai logic
     ) {
       return res.json({
         status: 400,
         message: "Mã không còn hoạt động",
       });
     }
+
     const checkOrderDiscount = await Order.findOne({
       where: {
         customerCode: account.customerCode,
@@ -293,19 +295,21 @@ const useDiscountAdmin = async (req, res) => {
       });
     }
 
-    const currentDate = moment();
-    const startDate = moment(getDiscount.startDate);
-    const endDate = moment(getDiscount.endDate);
+    const currentDate = moment(); // Thời điểm hiện tại
+    const startDate = moment(getDiscount.startDate).startOf("day"); // 00:00 của ngày bắt đầu
+    const endDate = moment(getDiscount.endDate).endOf("day"); // 23:59:59 của ngày kết thúc
+
     if (
-      startDate.isAfter(currentDate) ||
-      endDate.isBefore(currentDate) ||
-      startDate.isAfter(endDate)
+      currentDate.isBefore(startDate) || // Chưa đến ngày bắt đầu
+      currentDate.isAfter(endDate) || // Đã qua ngày kết thúc
+      startDate.isAfter(endDate) // Ngày bắt đầu > ngày kết thúc => sai logic
     ) {
       return res.json({
         status: 400,
         message: "Mã không còn hoạt động",
       });
     }
+
     const phoneNumberInt = parseInt(phoneNumber, 10);
     const checkOrderDiscount = await Order.findOne({
       where: {

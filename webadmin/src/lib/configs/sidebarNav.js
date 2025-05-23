@@ -27,7 +27,7 @@ const sidebarNav = [
   {
     link: "/admin/discount",
     section: "discount",
-    text: "Quản lí mã giảm giá",
+    text: "Quản lí phiếu giảm giá",
   },
   {
     link: "/admin/cartAdmin",
