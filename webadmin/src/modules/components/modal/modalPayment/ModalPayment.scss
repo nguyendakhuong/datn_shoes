@@ -18,12 +18,24 @@
     gap: 20px;
     z-index: 1000;
     display: flex;
+    .item-order-payment{
+      h3{
+        font-size: 16px;
+      }
+    }
     .item {
       margin: 10px 0;
       display: flex;
       gap: 10px;
       .item-image {
         width: 15rem;
+      }
+      h4{
+        font-size: 14px;
+        font-weight: 500;
+      }
+      p{
+        font-size: 12px;
       }
     }
     .form-discount {
@@ -37,7 +49,7 @@
       flex-direction: column;
     }
     span {
-      font-size: 12px;
+      font-size: 15px;
     }
     .type-input {
       margin-top: 10px;

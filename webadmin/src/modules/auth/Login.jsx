@@ -10,7 +10,6 @@ import { KEY_CONTEXT_USER } from "../../context/use.reducer";
 import ToastApp from "../../lib/notification/Toast";
 import APP_LOCAL from "../../lib/localStorage";
 import AppImages from "../../assets";
-import { useEffect } from "react";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -50,6 +49,9 @@ const Login = () => {
     navigate("/signup");
   };
   const handleOnClick = async () => {
+    if (!username || !password) {
+      return ToastApp.warning("Vui lòng nhập đầy đủ thông tin !!");
+    }
     try {
       await fetch(`http://localhost:3001/login`, {
         method: "POST",
@@ -124,22 +126,20 @@ const Login = () => {
               value={password}
               errorText={listError.password}
             />
-
-            <div className={styles}>
+            <div className={styles.btnAu}>
               <ButtonWed
                 title={"Đăng nhập"}
                 buttonAuth
-                disabledBtn={isButtonDisabled}
                 onClick={handleOnClick}
               />
             </div>
           </form>
+
           <div className={styles.signUP}>
             <label> Bạn chưa có tài khoản?</label>
-            <label className={styles.signUpNow} onClick={handleSignup}>
-              Đăng ký ngay
-            </label>
+            <label className={styles.labelSignUp} onClick={handleSignup}>Đăng ký ngay</label>
           </div>
+
         </div>
       </div>
     </div>

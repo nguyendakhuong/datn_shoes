@@ -107,6 +107,9 @@ const ProductDetail = () => {
     );
     if (!selectedProduct) return;
     const token = APP_LOCAL.getTokenStorage();
+    if(!token){
+      return ToastApp.warning("Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng");
+    }
     try {
       const response = await fetch(
         `http://localhost:3001/cart/productToCart/${selectedProduct.productDetailCode}`,

@@ -162,7 +162,7 @@ const OrderUser = () => {
               handleCloseModal();
               dispatch({
                 type: KEY_CONTEXT_USER.HIDE_MODAL,
-              })
+              });
             } else {
               ToastApp.warning(result.message);
             }
@@ -261,8 +261,10 @@ const OrderUser = () => {
               <strong>Trạng thái:</strong> {statusLabels[selectedOrder.status]}
             </p>
             <p>
-              <strong>Tổng tiền:</strong>{" "}
-              {formatter.format(selectedOrder.totalPayment)}
+              <strong className="total-payment">
+                Tổng tiền thanh toán: {" "}
+                <h4>{formatter.format(selectedOrder.totalPayment)}</h4>
+              </strong>{" "}
             </p>
             {orderNote && selectedOrder.status === "6" ? (
               <div>
@@ -276,7 +278,7 @@ const OrderUser = () => {
             ) : null}
 
             {orderNote && selectedOrder.status === "5" ? (
-              <div>
+              <div className="order-note">
                 <div>
                   <p className="order-info">
                     <strong>{orderNote.title}</strong>{" "}

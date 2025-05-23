@@ -1,8 +1,7 @@
 import { useContext, useEffect, useState } from 'react'
 import APP_LOCAL from '../../lib/localStorage'
 import ToastApp from '../../lib/notification/Toast'
-import styles from './auth.module.scss'
-import { useNavigate } from 'react-router-dom'
+import './signUpAdmin.scss'
 import InputAdmin from '../components/input/Input-admin'
 import ButtonWed from '../components/button/Button-admin'
 import { ParseValid } from '../../lib/validate/ParseValid'
@@ -16,7 +15,6 @@ import ModalAdminDetail from '../components/modal/modalAdminDetails/ModalAdminDe
 const SignUp = () => {
     const [userCtx, dispatch] = useContext(UserContext)
     const [data, setData] = useState(null)
-    // const navigate = useNavigate();
     const [status, setStatus] = useState(false)
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
@@ -96,15 +94,15 @@ const SignUp = () => {
             }
         }
         return (
-            <div className={styles.containerSignup}>
+            <div className={"containerSignup"}>
                 <table className="header-table">
                     <thead>
                         <tr>
                             <th colSpan="10">
                                 <div className="purple-line"></div>
-                                <div className={styles.headerSignUp}>
+                                <div className={"headerSignUp"}>
                                     <div>
-                                        <button className={styles.iconBack} onClick={handleBackProduct} >
+                                        <button className={"iconBack"} onClick={handleBackProduct} >
                                             <img src={AppImages.iconBack} alt='Error icon' />
                                         </button>
                                     </div>
@@ -114,8 +112,8 @@ const SignUp = () => {
                         </tr>
                     </thead>
                 </table>
-                <div className={styles.register}>
-                    <div className={styles.register_content}>
+                <div className={"register"}>
+                    <div className={"register_content"}>
                         <h2>Đăng ký tài khoản</h2>
                         <form onSubmit={e => e.preventDefault()}>
                             <InputAdmin
@@ -153,7 +151,7 @@ const SignUp = () => {
                                 errorText={listError.password}
                             />
 
-                            <div className={styles.button}>
+                            <div className={"button"}>
                                 <ButtonWed
                                     title={'Đăng ký'}
                                     buttonAuth
@@ -274,9 +272,9 @@ const SignUp = () => {
                             <tr>
                                 <th colSpan="10">
                                     <div className="purple-line"></div>
-                                    <div className={styles.createAccount}>
+                                    <div className="createAccount">
                                         <span>Danh sách tài khoản quản lý</span>
-                                        <button className={styles.createAdminButton} onClick={handleNavigateSignUp}>+ Tạo tài khoản mới</button>
+                                        <button className="createAdminButton" onClick={handleNavigateSignUp}>+ Tạo tài khoản mới</button>
                                     </div>
                                 </th>
                             </tr>

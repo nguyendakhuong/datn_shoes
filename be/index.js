@@ -5,7 +5,8 @@ const moment = require("moment");
 const cors = require("cors");
 const path = require("path");
 const db = require("./models");
-
+const bcrypt = require("bcrypt");
+const { Account, Admin } = db;
 const admin = require("./route/admin.route");
 const user = require("./route/user.route");
 const accounts = require("./route/account.route");
@@ -67,7 +68,45 @@ app.use("/payment", payment);
 app.use("/statistical", statistical);
 app.use("/riview", riview);
 
-db.sequelize.sync().then(() => {
+db.sequelize.sync().then(async () => {
+  const existingAdminAccount = await Account.findOne({
+    where: { username: "admin" },
+  });
+
+  if (!existingAdminAccount) {
+    const salt = await bcrypt.genSalt(15);
+    const hashedPassword = await bcrypt.hash("123456", salt);
+     await Account.create({
+      username: "admin",
+      name: "admin",
+      password: hashedPassword,
+      accountType: "admin",
+      status: 1,
+      creator: "system",
+      updater: "system",
+      employeeCode: 1111,
+      customerCode: 0,
+    });
+
+    await Admin.create({
+      employeeCode: 1111,
+      name: "admin",
+      sex: "",
+      address: "",
+      phoneNumber: "",
+      email: "",
+      position: "admin",
+      dob: "",
+      status: 1,
+      creator: "system",
+      updater: "system",
+    });
+
+    console.log("Tạo tài khoản admin thành công !");
+  }else{
+    console.log("Tài khoản đã tồn tại");
+  }
+
   app.listen(PORT, () => {
     console.log("server start localhost: " + PORT);
   });

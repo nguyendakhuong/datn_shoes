@@ -25,7 +25,8 @@
   .item-render {
     display: flex;
     flex-wrap: wrap;
-    gap: 15px;
+    gap: 10px;
+    justify-content: space-between;
     .text-title {
       margin-top: 5rem;
       text-align: center;

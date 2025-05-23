@@ -1,0 +1,170 @@
+
+
+.purple-line {
+  height: 4px;
+  background-color: #6a0dad;
+  margin-bottom: 12px;
+  border-radius: 2px;
+}
+
+.headerSignUp {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 20px;
+  font-weight: bold;
+
+  .iconBack {
+    background: none;
+    border: none;
+    cursor: pointer;
+
+    img {
+      width: 24px;
+      height: 24px;
+    }
+  }
+}
+
+.createAccount {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 18px;
+  margin-top: 12px;
+
+  .createAdminButton {
+    background-color: #6a0dad;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s ease;
+
+    &:hover {
+      background-color: #501188;
+    }
+  }
+}
+
+.product-container {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.product-table-container {
+  overflow-x: auto;
+}
+
+.product-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 16px;
+
+  th, td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: center;
+    font-size: 14px;
+  }
+
+  th {
+    background-color: #f3f3f3;
+    font-weight: 600;
+  }
+
+  tr:hover {
+    background-color: #f9f9f9;
+    cursor: pointer;
+  }
+
+  button {
+    background: none;
+    border: none;
+    cursor: pointer;
+
+    img {
+      width: 20px;
+    }
+  }
+}
+
+.active-product {
+  background-color: #4caf50;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: none;
+  font-size: 13px;
+}
+
+.inactive-product {
+  background-color: #f44336;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: none;
+  font-size: 13px;
+}
+
+// Sign up form styles
+.containerSignup {
+  padding: 24px;
+
+  .register {
+    background: white;
+    padding: 32px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+
+    &_content {
+      max-width: 500px;
+      margin: 0 auto;
+
+      h2 {
+        text-align: center;
+        margin-bottom: 24px;
+        font-size: 24px;
+        color: #333;
+      }
+
+      form {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+
+        .button {
+          margin-top: 12px;
+          display: flex;
+          justify-content: center;
+        }
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .createAccount {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+
+    .createAdminButton {
+      width: 100%;
+    }
+  }
+
+  .headerSignUp {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .product-table th, .product-table td {
+    font-size: 12px;
+    padding: 8px;
+  }
+}

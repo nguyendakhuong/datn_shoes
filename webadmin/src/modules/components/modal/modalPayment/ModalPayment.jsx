@@ -270,7 +270,7 @@ const ModalPayment = ({ data, total, isOpen, onClose }) => {
                       <img src={v.image} alt={v.name} />
                     </div>
                     <div>
-                      <h4>Tên: {v.name}</h4>
+                      <h4>{v.name}</h4>
                       <p>Màu : {v.colorName}</p>
                       <p>Giá : {formatter.format(v.price)}</p>
                       <p>Số lượng : {v.quantity}</p>
