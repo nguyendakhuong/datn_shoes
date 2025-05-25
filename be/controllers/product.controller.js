@@ -10,6 +10,7 @@ const {
 } = require("../models");
 const { Op, where, ValidationErrorItemOrigin } = require("sequelize");
 const jwt = require("jsonwebtoken");
+const { stat } = require("fs");
 require("dotenv").config;
 
 const generateUniqueCode = async (model, columnName) => {
@@ -1007,42 +1008,45 @@ const searchProduct = async (req, res) => {
       where: {
         name: { [Op.like]: `%${query}%` },
       },
-      include: [
-        {
-          model: Trademark,
-          as: "trademark",
-          attributes: ["name"],
-          required: false,
-        },
-      ],
       attributes: ["productCode", "name", "idTrademark"],
     });
-
     if (productResults.length > 0) {
-      // Nếu tìm thấy sản phẩm, trả về luôn
-      return res.json(productResults);
+      const trademarkIds = [
+        ...new Set(productResults.map((p) => p.idTrademark)),
+      ];
+      const trademarks = await Trademark.findAll({
+        where: {
+          brandCode: {
+            [Op.in]: trademarkIds,
+          },
+        },
+        attributes: ["brandCode", "name"],
+      });
+      const trademarkMap = {};
+      trademarks.forEach((t) => {
+        trademarkMap[t.brandCode] = t.name;
+      });
+      const enrichedProducts = productResults.map((product) => ({
+        ...product.toJSON(),
+        trademarkName: trademarkMap[product.idTrademark] || null,
+      }));
+
+      return res.json({ status: 200, data: enrichedProducts });
     }
 
-    // 2. Nếu không tìm thấy sản phẩm nào, tìm thương hiệu có name giống query
     const trademarkResults = await Trademark.findAll({
       where: {
         name: { [Op.like]: `%${query}%` },
       },
       attributes: ["id", "name"],
     });
-
     if (trademarkResults.length > 0) {
-      // Nếu có thương hiệu tìm thấy, trả về
-      return res.json(trademarkResults);
+      return res.json({ status: 200, data: trademarkResults });
     }
-
-    // Nếu không tìm thấy gì cả
-    return res
-      .status(404)
-      .json({
-        message: "Không tìm thấy sản phẩm hoặc thương hiệu",
-        status: 404,
-      });
+    return res.json({
+      message: "Không tìm thấy sản phẩm hoặc thương hiệu",
+      status: 404,
+    });
   } catch (e) {
     console.error("Lỗi tìm kiếm sản phẩm hoặc thương hiệu: ", e);
     return res.status(500).json({ message: "Lỗi server", status: 500 });

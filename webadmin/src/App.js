@@ -34,10 +34,12 @@ function App() {
             type: KEY_CONTEXT_USER.SET_ACCOUNT_TYPE,
             payload: data?.data?.accountType,
           });
-          dispatch({
-            type: KEY_CONTEXT_USER.SET_ROLE,
-            payload: data?.role,
-          });
+          if (data?.role) {
+            dispatch({
+              type: KEY_CONTEXT_USER.SET_ROLE,
+              payload: data?.role,
+            });
+          }
         } else {
           ToastApp.error("Error: " + data.message);
           setIsAuth(false);

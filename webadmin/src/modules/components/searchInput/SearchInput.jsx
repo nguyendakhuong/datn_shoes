@@ -13,6 +13,7 @@ const SearchInput = () => {
 
   const containerRef = useRef(null);
   const navigate = useNavigate();
+
   const fetchResults = async (text) => {
     if (!text) return setResults([]);
     setLoading(true);
@@ -20,8 +21,15 @@ const SearchInput = () => {
       const response = await axios.get(
         `http://localhost:3001/product/search?q=${text}`
       );
-      setResults(response.data);
-      setShowSuggestions(true);
+      const data = response.data;
+      console.log(data);
+      if (data.status === 200) {
+        setResults(data.data);
+        setShowSuggestions(true);
+      } else {
+        console.error("Lỗi tìm kiếm:", data.message);
+        setResults([]);
+      }
     } catch (error) {
       console.error("Lỗi tìm kiếm:", error);
     } finally {
@@ -53,12 +61,11 @@ const SearchInput = () => {
     setQuery(item.name);
     setShowSuggestions(false);
     console.log(item);
-    if (item.trademark) {
-      navigate(`/productDetail/${item.trademark?.name}/${item.productCode}`);
-    }else{
-      navigate(`/otherTrademark/${item.name}`)
+    if (item.trademarkName) {
+      navigate(`/productDetail/${item?.trademarkName}/${item.productCode}`);
+    } else {
+      navigate(`/otherTrademark/${item.name}`);
     }
-
   };
 
   return (

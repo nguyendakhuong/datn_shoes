@@ -16,17 +16,24 @@ const getAdmin = async (req, res) => {
         message: "Người dùng không tồn tại",
       });
     }
-    const admin = await Admin.findOne({
-      where: { employeeCode: account.employeeCode },
-      raw: true,
-      attributes: ["position"],
-    });
+    if (account.employeeCode) {
+      const admin = await Admin.findOne({
+        where: { employeeCode: account.employeeCode },
+        raw: true,
+        attributes: ["position"],
+      });
+      return res.json({
+        status: 200,
+        data: account,
+        role: admin.position,
+      });
+    }
     return res.json({
       status: 200,
       data: account,
-      role : admin.position,
     });
   } catch (error) {
+    console.log("Lỗi check đăng nhập: ", error);
     return res.json({ status: 500, message: "Lỗi server" });
   }
 };
