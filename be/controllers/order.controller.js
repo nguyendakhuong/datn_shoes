@@ -454,9 +454,26 @@ const getAllOrderByUser = async (req, res) => {
       orderDetailMap[detail.orderCode].push(detail);
     });
 
+    const discountCodes = orders
+      .filter((order) => order.discountCode)
+      .map((order) => order.discountCode);
+
+    const promotions = await Promotion.findAll({
+      where: {
+        promotionCode: {
+          [Op.in]: discountCodes,
+        },
+      },
+    });
+    const promotionMap = {};
+    promotions.forEach((promo) => {
+      promotionMap[promo.promotionCode] = promo.name;
+    });
+
     const data = orders.map((order) => ({
       ...order.toJSON(),
       orderDetails: orderDetailMap[order.orderCode] || [],
+      discountName: promotionMap[order.discountCode] || null, // Thêm tên khuyến mãi
     }));
     return res.json({
       status: 200,
@@ -555,7 +572,7 @@ const cancelOrderUser = async (req, res) => {
         message: "Hủy đơn hàng thành công",
       });
     }
-    if (order.status === "2"|| order.status === "9") {
+    if (order.status === "2" || order.status === "9") {
       order.status = "7";
       await order.save();
       const orderDetail = await OrderDetail.findAll({ where: { orderCode } });
@@ -1118,12 +1135,12 @@ const WaitingForProduct = async (req, res) => {
     }
     if (order.status === "1") {
       order.status = "8"; // Trạng thái đợi sản phẩm nhập về
-      await order.save(); 
+      await order.save();
       return res.json({
         status: 200,
         message: "Cập nhât trạng thái thành công!",
       });
-    }else{
+    } else {
       return res.json({
         status: 400,
         message: "Trạng thái đơn hàng không hợp lệ!",

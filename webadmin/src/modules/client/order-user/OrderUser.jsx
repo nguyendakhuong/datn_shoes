@@ -179,7 +179,6 @@ const OrderUser = () => {
     getPurchaseOrder();
   }, []);
 
-  console.log(purchaseOrders);
 
   const filteredOrders =
     selectedTab === "all"
@@ -194,6 +193,7 @@ const OrderUser = () => {
     style: "currency",
     currency: "VND",
   });
+  console.log(selectedOrder);
   return (
     <div className="order-container">
       <div className="tabbar">
@@ -261,6 +261,37 @@ const OrderUser = () => {
             <p>
               <strong>Trạng thái:</strong> {statusLabels[selectedOrder.status]}
             </p>
+            <p>
+              <strong >
+                Số tiền ban đầu:{" "}
+                {formatter.format(selectedOrder.totalDefault)}
+              </strong>
+            </p>
+            <p>
+              <strong >
+                Tên phiếu giảm giá:{" "}
+                {selectedOrder.discountName}
+              </strong>
+            </p>
+            <p>
+              <strong >
+                Số tiền giảm giá:{" "}
+                {formatter.format(selectedOrder.totalPromotion)}
+              </strong>
+            </p>
+            <p>
+              <strong >
+                Số tiền sau giảm:{" "}
+                {formatter.format(selectedOrder.totalPayment - 30000)}
+              </strong>
+            </p>
+             <p>
+              <strong >
+                Phí vận chuyển:{" "}
+                {formatter.format(selectedOrder.shippingFee)}
+              </strong>
+            </p>
+
             <p>
               <strong className="total-payment">
                 Tổng tiền thanh toán:{" "}
