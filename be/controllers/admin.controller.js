@@ -10,16 +10,21 @@ const getAdmin = async (req, res) => {
     const token = req.headers.authorization.split(" ")[1];
     const decoded = jwt.verify(token, signPrivate);
     const account = await Account.findOne({ where: { id: decoded.id } });
-
     if (!account) {
       return res.json({
         status: 404,
         message: "Người dùng không tồn tại",
       });
     }
+    const admin = await Admin.findOne({
+      where: { employeeCode: account.employeeCode },
+      raw: true,
+      attributes: ["position"],
+    });
     return res.json({
       status: 200,
       data: account,
+      role : admin.position,
     });
   } catch (error) {
     return res.json({ status: 500, message: "Lỗi server" });
@@ -140,12 +145,12 @@ const updateAdmin = async (req, res) => {
       });
     }
     const admin = await Admin.findOne({ where: { id } });
-    if (account.employeeCode !== admin.employeeCode) {
-      return res.json({
-        status: 400,
-        message: "Chỉ có tài khoản chính chủ mới được cập nhật thông tin",
-      });
-    }
+    // if (account.employeeCode !== admin.employeeCode) {
+    //   return res.json({
+    //     status: 400,
+    //     message: "Chỉ có tài khoản chính chủ mới được cập nhật thông tin",
+    //   });
+    // }
     await account.update({ name: data.name });
     await admin.update({
       name: data.name,

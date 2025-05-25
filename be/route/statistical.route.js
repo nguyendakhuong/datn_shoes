@@ -6,5 +6,5 @@ router.get("/getInfoStatistical", Statistical.getInfoStatistical);
 router.get("/ordersByPaymentMethod", Statistical.ordersByPaymentMethod);
 router.get("/productSales", Statistical.productSales);
 router.post("/productSalesByDate", Statistical.productSalesByDate);
-
+router.post("/revenueByMonth", Statistical.revenueByMonth);
 module.exports = router;

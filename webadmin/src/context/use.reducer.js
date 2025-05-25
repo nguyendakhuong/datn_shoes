@@ -3,6 +3,7 @@ import APP_LOCAL from "../lib/localStorage";
 const InitState = {
   token: "",
   accountType: APP_LOCAL.getAccountTypeStorage(),
+  role: "",
   isOpenModal: false,
   dataModal: null,
   isLoading: false,
@@ -13,6 +14,7 @@ const InitState = {
 const KEY_CONTEXT_USER = {
   SET_TOKEN: "SET_TOKEN",
   SET_ACCOUNT_TYPE: "ACCOUNT_TYPE",
+  SET_ROLE: "SET_ROLE",
   SET_LOADING: "SET_LOADING",
   CLEAR: "CLEAR",
   SHOW_MODAL: "SHOW_MODAL",
@@ -28,6 +30,8 @@ const UserReducer = (state, action) => {
     case KEY_CONTEXT_USER.SET_ACCOUNT_TYPE:
       APP_LOCAL.setAccountTypeStorage(action.payload);
       return { ...state, accountType: action.payload };
+    case KEY_CONTEXT_USER.SET_ROLE:
+      return { ...state, role: action.payload };
     case KEY_CONTEXT_USER.SET_LOADING:
       return { ...state, isLoading: action.payload };
     case KEY_CONTEXT_USER.SHOW_MODAL:

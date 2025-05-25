@@ -34,6 +34,10 @@ function App() {
             type: KEY_CONTEXT_USER.SET_ACCOUNT_TYPE,
             payload: data?.data?.accountType,
           });
+          dispatch({
+            type: KEY_CONTEXT_USER.SET_ROLE,
+            payload: data?.role,
+          });
         } else {
           ToastApp.error("Error: " + data.message);
           setIsAuth(false);
@@ -45,7 +49,6 @@ function App() {
       }
     };
     const getCart = async () => {
-      console.log("Vào");
       try {
         console.log(user);
         if (user) {

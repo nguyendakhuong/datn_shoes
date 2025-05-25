@@ -124,7 +124,6 @@ const getCartByUser = async (req, res) => {
     });
   }
 };
-
 const productToCart = async (req, res) => {
   const signPrivate = process.env.SIGN_PRIVATE;
   try {

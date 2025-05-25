@@ -284,9 +284,51 @@ const productSalesByDate = async (req, res) => {
   }
 };
 
+const revenueByMonth = async (req, res) => {
+  try {
+    const { year } = req.body;
+    const revenueData = await Order.findAll({
+      attributes: [
+        [sequelize.fn("MONTH", sequelize.col("createdAt")), "month"],
+        [sequelize.fn("SUM", sequelize.col("totalPayment")), "revenue"],
+      ],
+      where: {
+        status: [4, 5],
+        createdAt: {
+          [Op.between]: [
+            new Date(`${year}-01-01`),
+            new Date(`${year + 1}-01-01`),
+          ],
+        },
+      },
+      group: ["month"],
+      order: [[sequelize.literal("month"), "ASC"]],
+      raw: true,
+    });
+    const fullRevenue = Array.from({ length: 12 }, (_, i) => {
+      const found = revenueData.find((r) => parseInt(r.month) === i + 1);
+      return {
+        month: i + 1,
+        revenue: found ? parseInt(found.revenue) : 0,
+      };
+    });
+    return res.json({
+      status: 200,
+      data: fullRevenue,
+    });
+  } catch (e) {
+    console.log("Lỗi lấy doanh thu theo tháng: ", e);
+    return res.json({
+      status: 500,
+      message: "Lỗi server",
+    });
+  }
+};
+
 module.exports = {
   getInfoStatistical,
   ordersByPaymentMethod,
   productSales,
   productSalesByDate,
+  revenueByMonth,
 };

@@ -17,6 +17,7 @@ const ProductDetail = () => {
   const [selectedColor, setSelectedColor] = useState("");
   const [filteredSizes, setFilteredSizes] = useState([]);
   const [selectedSize, setSelectedSize] = useState("");
+  const [quantity, setQuantity] = useState(null);
   const navigate = useNavigate();
 
   const getProductById = async () => {
@@ -94,12 +95,15 @@ const ProductDetail = () => {
       const sizes = data.productDetail.filter(
         (item) => item.color === selectedColor
       );
+      const quantity = data.productDetail.filter((item) => item.color === selectedColor);
+      setQuantity(quantity);
       setFilteredSizes(sizes);
       if (sizes.length > 0) {
         setSelectedSize(sizes[0].size);
       }
     }
   }, [selectedColor, data]);
+  console.log(quantity);
 
   const handleAddToCart = async () => {
     const selectedProduct = filteredSizes.find(
@@ -167,6 +171,13 @@ const ProductDetail = () => {
             <p>
               <b>Thương hiệu:</b> {data?.trademark}
             </p>
+            <div className="quantity">
+              {quantity.map((v) => (
+                <p>
+                  <b>Số lượng còn lại:</b> {v.quantity}
+                </p>
+              ))}
+            </div>
             <div className="color-buttons">
               {Array.from(new Set(data.productDetail.map((v) => v.color))).map(
                 (color, i) => (

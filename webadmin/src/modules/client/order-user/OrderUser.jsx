@@ -30,6 +30,7 @@ const OrderUser = () => {
     6: "Đơn bị hủy hàng", // hủy hàng (phía admin)
     7: "Khách hủy hàng", // boom hàng
     8: "Đơn hàng bị lỗi do không hoàn tất thanh toán",
+    9: "Đợi nhập hàng",
   };
   const getAllOrder = async () => {
     const token = APP_LOCAL.getTokenStorage();
@@ -262,7 +263,7 @@ const OrderUser = () => {
             </p>
             <p>
               <strong className="total-payment">
-                Tổng tiền thanh toán: {" "}
+                Tổng tiền thanh toán:{" "}
                 <h4>{formatter.format(selectedOrder.totalPayment)}</h4>
               </strong>{" "}
             </p>

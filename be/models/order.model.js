@@ -44,6 +44,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
+      shippingFee: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
       paymentMethod: {
         type: DataTypes.STRING,
         allowNull: false,

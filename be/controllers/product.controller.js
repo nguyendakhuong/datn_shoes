@@ -155,7 +155,6 @@ const statusProduct = async (req, res) => {
     if (product.status === 2) {
       product.status = 1;
       await product.save();
-
       return res.json({
         status: 200,
         message: "Mở khóa sản phẩm thành công",
@@ -530,6 +529,12 @@ const statusProductDetail = async (req, res) => {
       });
     }
     if (productDetail.status === 2) {
+      if (productDetail.quantity === 0) {
+        return res.json({
+          status: 400,
+          message: "Không thể mở khóa sản phẩm đã hết hàng",
+        });
+      }
       productDetail.status = 1;
       await productDetail.save();
       return res.json({
@@ -541,7 +546,7 @@ const statusProductDetail = async (req, res) => {
     console.log("Lỗi cập nhật trạng thái sản phẩm chi tiết: ", e);
     return res.json({
       status: 500,
-      message: "Lỗi server:",
+      // message: "Lỗi server:",
     });
   }
 };
@@ -993,22 +998,24 @@ const searchProduct = async (req, res) => {
   try {
     const query = req.query.q;
     if (!query) {
-      return res.status(400).json({ message: "Thiếu từ khóa tìm kiếm", status: 400 });
+      return res
+        .status(400)
+        .json({ message: "Thiếu từ khóa tìm kiếm", status: 400 });
     }
 
     const productResults = await Products.findAll({
       where: {
-        name: { [Op.like]: `%${query}%` }
+        name: { [Op.like]: `%${query}%` },
       },
       include: [
         {
           model: Trademark,
-          as: 'trademark',
-          attributes: ['name'],
-          required: false
-        }
+          as: "trademark",
+          attributes: ["name"],
+          required: false,
+        },
       ],
-      attributes: ['productCode', 'name', 'idTrademark']
+      attributes: ["productCode", "name", "idTrademark"],
     });
 
     if (productResults.length > 0) {
@@ -1019,9 +1026,9 @@ const searchProduct = async (req, res) => {
     // 2. Nếu không tìm thấy sản phẩm nào, tìm thương hiệu có name giống query
     const trademarkResults = await Trademark.findAll({
       where: {
-        name: { [Op.like]: `%${query}%` }
+        name: { [Op.like]: `%${query}%` },
       },
-      attributes: ['id', 'name']
+      attributes: ["id", "name"],
     });
 
     if (trademarkResults.length > 0) {
@@ -1030,8 +1037,12 @@ const searchProduct = async (req, res) => {
     }
 
     // Nếu không tìm thấy gì cả
-    return res.status(404).json({ message: "Không tìm thấy sản phẩm hoặc thương hiệu", status: 404 });
-
+    return res
+      .status(404)
+      .json({
+        message: "Không tìm thấy sản phẩm hoặc thương hiệu",
+        status: 404,
+      });
   } catch (e) {
     console.error("Lỗi tìm kiếm sản phẩm hoặc thương hiệu: ", e);
     return res.status(500).json({ message: "Lỗi server", status: 500 });

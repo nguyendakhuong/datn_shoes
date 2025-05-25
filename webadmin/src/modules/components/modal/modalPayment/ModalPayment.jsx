@@ -21,11 +21,14 @@ const ModalPayment = ({ data, total, isOpen, onClose }) => {
   const [dataUser, setDataUser] = useState(null);
   const [orderSuccess, setOrderSuccess] = useState(false);
   const [dataOrder, setDataOrder] = useState(null);
+  const [selectDiscount, setSelectDiscount] = useState([]);
   const navigate = useNavigate();
-
-  const handleDiscount = async () => {
-    if (!discount) {
-      return ToastApp.warning("Vui lòng nhập mã giảm giá!");
+  console.log(discount);
+  const handleDiscount = async (selected) => {
+    if (!selected) {
+      setDiscountAPI(null);
+      setDiscount("");
+      return;
     }
     const token = APP_LOCAL.getTokenStorage();
     try {
@@ -37,32 +40,33 @@ const ModalPayment = ({ data, total, isOpen, onClose }) => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({ discount, total }),
+          body: JSON.stringify({ discount: selected, total }),
         }
       );
       const result = await response.json();
       if (result.status === 401) {
+        console.log(result.data);
         dispatch({
           type: KEY_CONTEXT_USER.SHOW_MODAL,
           payload: {
             typeModal: "NOTIFICATION_MODAL",
             titleModel: "Sử dụng mã thất bại",
             contentModel: `Mã áp dụng các đơn hàng có giá trị trên ${formatter.format(
-              result.data?.maximumPromotion
+              result.data?.conditionsOfApplication
             )}`,
             onClickConfirmModel: async () => {
               dispatch({ type: KEY_CONTEXT_USER.HIDE_MODAL, payload: true });
             },
           },
         });
-        return
+        return;
       }
       if (result.status === 200) {
         ToastApp.success("Sử dụng phiếu giảm giá thành công");
         setDiscountAPI(result.discount);
         setTotalAfterDiscount(result.data);
         setDiscountAmount(result.totalPromotion);
-        setDiscount("");
+        setDiscount(selected);
       } else {
         ToastApp.warning(result.message);
       }
@@ -96,7 +100,9 @@ const ModalPayment = ({ data, total, isOpen, onClose }) => {
                 totalDefault: total,
                 totalPromotion: discountAmount || 0,
                 totalPayment:
-                  totalAfterDiscount > 0 ? totalAfterDiscount : total,
+                  totalAfterDiscount > 0
+                    ? totalAfterDiscount + 30000
+                    : total + 30000,
                 discount: discountAPI?.name || "",
                 product: data,
               };
@@ -232,9 +238,32 @@ const ModalPayment = ({ data, total, isOpen, onClose }) => {
       dispatch({ type: KEY_CONTEXT_USER.SET_LOADING, payload: false });
     }
   };
+  const getDiscountByUser = async () => {
+    const token = APP_LOCAL.getTokenStorage();
+    try {
+      const response = await fetch(
+        `http://localhost:3001/discount/getDiscountByUser`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const data = await response.json();
+      if (data.status === 200) {
+        setSelectDiscount(data.data);
+      } else {
+        console.log("Lỗi lấy mã giảm giá: ", data.message);
+      }
+    } catch (e) {
+      console.log("Lỗi lấy mã giảm giá: ", e);
+    }
+  };
+
   useEffect(() => {
     getAddress();
     getUser();
+    getDiscountByUser();
   }, []);
   useEffect(() => {
     if (orderSuccess) {
@@ -256,6 +285,20 @@ const ModalPayment = ({ data, total, isOpen, onClose }) => {
     value: item.id,
     label: `${item.address} - ${item.commune} - ${item.district} - ${item.province}`,
   }));
+  const sortedDiscounts = selectDiscount
+    .map((item) => {
+      let value = 0;
+      if (item.promotionLevel > 100) {
+        value = item.promotionLevel;
+      } else {
+        const discount = (total * item.promotionLevel) / 100;
+        value = item.maximumPromotion
+          ? Math.min(discount, item.maximumPromotion)
+          : discount;
+      }
+      return { ...item, estimatedDiscount: value };
+    })
+    .sort((a, b) => b.estimatedDiscount - a.estimatedDiscount);
   return (
     <>
       {isOpen && (
@@ -283,25 +326,39 @@ const ModalPayment = ({ data, total, isOpen, onClose }) => {
 
             <div>
               <div className="form-discount">
-                <InputAdmin
-                  label={"Mã giảm giá"}
-                  name={"discount"}
-                  type={"text"}
+                <span htmlFor="discount">Giảm giá</span>
+                <select
+                  id="discount"
+                  name="discount"
                   value={discount}
-                  onChange={(e) => setDiscount(e.target.value)}
-                  placeholder={"Nhập mã giảm giá"}
-                />
-                <div>
-                  <ButtonWed title={"Áp dụng"} onClick={handleDiscount} />
-                </div>
+                  onChange={(e) => {
+                    const selected = e.target.value;
+                    setDiscount(selected);
+                    handleDiscount(selected);
+                  }}
+                  className="input-select"
+                >
+                  <option value="">Không sử dụng</option>
+                  {sortedDiscounts.map((item, index) => (
+                    <option key={index} value={item.name}>
+                      {item.name}
+                    </option>
+                  ))}
+                </select>
               </div>
+
               <div>
                 {discountAPI ? (
                   <div className="flex">
-                    <span>Mã giảm giá : {discountAPI.name}</span>
-                    <span>Mô tải: {discountAPI.describe}</span>
+                    <span>Tên phiếu giảm giá : {discountAPI.name}</span>
+                    <span>Mô tả: {discountAPI.describe}</span>
                     <span>
-                      Số tiền tối thiểu : {" "} {discountAPI.conditionsOfApplication ? `${formatter.format(discountAPI.conditionsOfApplication)}`: "0đ"}
+                      Số tiền tối thiểu :{" "}
+                      {discountAPI.conditionsOfApplication
+                        ? `${formatter.format(
+                            discountAPI.conditionsOfApplication
+                          )}`
+                        : "0đ"}
                     </span>
                     <span>
                       Hạn mức tối đa:{" "}
@@ -321,11 +378,12 @@ const ModalPayment = ({ data, total, isOpen, onClose }) => {
                 <div className="flex">
                   <span>Số tiền ban đầu: {formatter.format(total)}</span>
                   <span>
-                    Số tiền sau giảm giá:{" "}
-                    {totalAfterDiscount >= 0
+                    Số tiền sau giảm giá:
+                    {totalAfterDiscount && discountAPI
                       ? formatter.format(totalAfterDiscount)
                       : formatter.format(total)}
                   </span>
+                  <span>Phí vận chuyển : {formatter.format(30000)}</span>
                 </div>
               </div>
               <div className="type-input">
@@ -370,9 +428,9 @@ const ModalPayment = ({ data, total, isOpen, onClose }) => {
               <div className="flex-total">
                 <span>Số tiền bạn cần thanh toán: </span>
                 <p>
-                  {totalAfterDiscount
-                    ? formatter.format(totalAfterDiscount)
-                    : formatter.format(total)}
+                  {totalAfterDiscount && discountAPI
+                    ? formatter.format(totalAfterDiscount + 30000)
+                    : formatter.format(total + 30000)}
                 </p>
               </div>
               <div className="btn-payment">

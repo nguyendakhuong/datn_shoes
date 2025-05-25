@@ -9,6 +9,7 @@ const OrderDetail = ({ order, onClose }) => {
   const [data] = useState(order.orderDetails);
   const [orderNote, setOrderNote] = useState(null);
   const [userCtx, dispatch] = useContext(UserContext);
+  console.log(data);
   const statusLabels = {
     0: "Chưa thanh toán",
     1: "Chờ xác nhận",
@@ -19,6 +20,7 @@ const OrderDetail = ({ order, onClose }) => {
     6: "Đơn bị hủy hàng", // hủy hàng (phía admin)
     7: "Khách hủy hàng", // boom hàng
     8: "Đơn hàng bị lỗi do không hoàn tất thanh toán",
+    9: "Đợi nhập hàng",
   };
   const getOrderNote = async () => {
     try {
@@ -62,11 +64,45 @@ const OrderDetail = ({ order, onClose }) => {
             if (result.status === 200) {
               ToastApp.success("Xác nhận đơn hàng thành công !");
               onClose();
+              return;
             } else {
               ToastApp.warning(result.message);
             }
+            if (result.status === 401) {
+              dispatch({
+                type: KEY_CONTEXT_USER.SHOW_MODAL,
+                payload: {
+                  typeModal: "NOTIFICATION_MODAL",
+                  dataModal: orderCode,
+                  contentModel: "Số lượng sản phẩm không đủ để xác nhận đơn hàng, bạn có muốn chuyển trạng thái thành chờ nhập hàng không !",
+                  onClickConfirmModel: async () => {
+                    const token = APP_LOCAL.getTokenStorage();
+                    try {
+                      const response = await fetch(
+                        `http://localhost:3001/order/WaitingForProduct/${orderCode}`,
+                        {
+                          method: "GET",
+                          headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${token}`,
+                          },
+                        }
+                      );
+                      const result = await response.json();
+                      if (result.status === 200) {
+                        ToastApp.success("Cập nhật đơn hàng thành công !");
+                        dispatch({ type: KEY_CONTEXT_USER.HIDE_MODAL });
+                        onClose();
+                      }
+                    } catch (e) {
+                      console.log("Lỗi cập nhật đơn hàng: ", e);
+                    }
+                  },
+                },
+              });
+            }
           } catch (e) {
-            console.log("Lỗi tạo đơn hàng: ", e);
+            console.log("Lỗi cập nhật đơn hàng: ", e);
           }
         },
       },
@@ -257,13 +293,23 @@ const OrderDetail = ({ order, onClose }) => {
                   <strong>Thời gian đặt hàng:</strong> {formattedUpdatedAt}
                 </p>
                 <p className="order-info">
-                  <strong>Số tiền ban đầu:</strong> {formatter.format(order.totalDefault)}
+                  <strong>Số tiền ban đầu:</strong>{" "}
+                  {formatter.format(order.totalDefault)}
                 </p>
                 <p className="order-info">
-                  <strong>Số tiền đã giảm:</strong> {formatter.format(order.totalPromotion)}
+                  <strong>Phiếu giảm giá:</strong> {order.discountName}
                 </p>
                 <p className="order-info">
-                  <strong>Số tiền sau giảm:</strong> {formatter.format(order.totalPayment)}
+                  <strong>Số tiền đã giảm:</strong>{" "}
+                  {formatter.format(order.totalPromotion)}
+                </p>
+                <p className="order-info">
+                  <strong>Số tiền sau giảm:</strong>{" "}
+                  {formatter.format(order.totalPayment - 30000)}
+                </p>
+                <p className="order-info">
+                  <strong>Phí vận chuyển:</strong>{" "}
+                  {formatter.format(order.shippingFee)}
                 </p>
                 <p className="order-info">
                   <strong>Trạng thái:</strong> {statusLabels[order.status]}
@@ -301,7 +347,7 @@ const OrderDetail = ({ order, onClose }) => {
                 <strong>Tổng tiền cần thanh toán:</strong>{" "}
                 {formatter.format(order.totalPayment)}
               </p>
-              {order.status === "1" ? (
+              {order.status === "1" || order.status === "9" ? (
                 <button
                   className="btn-btn"
                   onClick={() => handleVerifyOrder(order.orderCode)}
@@ -317,7 +363,7 @@ const OrderDetail = ({ order, onClose }) => {
                   Giao hàng
                 </button>
               ) : null}
-              {order.status === "1" || order.status === "2" ? (
+              {order.status === "1" || order.status === "2" || order.status === "9" ? (
                 <button
                   className="btn-btn"
                   onClick={() => handleCancelOrder(order.orderCode)}

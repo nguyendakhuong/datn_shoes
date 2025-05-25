@@ -70,6 +70,7 @@ const createOrder = async (req, res) => {
       totalPayment, // tiền thanh toán
       discountCode: discountCode?.promotionCode || "", // tên giảm giá
       paymentMethod: "Thanh toán khi nhận hàng",
+      shippingFee: 30000,
       customerCode: account.customerCode,
       employeeCode: "",
       creator: userName,
@@ -223,6 +224,7 @@ const orderCartAdmin = async (req, res) => {
     });
   }
 };
+
 const getAllOrders = async (req, res) => {
   try {
     const orders = await Order.findAll();
@@ -245,10 +247,26 @@ const getAllOrders = async (req, res) => {
       }
       orderDetailMap[detail.orderCode].push(detail);
     });
+    const discountCodes = orders
+      .filter((order) => order.discountCode)
+      .map((order) => order.discountCode);
+
+    const promotions = await Promotion.findAll({
+      where: {
+        promotionCode: {
+          [Op.in]: discountCodes,
+        },
+      },
+    });
+    const promotionMap = {};
+    promotions.forEach((promo) => {
+      promotionMap[promo.promotionCode] = promo.name;
+    });
 
     const data = orders.map((order) => ({
       ...order.toJSON(),
       orderDetails: orderDetailMap[order.orderCode] || [],
+      discountName: promotionMap[order.discountCode] || null, // Thêm tên khuyến mãi
     }));
 
     return res.json({
@@ -264,6 +282,7 @@ const getAllOrders = async (req, res) => {
     });
   }
 };
+
 const verifyOrder = async (req, res) => {
   signPrivate = process.env.SIGN_PRIVATE;
   try {
@@ -313,8 +332,8 @@ const verifyOrder = async (req, res) => {
         }
         if (productDetail.quantity < orderDetail.quantity) {
           return res.json({
-            status: 400,
-            message: `Số lượng của sản phẩm không đủ`,
+            status: 401,
+            message: "Số lượng của sản phẩm không đủ",
           });
         }
 
@@ -528,15 +547,15 @@ const cancelOrderUser = async (req, res) => {
         message: "Không tim thấy đơn hàng !",
       });
     }
-    if (order.status === "1") {
+    if (order.status === "1" || order.status === "9") {
       order.status = "7";
       await order.save();
       return res.json({
         status: 200,
-        message: "Thành công",
+        message: "Hủy đơn hàng thành công",
       });
     }
-    if (order.status === "2") {
+    if (order.status === "2"|| order.status === "9") {
       order.status = "7";
       await order.save();
       const orderDetail = await OrderDetail.findAll({ where: { orderCode } });
@@ -610,7 +629,7 @@ const cancelOrderAdmin = async (req, res) => {
         message: "Không tim thấy đơn hàng !",
       });
     }
-    if (order.status === "1") {
+    if (order.status === "1" || order.status === "9") {
       order.status = "6";
       await order.save();
       await OrderNote.create({
@@ -988,7 +1007,7 @@ const updateQuantityOrderDetail = async (req, res) => {
     const productDetail = await ProductDetails.findOne({
       where: { productDetailCode: orderDetail.productDetailCode },
     });
-    if (productDetail.quantity <= quantity) {
+    if (productDetail.quantity < quantity) {
       return res.json({
         status: 400,
         message: "Số lượng sản phẩm không đủ ",
@@ -1043,13 +1062,14 @@ const payOrderAdmin = async (req, res) => {
 
       if (productDetail) {
         productDetail.quantity -= detail.quantity;
-        console.log(productDetail.quantity);
-        console.log(detail.quantity);
         if (productDetail.quantity < 0) {
           productDetail.quantity = 0;
         }
-
         await productDetail.save();
+        if (productDetail.quantity === 0) {
+          productDetail.status = 2;
+          await productDetail.save();
+        }
       }
     }
 
@@ -1072,13 +1092,45 @@ const payOrderAdmin = async (req, res) => {
     order.discountCode = discountCode;
     order.status = "4";
     await order.save();
-
     return res.json({
       status: 200,
       message: "Thanh toán thành công",
     });
   } catch (e) {
     console.log("Lỗi thanh toán tại quầy : ", e);
+    return res.json({
+      status: 500,
+      message: "Lỗi server",
+    });
+  }
+};
+const WaitingForProduct = async (req, res) => {
+  try {
+    const { orderCode } = req.params;
+    const order = await Order.findOne({
+      where: { orderCode: orderCode },
+    });
+    if (!order) {
+      return res.json({
+        status: 400,
+        message: "Không có đơn hàng!",
+      });
+    }
+    if (order.status === "1") {
+      order.status = "8"; // Trạng thái đợi sản phẩm nhập về
+      await order.save(); 
+      return res.json({
+        status: 200,
+        message: "Cập nhât trạng thái thành công!",
+      });
+    }else{
+      return res.json({
+        status: 400,
+        message: "Trạng thái đơn hàng không hợp lệ!",
+      });
+    }
+  } catch (e) {
+    console.log("Lỗi lấy đơn hàng đang chờ xác nhận: ", e);
     return res.json({
       status: 500,
       message: "Lỗi server",
@@ -1105,4 +1157,5 @@ module.exports = {
   deleteOrderDetail,
   updateQuantityOrderDetail,
   payOrderAdmin,
+  WaitingForProduct,
 };

@@ -64,7 +64,7 @@ const register = async (req, res) => {
         address: "",
         phoneNumber: "",
         email: "",
-        position: "",
+        position: "Nhân viên",
         dob: "",
         status: 1,
         creator: adminCreate.name,

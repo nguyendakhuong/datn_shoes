@@ -39,7 +39,6 @@ const createDiscount = async (req, res) => {
   try {
     const data = req.body;
     const token = req.headers.authorization.split(" ")[1];
-
     if (!token) {
       return res.json({
         status: 400,
@@ -144,7 +143,6 @@ const deleteDiscount = async (req, res) => {
     message: "Xóa thành công!",
   });
 };
-
 const useDiscount = async (req, res) => {
   const signPrivate = process.env.SIGN_PRIVATE;
   try {
@@ -271,7 +269,6 @@ const useDiscount = async (req, res) => {
     });
   }
 };
-
 const useDiscountAdmin = async (req, res) => {
   const { discount, total, phoneNumber } = req.body;
   try {
@@ -383,6 +380,55 @@ const useDiscountAdmin = async (req, res) => {
     });
   }
 };
+const getDiscountsByUser = async (req, res) => {
+  const signPrivate = process.env.SIGN_PRIVATE;
+  try {
+    const token = req.headers.authorization.split(" ")[1];
+    if (!token) {
+      return res.json({
+        status: 400,
+        message: "Thiếu token",
+      });
+    }
+    const decoded = jwt.verify(token, signPrivate);
+    const account = await Account.findOne({ where: { id: decoded.id } });
+    if (!account || account.status !== 1) {
+      return res.json({
+        status: 400,
+        message: "Tài khoan không hợp lệ hoặc đã bị khóa",
+      });
+    }
+    const usedDiscounts = await Order.findAll({
+      where: {
+        customerCode: account.customerCode,
+        discountCode: { [Op.ne]: null },
+      },
+      attributes: ["discountCode"],
+      raw: true,
+    });
+
+    const usedCodes = usedDiscounts.map((d) => d.discountCode);
+    const unusedDiscounts = await Promotion.findAll({
+      where: {
+        promotionCode: {
+          [Op.notIn]: usedCodes.length > 0 ? usedCodes : [''], 
+        },
+        status: 1,
+      },
+      raw: true,
+    });
+    return res.json({
+      status: 200,
+      data: unusedDiscounts,
+    });
+  } catch (e) {
+    console.log("Lỗi lấy mã giảm giá theo user: ", e);
+    return res.json({
+      status: 500,
+      message: "Lỗi server",
+    });
+  }
+};
 module.exports = {
   getDiscounts,
   createDiscount,
@@ -390,4 +436,5 @@ module.exports = {
   updateCreate,
   useDiscount,
   useDiscountAdmin,
+  getDiscountsByUser
 };

@@ -14,6 +14,7 @@ router.get("/getOrderAdmin", order.getOrderAdmin);
 router.get("/deleteOrderAdminByCode/:orderCode", order.deleteOrderAdminByCode);
 router.get("/deleteOrderDetail/:orderDetailCode", order.deleteOrderDetail);
 router.get("/getOrderAdminByCode/:orderCode", order.getOrderAdminByCode);
+router.get("/waitingForProduct/:orderCode", order.WaitingForProduct);
 
 router.post("/addProductToOrderAdmin/:orderCode", order.addProductToOrderAdmin);
 router.post("/payOrderAdmin/:orderCode", order.payOrderAdmin);

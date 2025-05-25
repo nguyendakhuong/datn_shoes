@@ -81,6 +81,7 @@ const createOrderPayment = async (req, res) => {
       totalPayment, // tiền thanh toán
       discountCode: discountCode?.promotionCode || "", // tên giảm giá
       paymentMethod: "Thanh toán online",
+      shippingFee: 30000,
       customerCode: infoUser.customerCode,
       employeeCode: "",
       creator: infoUser.name,

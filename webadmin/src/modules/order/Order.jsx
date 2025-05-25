@@ -10,7 +10,7 @@ const Order = () => {
   const [searchDataOder, setSearchDataOrder] = useState("");
   const [dataSearch, setDataSearch] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemPage, setItemPage] = useState(5);
+  const [itemPage, setItemPage] = useState(10);
   const lastIndex = currentPage * itemPage;
   const firstIndex = lastIndex - itemPage;
   const records = data ? data.slice(firstIndex, lastIndex) : null;
@@ -51,6 +51,7 @@ const Order = () => {
     6: "Đơn bị hủy hàng", // hủy hàng (phía admin)
     7: "Khách hủy hàng", // boom hàng
     8: "Đơn hàng bị lỗi do không hoàn tất thanh toán",
+    9: "Đợi nhập hàng", 
   };
   const handleInputSearch = (e) => {
     const { name, value } = e.target;
@@ -228,6 +229,7 @@ const Order = () => {
         <td>{order.phoneNumber}</td>
         <td>{formatter.format(order.totalDefault)}</td>
         <td>{formatter.format(order.totalPromotion)}</td>
+        <td>{formatter.format(order.shippingFee)}</td>
         <td>{formatter.format(order.totalPayment)}</td>
         <td>{order.paymentMethod}</td>
         <td>{formattedUpdatedAt}</td>
@@ -331,8 +333,8 @@ const Order = () => {
                   onChange={(e) => setSelectedPaymentMethod(e.target.value)}
                 >
                   <option value="">Tất cả</option>
-                  <option value="online">Thanh toán online</option>
-                  <option value="offline">Thanh toán offline</option>
+                  <option value="online">Hoá đơn online</option>
+                  <option value="offline">Hoá đơn thanh toán tại quầy</option>
                 </select>
               </div>
               <div className="input-search-order">
@@ -349,7 +351,6 @@ const Order = () => {
               </div>
             </div>
           </div>
-
           <div className="order-table-container">
             <table className="discount-table">
               <thead>
@@ -359,6 +360,7 @@ const Order = () => {
                   <th>Số điện thoại</th>
                   <th>Giá ban đầu </th>
                   <th>Giá khuyến mại </th>
+                  <th>Phí vận chuyển</th>
                   <th>Giá thanh toán </th>
                   <th>Hình thức thanh toán </th>
                   <th>Thời gian</th>
@@ -398,6 +400,7 @@ const Order = () => {
                         href="#"
                         className={`pageLink`}
                         onClick={() => changePage(1)}
+                        
                       >
                         1
                       </a>
