@@ -56,7 +56,7 @@ const createDiscount = async (req, res) => {
         message: "Không tìm thấy tài khoản!",
       });
     }
-    if (checkDiscount) {
+    if (checkDiscount && checkDiscount.status === 1) {
       return res.json({
         status: 400,
         message: "Mã đã tồn tại",
