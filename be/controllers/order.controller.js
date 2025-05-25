@@ -14,7 +14,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 require("dotenv").config;
-const { Op } = require("sequelize");
+const { Op, where } = require("sequelize");
 
 const generateUniqueCode = async (model, columnName) => {
   let code;
@@ -567,6 +567,13 @@ const cancelOrderUser = async (req, res) => {
     if (order.status === "1" || order.status === "9") {
       order.status = "7";
       await order.save();
+      const discount = await Promotion.findOne({
+        where: { promotionCode: order.discountCode },
+      });
+      if (discount) {
+        discount.quantity += 1;
+        await discount.save();
+      }
       return res.json({
         status: 200,
         message: "Hủy đơn hàng thành công",
@@ -657,6 +664,13 @@ const cancelOrderAdmin = async (req, res) => {
         status: 1,
         creator: admin.name,
       });
+      const discount = await Promotion.findOne({
+        where: { promotionCode: order.discountCode },
+      });
+      if (discount) {
+        discount.quantity += 1;
+        await discount.save();
+      }
       return res.json({
         status: 200,
         message: "Thành công",
