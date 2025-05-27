@@ -841,6 +841,7 @@ const createOrderAdmin = async (req, res) => {
       discountCode: "", // tên giảm giá
       paymentMethod: "Thanh toán offline tại quầy",
       customerCode: "",
+      shippingFee: 0,
       employeeCode: admin.name,
       creator: admin.name,
       status: "0", // chưa thanh toán

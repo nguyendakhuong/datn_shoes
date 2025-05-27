@@ -305,7 +305,7 @@ const OrderDetail = ({ order, onClose }) => {
                 </p>
                 <p className="order-info">
                   <strong>Số tiền sau giảm:</strong>{" "}
-                  {formatter.format(order.totalPayment - 30000)}
+                  {formatter.format(order.totalPayment - order.shippingFee)}
                 </p>
                 <p className="order-info">
                   <strong>Phí vận chuyển:</strong>{" "}

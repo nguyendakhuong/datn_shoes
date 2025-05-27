@@ -51,7 +51,7 @@ const Order = () => {
     6: "Đơn bị hủy hàng", // hủy hàng (phía admin)
     7: "Khách hủy hàng", // boom hàng
     8: "Đơn hàng bị lỗi do không hoàn tất thanh toán",
-    9: "Đợi nhập hàng", 
+    9: "Đợi nhập hàng",
   };
   const handleInputSearch = (e) => {
     const { name, value } = e.target;
@@ -96,8 +96,10 @@ const Order = () => {
     };
 
     const printOrder = (order) => {
-  const formattedUpdatedAt = new Date(order.updatedAt).toLocaleDateString("vi-VN");
-  return `
+      const formattedUpdatedAt = new Date(order.updatedAt).toLocaleDateString(
+        "vi-VN"
+      );
+      return `
     <html>
       <head>
         <style>
@@ -177,8 +179,20 @@ const Order = () => {
             <p><strong>Địa chỉ giao hàng:</strong> ${order.address}</p>
             <p><strong>Hình thức thanh toán:</strong> ${order.paymentMethod}</p>
             <p><strong>Ngày giao:</strong> ${formattedUpdatedAt}</p>
-            <p><strong>Số tiền ban đầu:</strong> ${formatter.format(order.totalDefault)}</p>
-            <p><strong>Số tiền khuyến mại:</strong> ${formatter.format(order.totalPromotion)}</p>
+            <p><strong>Số tiền ban đầu:</strong> ${formatter.format(
+              order.totalDefault
+            )}</p>
+            <p >
+                  <strong>Số tiền đã giảm:</strong>
+                  ${formatter.format(order.totalPromotion)}
+                </p>
+                <p >
+                  <strong>Số tiền sau giảm:</strong>
+                  ${formatter.format(order.totalPayment - order.shippingFee)}
+                </p>
+                ${order.shippingFee > 0 ?
+                `<p><strong>Phí vận chuyển:</strong> ${formatter.format(order.shippingFee)}</p>` : ""} 
+          
           </div>
           <div class="order-products">
             <h2>Danh sách sản phẩm</h2>
@@ -219,8 +233,7 @@ const Order = () => {
       </body>
     </html>
   `;
-};
-
+    };
 
     return (
       <tr key={order.id} onClick={() => viewOrderDetail(order)}>
@@ -400,7 +413,6 @@ const Order = () => {
                         href="#"
                         className={`pageLink`}
                         onClick={() => changePage(1)}
-                        
                       >
                         1
                       </a>
