@@ -282,7 +282,7 @@ const OrderUser = () => {
             <p>
               <strong >
                 Số tiền sau giảm:{" "}
-                {formatter.format(selectedOrder.totalPayment - 30000)}
+                {formatter.format(selectedOrder.totalPayment)}
               </strong>
             </p>
              <p>
@@ -295,7 +295,9 @@ const OrderUser = () => {
             <p>
               <strong className="total-payment">
                 Tổng tiền thanh toán:{" "}
-                <h4>{formatter.format(selectedOrder.totalPayment)}</h4>
+                <h4>{formatter.format(
+    Number(selectedOrder.totalPayment || 0) + Number(selectedOrder.shippingFee || 0)
+  )}</h4>
               </strong>{" "}
             </p>
             {orderNote && selectedOrder.status === "6" ? (
@@ -366,7 +368,7 @@ const OrderUser = () => {
                 </div>
               ))}
             </div>
-            {selectedOrder.status === "1" || selectedOrder.status === "2 " ? (
+            {selectedOrder.status === "1" || selectedOrder.status === "2"|| selectedOrder.status === "9" ? (
               <button
                 onClick={() => handleCancelOrder(selectedOrder.orderCode)}
               >
