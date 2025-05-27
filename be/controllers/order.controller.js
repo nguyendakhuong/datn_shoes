@@ -323,12 +323,11 @@ const verifyOrder = async (req, res) => {
         const productDetail = await ProductDetails.findOne({
           where: {
             productDetailCode: orderDetail.productDetailCode,
-            status: 1,
           },
         });
 
         if (!productDetail) {
-          return res.json({ status: 400, message: "Sản phẩm không hoạt động" });
+          return res.json({ status: 400, message: "Sản phẩm không tồn tại" });
         }
         if (productDetail.quantity < orderDetail.quantity) {
           return res.json({
@@ -1149,7 +1148,7 @@ const WaitingForProduct = async (req, res) => {
       });
     }
     if (order.status === "1") {
-      order.status = "8"; // Trạng thái đợi sản phẩm nhập về
+      order.status = "9"; // Trạng thái đợi sản phẩm nhập về
       await order.save();
       return res.json({
         status: 200,

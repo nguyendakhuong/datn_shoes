@@ -63,11 +63,14 @@ const ProductDetail = () => {
 
   const getRivew = async () => {
     try {
-      const response = await fetch(`http://localhost:3001/riview/listRiviewByProduct/${id}`, {
-        headers: {
-          Authorization: `Bearer `,
-        },
-      });
+      const response = await fetch(
+        `http://localhost:3001/riview/listRiviewByProduct/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer `,
+          },
+        }
+      );
       const data = await response.json();
       if (data.status === 200) {
         setRiviewProduct(data.data);
@@ -95,15 +98,18 @@ const ProductDetail = () => {
       const sizes = data.productDetail.filter(
         (item) => item.color === selectedColor
       );
-      const quantity = data.productDetail.filter((item) => item.color === selectedColor);
-      setQuantity(quantity);
       setFilteredSizes(sizes);
-      if (sizes.length > 0) {
-        setSelectedSize(sizes[0].size);
+      const sizeExists = sizes.some((item) => item.size === selectedSize);
+      if (!selectedSize || !sizeExists) {
+        setSelectedSize(sizes[0]?.size || "");
       }
+
+      const filteredItems = data.productDetail.filter(
+        (item) => item.color === selectedColor && item.size === selectedSize
+      );
+      setQuantity(filteredItems);
     }
-  }, [selectedColor, data]);
-  console.log(quantity);
+  }, [selectedColor, selectedSize, data]);
 
   const handleAddToCart = async () => {
     const selectedProduct = filteredSizes.find(
@@ -111,8 +117,10 @@ const ProductDetail = () => {
     );
     if (!selectedProduct) return;
     const token = APP_LOCAL.getTokenStorage();
-    if(!token){
-      return ToastApp.warning("Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng");
+    if (!token) {
+      return ToastApp.warning(
+        "Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng"
+      );
     }
     try {
       const response = await fetch(
