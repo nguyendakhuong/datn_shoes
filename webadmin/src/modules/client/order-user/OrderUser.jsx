@@ -130,6 +130,26 @@ const OrderUser = () => {
       },
     });
   };
+
+  // const getRiviewProduct = async () => {
+  //   const token = APP_LOCAL.getTokenStorage();
+  //   try {
+  //     const response = await fetch(`http://localhost:3001/riview/checkRiview`, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
+  //     const data = await response.json();
+  //     if (data.status === 200) {
+  //       console.log("aaaaa", data.data);
+  //     } else {
+  //       ToastApp.warning(data.message);
+  //     }
+  //   } catch (e) {
+  //     console.log("Lỗi lấy đánh giá sản phẩm: ", e);
+  //   }
+  // };
+
   const handleReviewProduct = (e, order, productDetailCode) => {
     e.stopPropagation();
     dispatch({
@@ -177,8 +197,8 @@ const OrderUser = () => {
   useEffect(() => {
     getAllOrder();
     getPurchaseOrder();
+    // getRiviewProduct()
   }, []);
-
 
   const filteredOrders =
     selectedTab === "all"
@@ -193,7 +213,6 @@ const OrderUser = () => {
     style: "currency",
     currency: "VND",
   });
-  console.log(selectedOrder);
   return (
     <div className="order-container">
       <div className="tabbar">
@@ -262,42 +281,39 @@ const OrderUser = () => {
               <strong>Trạng thái:</strong> {statusLabels[selectedOrder.status]}
             </p>
             <p>
-              <strong >
-                Số tiền ban đầu:{" "}
-                {formatter.format(selectedOrder.totalDefault)}
+              <strong>
+                Số tiền ban đầu: {formatter.format(selectedOrder.totalDefault)}
               </strong>
             </p>
             <p>
-              <strong >
-                Tên phiếu giảm giá:{" "}
-                {selectedOrder.discountName}
-              </strong>
+              <strong>Tên phiếu giảm giá: {selectedOrder.discountName}</strong>
             </p>
             <p>
-              <strong >
+              <strong>
                 Số tiền giảm giá:{" "}
                 {formatter.format(selectedOrder.totalPromotion)}
               </strong>
             </p>
             <p>
-              <strong >
-                Số tiền sau giảm:{" "}
-                {formatter.format(selectedOrder.totalPayment)}
+              <strong>
+                Số tiền sau giảm: {formatter.format(selectedOrder.totalPayment)}
               </strong>
             </p>
-             <p>
-              <strong >
-                Phí vận chuyển:{" "}
-                {formatter.format(selectedOrder.shippingFee)}
+            <p>
+              <strong>
+                Phí vận chuyển: {formatter.format(selectedOrder.shippingFee)}
               </strong>
             </p>
 
             <p>
               <strong className="total-payment">
                 Tổng tiền thanh toán:{" "}
-                <h4>{formatter.format(
-    Number(selectedOrder.totalPayment || 0) + Number(selectedOrder.shippingFee || 0)
-  )}</h4>
+                <h4>
+                  {formatter.format(
+                    Number(selectedOrder.totalPayment || 0) +
+                      Number(selectedOrder.shippingFee || 0)
+                  )}
+                </h4>
               </strong>{" "}
             </p>
             {orderNote && selectedOrder.status === "6" ? (
@@ -368,7 +384,9 @@ const OrderUser = () => {
                 </div>
               ))}
             </div>
-            {selectedOrder.status === "1" || selectedOrder.status === "2"|| selectedOrder.status === "9" ? (
+            {selectedOrder.status === "1" ||
+            selectedOrder.status === "2" ||
+            selectedOrder.status === "9" ? (
               <button
                 onClick={() => handleCancelOrder(selectedOrder.orderCode)}
               >

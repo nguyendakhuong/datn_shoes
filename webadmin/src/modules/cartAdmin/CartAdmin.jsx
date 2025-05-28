@@ -12,7 +12,7 @@ import { ParseValid } from "../../lib/validate/ParseValid";
 import { Validate } from "../../lib/validate/Validate";
 
 const CartAdmin = () => {
-  const [{ }, dispatch] = useContext(UserContext);
+  const [{}, dispatch] = useContext(UserContext);
   const [data, setData] = useState([]);
   const [dataProductActive, setDataProductActive] = useState([]);
   const [dataOrderDetail, setDataOrderDetail] = useState([]);
@@ -396,6 +396,10 @@ const CartAdmin = () => {
               getOrderAdminByCode();
             } else {
               ToastApp.warning(result.message);
+              return dispatch({
+                type: KEY_CONTEXT_USER.HIDE_MODAL,
+                payload: true,
+              });
             }
           } catch (e) {
             console.log("Lỗi xóa hóa đơn: ", e);
@@ -663,7 +667,10 @@ const CartAdmin = () => {
                 {discountAPI.promotionType === 1 ? "Giảm tiền" : "Giảm theo %"}
               </span>
               <span>Mô tả: {discountAPI.describe}</span>
-              <span>Số tiền tối thiểu: {formatter.format(discountAPI.conditionsOfApplication)}</span>
+              <span>
+                Số tiền tối thiểu:{" "}
+                {formatter.format(discountAPI.conditionsOfApplication)}
+              </span>
               <span>
                 Hạn mức tối đa:{" "}
                 {discountAPI.maximumPromotion

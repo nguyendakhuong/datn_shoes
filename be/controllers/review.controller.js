@@ -152,11 +152,10 @@ const checkRiview = async (req, res) => {
         orderCodeList.includes(review.orderCode) &&
         productDetailCodeList.includes(review.productDetailCode)
     );
-    console.log(matchedRiviews);
     return res.json({
       status: 200,
       message: "Thành công",
-      data: listRiview,
+      data: matchedRiviews,
     });
   } catch (e) {
     console.log("Lỗi kiểm tra xem đã đánh giá chưa: ", e);
