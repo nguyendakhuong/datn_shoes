@@ -126,6 +126,7 @@ const EditAdmin = ({ id }) => {
                             type={'text'}
                             value={data.position}
                             onChange={handleChange}
+                            readOnly={true}
                         />
                         {listError.position && <label className='error-text'>{listError.position}</label>}
                         <InputAdmin
