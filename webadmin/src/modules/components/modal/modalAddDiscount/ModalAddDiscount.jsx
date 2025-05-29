@@ -83,7 +83,7 @@ const ModalAddDiscount = ({ isOpen, onClose }) => {
                 clearForm();
                 onClose();
             } else {
-                ToastApp.warning(data.message);
+                ToastApp.warning(result.message);
             }
         } catch (e) {
             console.log("Lỗi thêm mã khuyến mãi")

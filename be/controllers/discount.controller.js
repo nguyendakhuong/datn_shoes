@@ -48,7 +48,7 @@ const createDiscount = async (req, res) => {
     const decoded = jwt.verify(token, signPrivate);
     const account = await Account.findOne({ where: { id: decoded.id } });
     const checkDiscount = await Promotion.findOne({
-      where: { name: data.name },
+      where: { name: data.name.trim() },
     });
     if (!account) {
       return res.json({
@@ -58,8 +58,8 @@ const createDiscount = async (req, res) => {
     }
     if (checkDiscount && checkDiscount.status === 1) {
       return res.json({
-        status: 400,
-        message: "Mã đã tồn tại",
+        status: 401,
+        message: "Phiếu giảm giá đã tồn tại",
       });
     }
     let promotionCode = await generateUniqueCode(Promotion, "promotionCode");

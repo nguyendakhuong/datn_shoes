@@ -26,6 +26,12 @@ const product = async (req, res) => {
   const signPrivate = process.env.SIGN_PRIVATE;
   try {
     const { name, description, trademark, origin, material } = req.body;
+    if (!name || !description || !trademark || !origin || !material) {
+      return res.json({
+        status: 400,
+        message: "Thiếu dữ liệu",
+      });
+    }
     const token = req.headers.authorization.split(" ")[1];
     const decoded = jwt.verify(token, signPrivate);
     const account = await Account.findOne({ where: { id: decoded.id } });
@@ -35,7 +41,10 @@ const product = async (req, res) => {
         message: "Tài khoản không tồn tại",
       });
     }
-    const checkNameProduct = await Products.findOne({ where: { name } });
+    const checkNameProduct = await Products.findOne({
+      where: { name: name.trim() },
+    });
+
     if (
       checkNameProduct &&
       (checkNameProduct.status === 1 || checkNameProduct.status === 2)
